@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  name      String?
+  role      Role     @default(USER)
+  posts     Post[]
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  content   String?
+  thumbnail String?
+  published Boolean  @default(false)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id         Int      @id @default(autoincrement())
+  title      String
+  slug       String   @unique
+  client     String?
+  category   String
+  summary    String
+  content    String?
+  coverImage String?
+  year       Int?
+  published  Boolean  @default(false)
+  featured   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  summary     String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  quote       String
+  authorName  String
+  authorTitle String?
+  company     String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+enum ExperienceType {
+  WORK
+  EDUCATION
+}
+
+model Experience {
+  id           Int            @id @default(autoincrement())
+  type         ExperienceType
+  organization String
+  role         String
+  description  String?
+  startDate    DateTime
+  endDate      DateTime?
+  order        Int            @default(0)
+  createdAt    DateTime       @default(now())
+}
+
+model ContactSubmission {
+  id           Int      @id @default(autoincrement())
+  name         String
+  company      String?
+  email        String
+  timeline     String?
+  budget       String?
+  message      String
+  projectTypes String[] @default([])
+  read         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}

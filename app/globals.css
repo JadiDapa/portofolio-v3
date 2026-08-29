@@ -1,26 +1,213 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Hairline colour of the page's vertical rules — deliberately its own token
+     so the whole grid can be retuned without touching --border. */
+  --color-grid: var(--grid);
+  /* Page gutter, exposed on the --spacing-* namespace so `px-gutter`,
+     `gap-gutter`, `-mx-gutter` etc. all resolve to the same value the
+     GridLines overlay uses. Every full-bleed section must use it or the
+     content stops landing on the rules. */
+  --spacing-gutter: var(--gutter);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: var(--radius);
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  /* Fluid display type — namespaced under --text-* so `text-hero` etc. work.
+     Deliberately avoids the xs/sm/xl/2xl keys so it can't shadow Tailwind's
+     own sizing scales (a --spacing-4xl key silently breaks max-w-4xl). */
+  --text-eyebrow: var(--step--2);
+  --text-lead: var(--step-p);
+  --text-title: var(--step-2);
+  --text-section: var(--step-6);
+  --text-hero: var(--step-6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0 0 0);
+  --primary: oklch(0 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.44 0 0);
+  --accent: oklch(0.94 0 0);
+  --accent-foreground: oklch(0 0 0);
+  --destructive: oklch(0.63 0.19 23.03);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.94 0 0);
+  --ring: oklch(0 0 0);
+  --chart-1: #ff2e79;
+  --chart-2: #6fc2ef;
+  --chart-3: #e1a3ee;
+  --chart-4: #ddb26f;
+  --chart-5: #0f0f0f;
+  --radius: 0.5rem;
+  --grid: #e5e5e5;
+  /* ~1rem on phones, settling at 6.5rem once the viewport passes ~1920px,
+     which is where the source design's rules sit. */
+  --gutter: clamp(1rem, 5.5vw, 6.5rem);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f0f0f;
+  --sidebar-primary: #ff2e79;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffeef3;
+  --sidebar-accent-foreground: #0f0f0f;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #ff2e79;
+
+  /* Fluid type steps — copied from wondermake.xyz's Utopia-style scale */
+  --step--2: clamp(0.7813rem, 0.7566rem + 0.1162vi, 0.88rem);
+  --step--1: clamp(0.9375rem, 0.8969rem + 0.1912vi, 1.1rem);
+  --step-0: clamp(1.125rem, 1.0625rem + 0.2941vi, 1.375rem);
+  --step-p: clamp(1.3rem, 1.2578rem + 0.4338vi, 1.5rem);
+  --step-1: clamp(1.35rem, 1.2578rem + 0.4338vi, 1.7188rem);
+  --step-2: clamp(1.62rem, 1.4879rem + 0.6217vi, 2.1484rem);
+  --step-3: clamp(1.944rem, 1.7586rem + 0.8724vi, 2.6855rem);
+  --step-4: clamp(2.3328rem, 2.0768rem + 1.2049vi, 3.3569rem);
+  --step-5: clamp(2.7994rem, 2.4502rem + 1.6433vi, 4.1962rem);
+  --step-6: clamp(3.3592rem, 2.8877rem + 2.2188vi, 5.2452rem);
+  --step-7: clamp(4.0311rem, 3.3997rem + 2.9711vi, 6.5565rem);
+  --step-8: clamp(4.8373rem, 3.9977rem + 3.951vi, 8.1956rem);
+  --step-9: clamp(5.8048rem, 4.6948rem + 5.2233vi, 10.2445rem);
+  --step-10: clamp(6.9657rem, 5.5057rem + 6.8706vi, 12.8057rem);
+
+  /* Fluid space scale — copied from wondermake.xyz's Utopia-style scale */
+  --space-3xs: clamp(0.5625rem, 0.5313rem + 0.1471vi, 0.6875rem);
+  --space-2xs: clamp(0.5625rem, 0.5313rem + 0.1471vi, 0.6875rem);
+  --space-xs: clamp(0.875rem, 0.8281rem + 0.2206vi, 1.0625rem);
+  --space-s: clamp(1.125rem, 1.0625rem + 0.2941vi, 1.375rem);
+  --space-m: clamp(1.6875rem, 1.5938rem + 0.4412vi, 2.0625rem);
+  --space-l: clamp(2.25rem, 2.125rem + 0.5882vi, 2.75rem);
+  --space-xl: clamp(3.375rem, 3.1875rem + 0.8824vi, 4.125rem);
+  --space-2xl: clamp(4.5rem, 4.25rem + 1.1765vi, 5.5rem);
+  --space-3xl: clamp(6.75rem, 6.375rem + 1.7647vi, 8.25rem);
+  --space-4xl: clamp(7.875rem, 7.4375rem + 2.0588vi, 9.625rem);
+  --space-5xl: clamp(7.875rem, 7.4375rem + 2.0588vi, 9.625rem);
+}
+
+.dark {
+  /* Straight inversion of the brand palette so the tile/border system reads
+     the same in both themes. */
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.14 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.25 0 0);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.23 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.32 0 0);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.69 0.2 23.91);
+  --destructive-foreground: oklch(0 0 0);
+  --border: oklch(0.26 0 0);
+  --input: oklch(0.32 0 0);
+  --ring: oklch(0.72 0 0);
+  --grid: #2a2a2a;
+  --chart-1: #ff2e79;
+  --chart-2: #6fc2ef;
+  --chart-3: #e1a3ee;
+  --chart-4: #ddb26f;
+  --chart-5: #f8f8f8;
+  --sidebar: #171717;
+  --sidebar-foreground: #f8f8f8;
+  --sidebar-primary: #ff2e79;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #f8f8f8;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #ff2e79;
+}
+
+/* The public site's column grid. GridLines draws a rule at the start of every
+   column it produces, so anything that wants to sit *on* those rules has to be
+   laid out with this exact utility rather than its own grid-cols-*. */
+@utility page-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+
+  @media (width >= 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (width >= 64rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+.outline-text {
+  -webkit-text-stroke: 2px #000;
+}
+
+.dark .outline-text {
+  -webkit-text-stroke: 2px #fff;
 }

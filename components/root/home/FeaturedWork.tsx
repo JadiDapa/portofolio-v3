@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { Asterisk, Lightbulb, Sparkles } from "lucide-react";
 import ProjectPreview, { type WorkProject } from "@/components/root/work/ProjectPreview";
 import ServiceLink from "@/components/root/services/detail/ServiceLink";
+import InView from "@/components/root/shared/InView";
 
 /**
  * Three-up masonry: a wide card, then a square card on each side, offset by
@@ -32,18 +33,20 @@ export default function FeaturedWork({ projects }: { projects: WorkProject[] }) 
       data-sec="featured"
     >
       <div className="hm-feat">
-        <div className="hm-feat-tiles">
+        <InView className="hm-feat-tiles hm-pop" threshold={0.5}>
           <div className="sv-tile sv-tile--dark flex">
             <Asterisk strokeWidth={2.2} aria-hidden />
           </div>
           <div className="sv-tile wk-b flex">
             <Lightbulb strokeWidth={1.3} aria-hidden />
           </div>
-        </div>
-        <div className="hm-feat-1">{card(first, true)}</div>
+        </InView>
+        <InView className="hm-feat-1 hm-rv" threshold={0} rootMargin="0px 0px -12% 0px">
+          {card(first, true)}
+        </InView>
 
         {right && (
-          <div className="hm-feat-3">
+          <InView className="hm-feat-3 hm-rv hm-pop" threshold={0} rootMargin="0px 0px -12% 0px">
             <div className="hm-feat-tiles hm-feat-tiles--card">
               <div className="sv-tile sv-tile--dark flex">
                 <Asterisk strokeWidth={2.2} aria-hidden />
@@ -53,10 +56,14 @@ export default function FeaturedWork({ projects }: { projects: WorkProject[] }) 
               </div>
             </div>
             {card(right)}
-          </div>
+          </InView>
         )}
 
-        {left && <div className="hm-feat-2">{card(left)}</div>}
+        {left && (
+          <InView className="hm-feat-2 hm-rv" threshold={0} rootMargin="0px 0px -12% 0px">
+            {card(left)}
+          </InView>
+        )}
 
         <div className="hm-feat-btn">
           <motion.div

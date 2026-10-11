@@ -8,7 +8,7 @@ type ShowcaseItem = { id: number; title: string; coverImage: string };
 function Row({ items, reverse }: { items: ShowcaseItem[]; reverse?: boolean }) {
   const loop = [...items, ...items];
   return (
-    <div className="-mx-(--space-m-l) overflow-hidden">
+    <div className="overflow-hidden">
       <div
         className={reverse ? "ct-carousel ct-carousel--reverse" : "ct-carousel"}
         // one tile (11em + 0.6em gap = ~369px at 1440) every 6.12s = 60.3px/s, as measured on the reference
@@ -38,7 +38,14 @@ function Row({ items, reverse }: { items: ShowcaseItem[]; reverse?: boolean }) {
 }
 
 /** Bordered strip of project covers scrolling in opposite directions. */
-export default function ContactShowcase({ items }: { items: ShowcaseItem[] }) {
+export default function ContactShowcase({
+  items,
+  boost,
+}: {
+  items: ShowcaseItem[];
+  /** Scrolling speeds the rows up. */
+  boost?: boolean;
+}) {
   if (!items.length) return null;
 
   // Pad short lists so each row is always wider than the viewport
@@ -50,7 +57,7 @@ export default function ContactShowcase({ items }: { items: ShowcaseItem[] }) {
 
   return (
     <section className="wk-b ct-showcase-pad" data-cmp="showcase">
-      <ShowcaseInView>
+      <ShowcaseInView boost={boost}>
       <div className="ct-showcase">
         <Row items={top} reverse />
         <Row items={bottom} />

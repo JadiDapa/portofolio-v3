@@ -686,6 +686,16 @@
     grid-row: 4;
   }
 }
+/* Four ~220px cells at 1024: the default padding pushes the icons into the
+   inset by a different amount per label, so they stop lining up. */
+@media (64rem <= width < 80rem) {
+  .hm-foot-links .sv-link .wk-btn_inner {
+    padding-inline: var(--space-s-m);
+  }
+  .hm-foot-links .sv-link-text {
+    padding-right: 1em;
+  }
+}
 
 /* Nav rows */
 .hm-foot-link {
@@ -894,6 +904,13 @@
     aspect-ratio: 1440 / 660;
   }
 }
+/* Tablets: the desktop frame is only ~340px tall here, which squeezes the
+   intro into a sliver; a taller frame keeps the copy readable. */
+@media (48rem <= width < 64rem) {
+  .hm-hero {
+    aspect-ratio: 1440 / 780;
+  }
+}
 
 .hm-hero_intro {
   position: absolute;
@@ -909,6 +926,11 @@
     left: auto;
     right: 2cqw;
     width: 22cqw;
+  }
+}
+@media (48rem <= width < 64rem) {
+  .hm-hero_intro {
+    width: 28cqw;
   }
 }
 .hm-hero_greet {
@@ -927,7 +949,7 @@
     font-size: max(0.8rem, 1.25cqw);
   }
   .hm-hero_desc {
-    font-size: max(0.7rem, 0.97cqw);
+    font-size: max(0.8125rem, 0.97cqw);
   }
 }
 
@@ -1024,4 +1046,160 @@
   .hm-hero_spec {
     font-size: max(0.95rem, 2.08cqw);
   }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-in motion. Each piece animates INTO its resting style and lets go
+   (animations use `backwards` fill, so nothing is left behind once they end,
+   and no stacking context lingers). Hidden states only apply until the
+   wrapper gets data-visible. The reduced-motion rule in shared.css collapses
+   all of it, including the idle loops.
+   -------------------------------------------------------------------------- */
+@keyframes hm-rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5em;
+  }
+}
+@keyframes hm-from-l {
+  from {
+    opacity: 0;
+    translate: -1.5em 0;
+  }
+}
+@keyframes hm-from-r {
+  from {
+    opacity: 0;
+    translate: 1.5em 0;
+  }
+}
+@keyframes hm-pop {
+  from {
+    opacity: 0;
+    scale: 0;
+    rotate: -45deg;
+  }
+}
+@keyframes hm-art-in {
+  from {
+    opacity: 0;
+    scale: 0;
+    rotate: -90deg;
+  }
+}
+@keyframes hm-wipe {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+@keyframes hm-settle {
+  from {
+    scale: 1.25;
+  }
+}
+@keyframes hm-draw {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes hm-twinkle {
+  50% {
+    scale: 1.18;
+  }
+}
+@keyframes hm-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes hm-bob {
+  50% {
+    translate: 0 -1.5px;
+  }
+}
+
+/* Icon tiles: the glyph pops in once its row scrolls into view */
+.hm-pop:not([data-visible]) .sv-tile > svg > * {
+  opacity: 0;
+  scale: 0;
+}
+.hm-pop[data-visible] .sv-tile > svg > * {
+  animation: hm-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.hm-pop[data-visible] .sv-tile:nth-child(2) > svg > * {
+  animation-delay: 0.1s;
+}
+
+/* Featured cards: the cover wipes up, the image settles, the title box follows */
+.hm-rv:not([data-visible]) .wk-inset-media {
+  clip-path: inset(100% 0 0 0);
+}
+.hm-rv:not([data-visible]) .wk-pv_content {
+  opacity: 0;
+}
+.hm-rv[data-visible] .wk-inset-media {
+  animation: hm-wipe 1.2s var(--wk-ease) backwards;
+}
+.hm-rv[data-visible] .wk-inset-this > * {
+  animation: hm-settle 1.8s var(--wk-ease) backwards;
+}
+.hm-rv[data-visible] .wk-pv_content {
+  animation: hm-rise 1s var(--wk-ease) 0.4s backwards;
+}
+.hm-rv[data-visible] .wk-cats {
+  animation: hm-rise 1s var(--wk-ease) 0.6s backwards;
+}
+
+/* Section titles: labels slide in toward the art, the art spins in, the
+   opening line rises last */
+.hm-st:not([data-visible]) :is(.hm-st-l, .hm-st-r, .hm-st-art, .hm-st-open) {
+  opacity: 0;
+}
+.hm-st[data-visible] .hm-st-l {
+  animation: hm-from-l 1s var(--wk-ease) 0.3s backwards;
+}
+.hm-st[data-visible] .hm-st-r {
+  animation: hm-from-r 1s var(--wk-ease) 0.3s backwards;
+}
+.hm-st[data-visible] .hm-st-art {
+  animation: hm-art-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+}
+.hm-st[data-visible] .hm-st-open {
+  animation: hm-rise 1s var(--wk-ease) 0.7s backwards;
+}
+
+/* Expertise sparkle: draws in, then each star twinkles out of phase */
+.hm-ex:not([data-visible]) .hm-spark path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.hm-ex[data-visible] .hm-spark path {
+  animation:
+    hm-draw 1.1s var(--wk-ease) calc(0.5s + var(--k, 0) * 0.15s) backwards,
+    hm-twinkle 3.2s ease-in-out calc(2s + var(--k, 0) * 0.55s) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Label art idle loops: the reviews rosette turns, the chat bubbles bob */
+[data-sec="testimonials"] .hm-rosette {
+  transform-box: view-box;
+  transform-origin: 24px 24px;
+  animation: hm-spin 24s linear infinite;
+}
+[data-sec="enquiry"] .hm-bob {
+  animation: hm-bob 3.4s ease-in-out calc(var(--k, 0) * 0.5s) infinite;
+}
+
+/* Enquiry switches rise one after another */
+.hm-enq-aside:not([data-visible]) .hm-sw {
+  opacity: 0;
+}
+.hm-enq-aside[data-visible] .hm-sw {
+  animation: hm-rise 0.9s var(--wk-ease) calc(var(--i, 0) * 0.12s) backwards;
 }

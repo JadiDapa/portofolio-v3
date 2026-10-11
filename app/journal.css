@@ -350,26 +350,21 @@
 }
 
 /* ---- Previous / next ----------------------------------------------------- */
+/* The hover fill is a background (not ::before) so wk-b's ::before/::after
+   hairlines on the right and bottom edges stay intact. */
 .jn-next {
   position: relative;
-  isolation: isolate;
   display: flex;
   min-height: 14rem;
   flex-direction: column;
   justify-content: space-between;
   gap: var(--space-s-m);
-  overflow: hidden;
   padding: var(--space-s-m);
-  transition: color 0.5s var(--wk-ease);
-}
-.jn-next::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--foreground);
-  transform: translateY(101%);
-  transition: transform 0.6s var(--wk-ease);
+  background: linear-gradient(var(--foreground), var(--foreground)) no-repeat
+    bottom / 100% 0;
+  transition:
+    color 0.5s var(--wk-ease),
+    background-size 0.6s var(--wk-ease);
 }
 .jn-next[data-dir="next"] {
   text-align: right;
@@ -386,8 +381,8 @@
   .jn-next:hover {
     color: var(--on-foreground);
   }
-  .jn-next:hover::before {
-    transform: none;
+  .jn-next:hover {
+    background-size: 100% 100%;
   }
 }
 @media (width >= 64rem) {
@@ -418,6 +413,18 @@
   font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
+}
+/* Side by side with the text card: let the cover fill the row's height
+   instead of stopping at a square and leaving a blank strip underneath. */
+@media (width >= 64rem) {
+  .jn-cover .wk-inset-media {
+    height: 100%;
+  }
+  .jn-cover .wk-inset-this {
+    height: 100%;
+    min-height: 100%;
+    aspect-ratio: auto;
+  }
 }
 .jn-feature {
   display: flex;

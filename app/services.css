@@ -223,12 +223,21 @@
 }
 .sv-link-text {
   flex-grow: 1;
+  min-width: 0;
   text-align: left;
-  padding-right: 2.2em;
+}
+/* Room for the label to slide right on hover; touch screens never slide, and
+   on a narrow button the extra inset pushed the icon past the edge. */
+@media (hover: hover) and (pointer: fine) {
+  .sv-link-text {
+    padding-right: 2.2em;
+  }
 }
 .sv-link-right {
   width: 1.5em;
   height: 1.5em;
+  /* A long label on a narrow button would otherwise squash it to a dot */
+  flex-shrink: 0;
 }
 .sv-link:hover .sv-link-left,
 .sv-link:focus-visible .sv-link-left {
@@ -262,6 +271,11 @@
   from {
     transform: translateY(100%);
   }
+}
+/* Pages with a floating bottom bar (this toolbar or the service switcher):
+   pad the footer so its last line can scroll clear of the bar. */
+body:has(.sv-toolbar, .sd-switcher) .hm-footer {
+  padding-bottom: calc(var(--gutter-pad) + var(--space-m) * 2.8 + var(--space-m-l) * 2);
 }
 .sv-toolbar nav {
   pointer-events: auto;

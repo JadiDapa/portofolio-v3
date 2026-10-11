@@ -11,7 +11,7 @@ export default function MoreWork({ projects }: { projects: ProjectCard[] }) {
   return (
     // overflow-x-clip trims the rows that bleed past the frame without clipping the hover lift
     <section className="px-gutter pt-(--gutter-pad) overflow-x-clip" data-sec="more">
-      <ContactShowcase items={items} />
+      <ContactShowcase items={items} boost />
     </section>
   );
 }

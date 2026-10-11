@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import ExtrudeChar from "@/components/root/shared/ExtrudeChar";
@@ -9,6 +10,8 @@ import ExtrudeChar from "@/components/root/shared/ExtrudeChar";
  * `lowercase` uses the tighter word/char boxes meant for mixed-case titles;
  * `inView` waits until the heading scrolls into view instead of animating on mount.
  * `extrude` renders the last N words as extruded letters that pop out in turn.
+ * Words never break, so when the widest one is wider than the box (a long
+ * word on a phone) the whole heading is zoomed down just enough to fit.
  */
 export default function RevealHeading({
   text,
@@ -32,9 +35,27 @@ export default function RevealHeading({
   }));
   const words = marked.map((m) => m.word);
   const target = { y: "0%" };
+  const root = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.removeProperty("zoom");
+      const widest = Math.max(
+        0,
+        ...Array.from(el.querySelectorAll<HTMLElement>(".wk-word"), (w) => w.scrollWidth),
+      );
+      if (widest > el.clientWidth) el.style.zoom = String(el.clientWidth / widest);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el.parentElement ?? el);
+    return () => ro.disconnect();
+  }, [text]);
 
   return (
-    <span className={cn("mr-[-0.12em] block", lowercase && "wk-lc")}>
+    <span ref={root} className={cn("mr-[-0.12em] block", lowercase && "wk-lc")}>
       {words.map((word, w) => (
         <span key={`${word}-${w}`}>
           <span className="wk-word relative z-1 inline-block whitespace-nowrap">

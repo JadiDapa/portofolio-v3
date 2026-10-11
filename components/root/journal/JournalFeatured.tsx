@@ -26,7 +26,7 @@ export default function JournalFeatured({ post }: { post: JournalListPost }) {
       <Link
         href={href}
         aria-label={post.title}
-        className="wk-route wk-b wk-inset col-span-2"
+        className="wk-route wk-b wk-inset jn-cover col-span-2"
       >
         <div className="wk-inset-media">
           <div className="wk-inset-this">

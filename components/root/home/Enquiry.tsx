@@ -3,6 +3,7 @@ import ContactForm from "@/components/root/ContactForm";
 import PrioritiesAside from "@/components/root/home/PrioritiesAside";
 import SectionTitle from "@/components/root/home/SectionTitle";
 import { ChatArt } from "@/components/root/work/WorkArt";
+import InView from "@/components/root/shared/InView";
 
 /**
  * Title box (icon tiles hanging off its top-left), then the framed enquiry
@@ -12,14 +13,14 @@ export default function Enquiry() {
   return (
     <section className="px-gutter hidden pt-(--gutter-pad) lg:block" data-sec="enquiry">
       <div className="page-grid">
-        <div className="hidden flex-col items-end lg:flex">
+        <InView className="hm-pop hidden flex-col items-end lg:flex" threshold={0.5}>
           <div className="sv-tile wk-b flex">
             <MessageSquare strokeWidth={1.3} aria-hidden />
           </div>
           <div className="sv-tile sv-tile--dark flex">
             <Asterisk strokeWidth={2.2} aria-hidden />
           </div>
-        </div>
+        </InView>
 
         <div className="col-span-full lg:col-span-3">
           <SectionTitle

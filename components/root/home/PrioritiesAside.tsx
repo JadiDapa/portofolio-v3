@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clock, DollarSign, Smile, ThumbsUp, X } from "lucide-react";
 import GridButton from "@/components/root/work/GridButton";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
 
 const PRIORITIES = [
   { key: "quality", label: "Highest Quality", icon: ThumbsUp },
@@ -22,6 +23,18 @@ const OUTCOMES: Record<string, string> = {
 export default function PrioritiesAside() {
   const [selected, setSelected] = useState<PriorityKey[]>(["quality", "deadline"]);
   const [info, setInfo] = useState(false);
+  const [aside, visible] = useInViewOnce<HTMLElement>({
+    threshold: 0,
+    rootMargin: "0px 0px -15% 0px",
+  });
+  // The switches rise first, then the knobs slide over to their starting positions
+  const [armed, setArmed] = useState(false);
+
+  useEffect(() => {
+    if (!visible) return;
+    const id = setTimeout(() => setArmed(true), 700);
+    return () => clearTimeout(id);
+  }, [visible]);
 
   // Always two of three. Switching one off brings the third on; switching
   // cost on drops quality (and the other way round), deadline drops the oldest.
@@ -48,16 +61,24 @@ export default function PrioritiesAside() {
       : "Pick two and I'll work around them.";
 
   return (
-    <aside className="hm-enq-aside col-span-full lg:col-span-1">
-      {PRIORITIES.map(({ key, label, icon: Icon }) => {
+    <aside
+      ref={aside}
+      data-visible={visible || undefined}
+      className="hm-enq-aside col-span-full lg:col-span-1"
+    >
+      {PRIORITIES.map(({ key, label, icon: Icon }, i) => {
         const on = selected.includes(key);
         return (
-          <div key={key} className="wk-b wk-glass p-(--space-s-m)">
+          <div
+            key={key}
+            className="hm-sw wk-b wk-glass p-(--space-s-m)"
+            style={{ "--i": i } as React.CSSProperties}
+          >
             <button
               type="button"
               role="switch"
               aria-checked={on}
-              data-state={on ? "checked" : "unchecked"}
+              data-state={on && armed ? "checked" : "unchecked"}
               onClick={() => toggle(key)}
               className="hm-switch"
             >

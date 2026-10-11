@@ -30,14 +30,17 @@ export function LabelArt() {
   );
 }
 
+/** Index passed to the stylesheet so each shape can run on its own beat. */
+const beat = (k: number) => ({ "--k": k }) as React.CSSProperties;
+
 /** Sparkle cluster pinned to the corner of the "Expertise" heading. */
 export function SparkleArt() {
   return (
     <svg viewBox="0 0 48 48" className="size-full" aria-hidden>
-      <g {...STROKE}>
-        <path d={star(15, 31, 11)} />
-        <path d={star(33, 14, 5.5)} />
-        <path d={star(35, 36, 3.6)} />
+      <g {...STROKE} className="hm-spark">
+        <path d={star(15, 31, 11)} pathLength={1} style={beat(0)} />
+        <path d={star(33, 14, 5.5)} pathLength={1} style={beat(1)} />
+        <path d={star(35, 36, 3.6)} pathLength={1} style={beat(2)} />
       </g>
     </svg>
   );
@@ -48,9 +51,9 @@ export function ChatArt() {
   return (
     <svg viewBox="0 0 48 48" className="size-full" aria-hidden>
       <g {...STROKE}>
-        <path d="M4 12.5h12.5a2 2 0 0 1 2 2V24a2 2 0 0 1-2 2H11l-3.5 3.5V26H4a2 2 0 0 1-2-2v-9.5a2 2 0 0 1 2-2Z" transform="translate(0 6)" />
-        <path d="M31.5 12.5H44a2 2 0 0 1 2 2V24a2 2 0 0 1-2 2h-3.5V29.5L37 26h-5.5a2 2 0 0 1-2-2v-9.5a2 2 0 0 1 2-2Z" transform="translate(0 6)" />
-        <path d="M17.5 4H30.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H26l-3 3.5L20 19h-2.5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+        <path d="M4 12.5h12.5a2 2 0 0 1 2 2V24a2 2 0 0 1-2 2H11l-3.5 3.5V26H4a2 2 0 0 1-2-2v-9.5a2 2 0 0 1 2-2Z" transform="translate(0 6)" className="hm-bob" style={beat(0)} />
+        <path d="M31.5 12.5H44a2 2 0 0 1 2 2V24a2 2 0 0 1-2 2h-3.5V29.5L37 26h-5.5a2 2 0 0 1-2-2v-9.5a2 2 0 0 1 2-2Z" transform="translate(0 6)" className="hm-bob" style={beat(2)} />
+        <path d="M17.5 4H30.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H26l-3 3.5L20 19h-2.5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" className="hm-bob" style={beat(1)} />
         <path d="M24 8.2v6.6M20.7 11.5h6.6" />
       </g>
     </svg>
@@ -76,7 +79,7 @@ export function ReviewArt() {
   return (
     <svg viewBox="0 0 48 48" className="size-full" aria-hidden>
       <g {...STROKE}>
-        <path d={scallop} />
+        <path d={scallop} className="hm-rosette" />
         <path d="m19.5 24 3 3 6-6.5" />
         <path d="M11 20 4 17.5v13L11 28z" />
         <path d="M6.5 30.5v6h4v-5" />

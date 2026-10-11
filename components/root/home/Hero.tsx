@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pad2 } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { Stars, ArrowRight } from "lucide-react";
 import { AnimatedBorderBox } from "./AnimatedBorderBox";
 import { HoverShadowBox } from "@/components/root/HoverShadowBox";
@@ -74,6 +74,18 @@ function useTypewriter(text: string, speed = 45, startDelay = 0) {
 
 export default function Hero() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const section = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  // Scrolling away: the names part ways and the portrait lags behind the page.
+  // Every value is 0 at the top, so the resting composition is untouched.
+  const { scrollYProgress } = useScroll({
+    target: section,
+    offset: ["start start", "end start"],
+  });
+  const reach = reduce ? 0 : 1;
+  const daffaX = useTransform(scrollYProgress, [0, 1], [0, -70 * reach]);
+  const althafX = useTransform(scrollYProgress, [0, 1], [0, 70 * reach]);
+  const portraitY = useTransform(scrollYProgress, [0, 1], ["0%", `${9 * reach}%`]);
   const typedGreeting = useTypewriter(
     GREETING,
     GREETING_SPEED,
@@ -94,7 +106,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="px-gutter">
+    <section ref={section} className="px-gutter">
       <h1 className="sr-only">
         Daffa Althaf Ridovani — Software Engineer &amp; Electrical Engineer
       </h1>
@@ -122,7 +134,7 @@ export default function Hero() {
           </div>
 
           {/* DAFFA */}
-          <div className="hm-hero_daffa">
+          <motion.div className="hm-hero_daffa" style={{ x: daffaX }}>
             <WigglyText
               text="DAFFA"
               className="hm-hero_name"
@@ -131,10 +143,10 @@ export default function Hero() {
               y={40}
               duration={NAME_DURATION_MS / 1000}
             />
-          </div>
+          </motion.div>
 
           {/* ALTHAF */}
-          <div className="hm-hero_althaf">
+          <motion.div className="hm-hero_althaf" style={{ x: althafX }}>
             <WigglyText
               text="ALTHAF"
               className="hm-hero_name"
@@ -143,28 +155,34 @@ export default function Hero() {
               y={40}
               duration={NAME_DURATION_MS / 1000}
             />
-          </div>
+          </motion.div>
 
-          {/* Portrait */}
+          {/* Portrait. The wrapper carries the scroll drift (and the stacking
+              slot) so the entrance below keeps sole control of its own y. */}
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{
-              duration: PORTRAIT_DURATION_MS / 1000,
-              delay: PORTRAIT_DELAY_MS / 1000,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="hm-hero_portrait"
+            className="pointer-events-none absolute inset-0 z-20"
+            style={{ y: portraitY }}
           >
-            <Image
-              src="/images/self-hero-123.png"
-              alt="Portrait"
-              width={1120}
-              height={1400}
-              sizes="(min-width: 48rem) 46vw, 92vw"
-              className="size-full object-contain object-bottom"
-              priority
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 100, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                duration: PORTRAIT_DURATION_MS / 1000,
+                delay: PORTRAIT_DELAY_MS / 1000,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="hm-hero_portrait"
+            >
+              <Image
+                src="/images/self-hero-123.png"
+                alt="Portrait"
+                width={1120}
+                height={1400}
+                sizes="(min-width: 48rem) 46vw, 92vw"
+                className="size-full object-contain object-bottom"
+                priority
+              />
+            </motion.div>
           </motion.div>
 
           {/* Specialties */}

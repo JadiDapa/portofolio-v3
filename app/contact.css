@@ -365,8 +365,7 @@
   }
 }
 .ct-showcase-pad {
-  padding-top: var(--space-s-m);
-  padding-bottom: var(--space-s-m);
+  padding: var(--space-s-m);
 }
 @media (width >= 40rem) {
   .ct-showcase-pad {

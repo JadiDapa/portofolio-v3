@@ -7,6 +7,7 @@ import type { Service } from "@/generated/prisma";
 import { DEFAULT_SERVICE_ICON, SERVICE_ICONS } from "@/components/root/serviceIcons";
 import { SparkleArt } from "./WorkArt";
 import RevealHeading from "@/components/root/shared/RevealHeading";
+import InView from "@/components/root/shared/InView";
 
 const ARROW =
   "M4.77 11.943h13.321m1.025 0L11.943 4.77m7.173 7.173-7.173 7.173";
@@ -93,7 +94,7 @@ export default function WorkExpertise({
     <section className="space-y-(--space-xl-2xl) pt-(--space-xl-2xl)">
       <div className="grid grid-cols-2 lg:grid-cols-4">
         <div className="col-span-2 space-y-(--space-s-m) px-(--space-xs-s) sm:col-span-3">
-          <div className="relative w-fit" data-cmp="expTitle">
+          <InView className="hm-ex relative w-fit" data-cmp="expTitle" threshold={0.5}>
             <p className="wk-heading wk-heading--sm">
               {typeof heading === "string" ? (
                 <RevealHeading text={heading} inView />
@@ -104,15 +105,29 @@ export default function WorkExpertise({
             <span className="absolute -top-[1.9em] -right-[2.4em] size-[2.7em] text-(length:--space-m)">
               <SparkleArt />
             </span>
-          </div>
-          <p data-cmp="expOpening" className="wk-opening max-w-[26em]">
+          </InView>
+          <motion.p
+            data-cmp="expOpening"
+            className="wk-opening max-w-[26em]"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.9, delay: 0.45, ease: [0.19, 1, 0.22, 1] }}
+          >
             {opening}
-          </p>
+          </motion.p>
         </div>
         {action && (
-          <div data-cmp="expAction" className="col-span-2 lg:col-span-1 lg:col-start-4 lg:row-start-1">
+          <motion.div
+            data-cmp="expAction"
+            className="col-span-2 lg:col-span-1 lg:col-start-4 lg:row-start-1"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.9, delay: 0.6, ease: [0.19, 1, 0.22, 1] }}
+          >
             {action}
-          </div>
+          </motion.div>
         )}
       </div>
 

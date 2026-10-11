@@ -31,7 +31,11 @@ export default function SectionTitle({
   const [ref, visible] = useInViewOnce({ threshold: 0.3 });
 
   return (
-    <div ref={ref} className={cn("relative", className)}>
+    <div
+      ref={ref}
+      data-visible={visible || undefined}
+      className={cn("hm-st relative", className)}
+    >
       {boxed && <BoxFrame visible={visible} className="ct-glass" />}
 
       <header
@@ -41,16 +45,16 @@ export default function SectionTitle({
         )}
       >
         <p className="wk-label flex items-center justify-center gap-(--space-3xs-2xs)">
-          <span className="hidden basis-[40%] text-right sm:block">{labelLeft}</span>
-          <span className="size-[5em] shrink-0">{art}</span>
-          <span className="hidden basis-[40%] text-left sm:block">{labelRight}</span>
+          <span className="hm-st-l hidden basis-[40%] text-right sm:block">{labelLeft}</span>
+          <span className="hm-st-art size-[5em] shrink-0">{art}</span>
+          <span className="hm-st-r hidden basis-[40%] text-left sm:block">{labelRight}</span>
         </p>
 
         <div className="space-y-(--space-s-m)">
           <h2 className="wk-heading text-balance">
             <RevealHeading text={heading} inView />
           </h2>
-          <p className="wk-opening mx-auto max-w-none text-balance">{opening}</p>
+          <p className="hm-st-open wk-opening mx-auto max-w-none text-balance">{opening}</p>
         </div>
       </header>
     </div>

@@ -334,6 +334,13 @@
   display: flex;
   align-items: center;
 }
+/* The kind column is hidden below lg: let the source take the whole row
+   instead of half of it (which truncated most names). */
+@media (width < 64rem) {
+  .ab-rec a > div > .ab-rec-cell:first-child {
+    grid-column: 1 / -1;
+  }
+}
 @media (hover: hover) and (pointer: fine) {
   .ab-rec a:hover::before,
   .ab-rec a:focus-visible::before {
@@ -416,6 +423,9 @@
     grid-column: 1;
     position: sticky;
     top: calc(var(--ab-grid) * 1.2);
+  }
+  .ab-tbx_main {
+    grid-column: 2 / span 3;
   }
 }
 
@@ -592,12 +602,12 @@
 /* Right column: discipline block -> skill rows -> tool tiles */
 .ab-tbx_main {
   display: flex;
-  grid-column: 2 / span 3;
   min-width: 0;
   flex-direction: column;
 }
 .ab-tbx_bhead {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-xs-s);
   padding: var(--space-xs-s) var(--space-s-m);
@@ -612,7 +622,9 @@
 }
 .ab-tbx_btitle {
   display: inline-flex;
-  flex: 1;
+  /* auto basis: a long title pushes the "04 skills" label onto its own line
+     rather than running underneath it */
+  flex: 1 1 auto;
   align-items: center;
   gap: 0.4em;
   font-size: var(--step-2);
@@ -678,10 +690,16 @@
 .ab-tbx_grid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Three a row on phones: four leaves ~80px tiles that split tool names mid-word */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--foreground);
   border-left: 1px solid var(--foreground);
   align-content: start;
+}
+@media (width >= 40rem) {
+  .ab-tbx_grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 @media (width >= 64rem) {
   .ab-tbx_grid {
@@ -780,7 +798,8 @@
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.01em;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 @media (prefers-reduced-motion: reduce) {
   .ab-tbx[data-visible] .ab-tbx_grid > li {

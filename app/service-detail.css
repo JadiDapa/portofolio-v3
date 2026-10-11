@@ -65,14 +65,10 @@
   gap: 0.6em;
   font-size: var(--space-m);
 }
+/* Inset by the same 0.6em as the title card so both sit inside the frame */
 .sd-row {
-  margin-inline: calc(var(--space-s-m) / -2);
+  margin-inline: calc(var(--space-m) * 0.6);
   overflow: hidden;
-}
-@media (width >= 40rem) {
-  .sd-row {
-    margin-inline: calc(var(--space-m-l) * -1);
-  }
 }
 .sd-track {
   --sd-set: calc(6 * 11.6em);

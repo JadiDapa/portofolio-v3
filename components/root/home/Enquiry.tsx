@@ -1,46 +1,42 @@
 import { Asterisk, MessageSquare } from "lucide-react";
 import ContactForm from "@/components/root/ContactForm";
 import PrioritiesAside from "@/components/root/home/PrioritiesAside";
+import SectionTitle from "@/components/root/home/SectionTitle";
+import { ChatArt } from "@/components/root/work/WorkArt";
 
+/**
+ * Title box (icon tiles hanging off its top-left), then the framed enquiry
+ * form with the quality / deadline / cost switches beside it.
+ */
 export default function Enquiry() {
   return (
-    <section className="px-gutter py-32">
-      {/* Tiles above the panel */}
-
-      <div className="border-foreground relative grid grid-cols-4 justify-between border border-t-0 sm:flex-row sm:items-start">
-        <div className="flex flex-col items-end">
-          <div className="border-foreground flex size-20 items-center justify-center border">
-            <MessageSquare className="size-8" />
+    <section className="px-gutter hidden pt-(--gutter-pad) lg:block" data-sec="enquiry">
+      <div className="page-grid">
+        <div className="hidden flex-col items-end lg:flex">
+          <div className="sv-tile wk-b flex">
+            <MessageSquare strokeWidth={1.3} aria-hidden />
           </div>
-          <div className="bg-foreground text-background flex size-20 items-center justify-center">
-            <Asterisk className="size-8" />
+          <div className="sv-tile sv-tile--dark flex">
+            <Asterisk strokeWidth={2.2} aria-hidden />
           </div>
         </div>
 
-        <div className="border-foreground col-span-3 grid place-items-center border px-6 py-28 text-center">
-          <p className="text-eyebrow flex items-center justify-center gap-3 text-lg font-medium tracking-[0.2em] uppercase">
-            <span>Your search</span>
-            <Asterisk className="text-primary size-5" />
-            <span>ends with me</span>
-          </p>
-
-          <h2 className="text-section mt-6 max-w-3xl leading-[0.9] font-bold tracking-tight uppercase">
-            Tell me about your <span className="text-primary">project</span>
-          </h2>
-
-          <p className="text-lead mt-6 text-lg font-medium text-balance">
-            Give me a few key details on the form below and I&apos;ll be in
-            touch!
-          </p>
+        <div className="col-span-full lg:col-span-3">
+          <SectionTitle
+            boxed
+            labelLeft="Your search"
+            labelRight="ends with me"
+            art={<ChatArt />}
+            heading="Tell me about your *project*"
+            opening="Give me a few key details on the form below and I'll be in touch!"
+          />
         </div>
       </div>
 
-      {/* Form + priorities */}
-      <div className="grid grid-cols-4">
-        <div className="border-foreground col-span-3 border border-t-0 p-6 sm:p-16">
-          <ContactForm />
+      <div className="page-grid">
+        <div className="hm-enq-form col-span-full lg:col-span-3 lg:pr-(--sv-grid)">
+          <ContactForm framed />
         </div>
-
         <PrioritiesAside />
       </div>
     </section>

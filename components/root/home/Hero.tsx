@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Sparkles, LayoutGrid, Stars, ArrowRight } from "lucide-react";
+import { Stars, ArrowRight } from "lucide-react";
 import { AnimatedBorderBox } from "./AnimatedBorderBox";
 import { HoverShadowBox } from "@/components/root/HoverShadowBox";
 import { WigglyText } from "../WigglyText";
@@ -243,57 +243,6 @@ export default function Hero() {
           </Link>
         </HoverShadowBox>
       </div>
-
-      {/* Icons */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          delay: DESCRIPTION_END_S + 0.2,
-        }}
-        className="mt-10 flex items-stretch justify-end"
-      >
-        <div className="border-foreground hidden size-22 items-center justify-center border sm:flex">
-          <LayoutGrid className="size-8" />
-        </div>
-
-        <div className="bg-foreground text-background hidden size-22 items-center justify-center sm:flex">
-          <Sparkles className="size-8" />
-        </div>
-      </motion.div>
-
-      {/* Image */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          scale: 0.96,
-        }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
-        transition={{
-          delay: DESCRIPTION_END_S + 0.3,
-          duration: 0.8,
-        }}
-        className="border-foreground relative aspect-video w-full border p-8"
-      >
-        <div className="relative h-full w-full overflow-hidden rounded-lg">
-          <Image
-            src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1920&auto=format&fit=crop"
-            alt="Recent work showreel"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-      </motion.div>
     </section>
   );
 }

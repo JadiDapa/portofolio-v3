@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
+/** Grid tile that flips light / dark. Sits in the footer's legal bar. */
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -13,7 +14,7 @@ export default function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div aria-hidden className="border-grid size-14 border" />;
+    return <div aria-hidden className="sv-tile wk-b flex" />;
   }
 
   const isDark = resolvedTheme === "dark";
@@ -23,9 +24,9 @@ export default function ThemeToggle() {
       type="button"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="hover:bg-background bg-foreground text-background hover:text-foreground flex size-21 items-center justify-center transition-colors"
+      className="sv-tile wk-b flex"
     >
-      {isDark ? <Sun className="size-8" /> : <Moon className="size-8" />}
+      {isDark ? <Sun strokeWidth={1.3} /> : <Moon strokeWidth={1.3} />}
     </button>
   );
 }

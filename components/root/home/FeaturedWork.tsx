@@ -1,62 +1,74 @@
-import Link from "next/link";
-import { ArrowRight, Stars } from "lucide-react";
-import { Project } from "@/generated/prisma";
-import ProjectCard from "@/components/root/ProjectCard";
-import { HoverShadowBox } from "../HoverShadowBox";
+"use client";
 
-export default function FeaturedWork({ projects }: { projects: Project[] }) {
+import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
+import { Asterisk, Lightbulb, Sparkles } from "lucide-react";
+import ProjectPreview, { type WorkProject } from "@/components/root/work/ProjectPreview";
+import ServiceLink from "@/components/root/services/detail/ServiceLink";
+
+/**
+ * Three-up masonry: a wide card, then a square card on each side, offset by
+ * one column so they interlock. Cards are the same ones /work previews with.
+ */
+export default function FeaturedWork({ projects }: { projects: WorkProject[] }) {
+  const router = useRouter();
   if (projects.length === 0) return null;
 
-  const leftColumn = projects.filter((_, i) => i % 2 === 0);
-  const rightColumn = projects.filter((_, i) => i % 2 === 1);
+  const [first, left, right] = projects;
+  const openCategory = (category: string) =>
+    router.push(`/work?category=${encodeURIComponent(category)}`);
+
+  const card = (project: WorkProject, landscape?: boolean) => (
+    <ProjectPreview
+      project={project}
+      onCategory={openCategory}
+      sticky={false}
+      catsStart
+      landscape={landscape}
+    />
+  );
 
   return (
-    <section className="px-gutter py-24">
-      <div className="grid grid-cols-1 sm:grid-cols-2">
-        <div className="flex flex-col gap-6">
-          {leftColumn.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              aspect="landscape"
-            />
-          ))}
+    <section
+      className="px-gutter pt-[calc(var(--gutter-pad)+var(--space-2xl-3xl))] pb-[calc(var(--gutter-pad)+var(--space-2xl-3xl))]"
+      data-sec="featured"
+    >
+      <div className="hm-feat">
+        <div className="hm-feat-tiles">
+          <div className="sv-tile sv-tile--dark flex">
+            <Asterisk strokeWidth={2.2} aria-hidden />
+          </div>
+          <div className="sv-tile wk-b flex">
+            <Lightbulb strokeWidth={1.3} aria-hidden />
+          </div>
         </div>
-        <div className="flex h-full flex-col">
-          <div className="col-span-2 mb-32 px-6 text-end">
-            <h2 className="text-section leading-[0.9] font-bold tracking-tight uppercase">
-              WORKS
-            </h2>
-            <p className="mt-4 text-2xl font-medium">
-              I craft websites, apps, AI features and connected hardware that
-              spark a moment of joy.
-            </p>
-          </div>
-          <div className="col-span-2 gap-6">
-            {rightColumn.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                aspect="landscape"
-              />
-            ))}
-          </div>
-          <HoverShadowBox
-            delay={1.9}
-            className="mt-auto ml-auto h-fit w-1/2 shrink-0"
-          >
-            <Link
-              href="/work"
-              className="border-foreground bg-background relative flex translate-x-0 translate-y-0 items-center justify-between gap-3 border px-4 py-8 font-medium tracking-wide uppercase transition-transform duration-300 ease-out group-hover:translate-x-2 group-hover:-translate-y-2"
-            >
-              <span className="flex items-center gap-3">
-                <ArrowRight className="size-4 -translate-x-3 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100" />
-                View all works
-              </span>
+        <div className="hm-feat-1">{card(first, true)}</div>
 
-              <Stars className="size-6 transition-transform duration-300 ease-out group-hover:scale-125 group-hover:-rotate-12" />
-            </Link>
-          </HoverShadowBox>
+        {right && (
+          <div className="hm-feat-3">
+            <div className="hm-feat-tiles hm-feat-tiles--card">
+              <div className="sv-tile sv-tile--dark flex">
+                <Asterisk strokeWidth={2.2} aria-hidden />
+              </div>
+              <div className="sv-tile wk-b flex">
+                <Lightbulb strokeWidth={1.3} aria-hidden />
+              </div>
+            </div>
+            {card(right)}
+          </div>
+        )}
+
+        {left && <div className="hm-feat-2">{card(left)}</div>}
+
+        <div className="hm-feat-btn">
+          <motion.div
+            initial={{ opacity: 0, y: 300 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.9, ease: [0.19, 1, 0.22, 1] }}
+          >
+            <ServiceLink href="/work" label="View work" Icon={Sparkles} />
+          </motion.div>
         </div>
       </div>
     </section>

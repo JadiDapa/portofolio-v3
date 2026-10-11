@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./work.css";
+@import "./contact.css";
+@import "./services.css";
+@import "./service-detail.css";
+@import "./about.css";
+@import "./home.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -66,8 +72,9 @@
 }
 
 :root {
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0 0 0);
+  /* Brand palette (matches wondermake.xyz): off-white page, near-black ink */
+  --background: #f8f8f8;
+  --foreground: #0f0f0f;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0 0 0);
   --popover: oklch(0.99 0 0);
@@ -94,7 +101,8 @@
   --grid: #e5e5e5;
   /* ~1rem on phones, settling at 6.5rem once the viewport passes ~1920px,
      which is where the source design's rules sit. */
-  --gutter: clamp(1rem, 5.5vw, 6.5rem);
+  --gutter: max(var(--gutter-pad), calc((100% - 1500px) / 2));
+  --gutter-pad: var(--space-s-m);
   --sidebar: #ffffff;
   --sidebar-foreground: #0f0f0f;
   --sidebar-primary: #ff2e79;
@@ -132,6 +140,26 @@
   --space-3xl: clamp(6.75rem, 6.375rem + 1.7647vi, 8.25rem);
   --space-4xl: clamp(7.875rem, 7.4375rem + 2.0588vi, 9.625rem);
   --space-5xl: clamp(7.875rem, 7.4375rem + 2.0588vi, 9.625rem);
+  --space-3xs-2xs: clamp(0.5625rem, 0.5313rem + 0.1471vi, 0.6875rem);
+  --space-2xs-xs: clamp(0.5625rem, 0.4375rem + 0.5882vi, 1.0625rem);
+  --space-xs-s: clamp(0.875rem, 0.75rem + 0.5882vi, 1.375rem);
+  --space-s-m: clamp(1.125rem, 0.8906rem + 1.1029vi, 2.0625rem);
+  --space-m-l: clamp(1.6875rem, 1.4219rem + 1.25vi, 2.75rem);
+  --space-l-xl: clamp(2.25rem, 1.7813rem + 2.2059vi, 4.125rem);
+  --space-xl-2xl: clamp(3.375rem, 2.8438rem + 2.5vi, 5.5rem);
+  --space-2xl-3xl: clamp(4.5rem, 3.5625rem + 4.4118vi, 8.25rem);
+}
+
+@media (width >= 40rem) {
+  :root {
+    --gutter-pad: var(--space-l-xl);
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --gutter-pad: var(--space-xl-2xl);
+  }
 }
 
 .dark {

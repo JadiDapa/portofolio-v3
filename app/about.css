@@ -1,0 +1,487 @@
+/* ==========================================================================
+   /about — personal page on the wk- primitives (wk-b, wk-box, wk-pad, wk-btn).
+   Geometry measured against wondermake.xyz/about at 1440 / 1024 / 390.
+   ========================================================================== */
+:root {
+  /* One grid tile: 2.666em at the body's --space-m size (≈85px at 1440) */
+  --ab-grid: calc(var(--space-m) * 2.666);
+}
+
+/* Title block padding: even top and bottom on mobile (differs from /work) */
+.ab-pad {
+  padding: var(--space-l-xl) var(--space-m-l);
+}
+@media (width >= 40rem) {
+  .ab-pad {
+    padding: var(--space-xl-2xl) var(--space-l-xl);
+  }
+}
+@media (width >= 96.0625rem) {
+  .ab-pad {
+    padding-inline: var(--space-xl-2xl);
+  }
+}
+
+.ab-glass {
+  background-color: rgba(248, 248, 248, 0.64);
+}
+.ab-p {
+  padding: var(--space-s-m);
+}
+.ab-px {
+  padding-inline: var(--space-xs-s);
+}
+.ab-space > * + * {
+  margin-top: var(--space-s-m);
+}
+
+/* Square grid tile holding a single icon */
+.ab-tile {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--ab-grid);
+  height: var(--ab-grid);
+}
+.ab-tile svg {
+  width: calc(var(--space-m) * 0.9);
+  height: calc(var(--space-m) * 0.9);
+}
+
+@media (width < 64rem) {
+  .ab-tile--lg {
+    display: none;
+  }
+}
+
+/* Type pieces not already covered by wk-heading / wk-opening / wk-label */
+.ab-subtitle {
+  font-size: var(--step-2);
+  font-weight: 500;
+  line-height: 1.25em;
+  letter-spacing: -0.03em;
+}
+.ab-title {
+  font-size: var(--step-3);
+  font-weight: 600;
+  line-height: 1.3em;
+  letter-spacing: -0.02em;
+}
+.ab-subtext {
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.65em;
+}
+.ab-tag {
+  font-size: var(--step-0);
+  font-weight: 500;
+  line-height: 1.5em;
+}
+.ab-strong {
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.47em;
+  letter-spacing: 0.01em;
+}
+.ab-shout {
+  font-size: var(--step-1);
+  font-weight: 900;
+  line-height: 1.47em;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Scroll reveal: rises (or slides) in once, then stays */
+.ab-reveal {
+  opacity: 0;
+  transform: translateY(200px);
+  transition:
+    opacity 0.25s,
+    transform 2s var(--wk-ease);
+}
+.ab-reveal--x {
+  transform: translateX(-200px);
+  transition-duration: 0.25s, 1.3s;
+}
+.ab-reveal[data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+.ab-spin {
+  animation: ab-spin 10s linear infinite;
+}
+@keyframes ab-spin {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Extruded word: stacked stroked copies with a light face on top
+   -------------------------------------------------------------------------- */
+.ab-ex-char {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.ab-ex-char span {
+  display: inline-block;
+  pointer-events: none;
+  will-change: transform;
+}
+.ab-ex-char span:not(.ab-ex-base) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  user-select: none;
+}
+.ab-ex-layer {
+  -webkit-text-stroke: 4px #0f0f0f;
+}
+.ab-ex-face {
+  color: #f8f8f8;
+}
+
+/* --------------------------------------------------------------------------
+   Halftone photo: colour <img> + dotted canvas, swapped inside a cursor lens
+   -------------------------------------------------------------------------- */
+.ab-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.4s var(--wk-ease);
+}
+.ab-photo:active {
+  transform: scale(0.97);
+}
+.ab-photo_media,
+.ab-photo_ring,
+.ab-photo_dots {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  user-select: none;
+}
+.ab-photo_ring {
+  z-index: 1;
+  background: #0f0f0f;
+}
+.ab-photo_dots {
+  z-index: 2;
+  background: #fff;
+}
+.ab-photo_dots canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Toggled: dots fill the frame, colour shows through the lens */
+.ab-photo[data-toggle] .ab-photo_media {
+  z-index: 2;
+}
+.ab-photo[data-toggle] .ab-photo_dots {
+  z-index: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Hero: photo frame + sticky phrase strip
+   -------------------------------------------------------------------------- */
+.ab-hero-photo {
+  font-size: var(--space-m);
+  box-shadow:
+    inset 0 0 #0f0f0f,
+    inset 0 0 #0f0f0f;
+  transition: box-shadow 0.4s var(--wk-ease);
+}
+.ab-hero-photo {
+  padding: 0;
+}
+.ab-hero-photo_inner {
+  aspect-ratio: 3 / 2;
+}
+@media (width >= 64rem) {
+  .ab-hero-photo {
+    padding: var(--space-s-m);
+  }
+  .ab-hero-photo_inner {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-hero-photo:hover,
+  .ab-hero-photo:focus-within {
+    box-shadow:
+      inset 1.5em 1.5em #0f0f0f,
+      inset -1.5em -1.5em #0f0f0f;
+  }
+}
+
+.ab-strip {
+  pointer-events: none;
+  position: sticky;
+  z-index: 3;
+  top: calc(40svh - 1.5 * var(--space-m));
+  overflow: hidden;
+  padding-block: var(--space-xs-s);
+  user-select: none;
+}
+@media (width >= 64rem) {
+  .ab-strip {
+    width: calc(100% + var(--ab-grid) * 2);
+  }
+}
+@media (width >= 80rem) {
+  .ab-strip {
+    transform: translateX(var(--ab-grid));
+  }
+}
+.ab-strip_track {
+  pointer-events: auto;
+  display: flex;
+  width: max-content;
+  cursor: grab;
+  touch-action: pan-y;
+  will-change: transform;
+}
+.ab-strip_track:active {
+  cursor: grabbing;
+}
+.ab-strip_phrase {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-right: 1em;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+.ab-strip_phrase svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* --------------------------------------------------------------------------
+   Intro
+   -------------------------------------------------------------------------- */
+@media (width >= 64rem) {
+  .ab-intro-heading {
+    margin-right: var(--ab-grid);
+  }
+  .ab-intro-text {
+    margin-top: var(--ab-grid);
+    margin-left: calc(0px - var(--ab-grid));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Portrait cards
+   -------------------------------------------------------------------------- */
+.ab-portraits {
+  overflow: visible;
+}
+.ab-portraits_track {
+  display: flex;
+}
+.ab-portrait {
+  flex: 0 0 90%;
+  min-width: 0;
+  font-size: var(--space-m);
+}
+@media (width >= 40rem) {
+  .ab-portrait {
+    flex-basis: 60%;
+  }
+}
+@media (width >= 64rem) {
+  .ab-portrait {
+    flex-basis: calc(100% / 3);
+  }
+}
+.ab-portrait_lift {
+  transition: transform 0.4s var(--wk-ease);
+  will-change: transform;
+}
+.ab-portrait_frame {
+  aspect-ratio: 421 / 490;
+  background: #f8f8f8;
+  transition: background-color 0.4s var(--wk-ease);
+}
+.ab-portrait_media {
+  position: absolute;
+  inset: 1px 0 0 1px;
+  clip-path: inset(-1px);
+}
+.ab-portrait_name {
+  transition-property: color, background-color;
+  transition-duration: 0.4s;
+  transition-timing-function: var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-portrait:hover .ab-portrait_lift,
+  .ab-portrait:focus-within .ab-portrait_lift {
+    transform: translateY(-0.5em);
+  }
+}
+.ab-portrait[data-cursor="enter"] .ab-portrait_frame,
+.ab-portrait[data-cursor="enter"] .ab-portrait_name {
+  background-color: #0f0f0f;
+  color: #fff;
+}
+.ab-portrait[data-cursor="enter"] .ab-portrait_media {
+  animation: ab-inset-enter 0.5s var(--wk-ease) forwards;
+}
+.ab-portrait[data-cursor="leave"] .ab-portrait_media {
+  animation: ab-inset-leave 0.5s var(--wk-ease) forwards;
+}
+@keyframes ab-inset-enter {
+  from {
+    clip-path: inset(-1px);
+  }
+  to {
+    clip-path: inset(8px round 8px);
+  }
+}
+@keyframes ab-inset-leave {
+  from {
+    clip-path: inset(8px round 8px);
+  }
+  to {
+    clip-path: inset(-1px);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   Approach
+   -------------------------------------------------------------------------- */
+@media (width >= 48rem) {
+  .ab-approach-title {
+    padding-top: var(--space-m-l);
+  }
+}
+@media (width < 80rem) {
+  .ab-approach-tile {
+    order: -1;
+  }
+}
+.ab-approach-heading {
+  line-height: 1.05em;
+}
+@media (width >= 40rem) {
+  .ab-approach-heading {
+    min-height: 2.1em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Recognition rows: black fill grows from the edge the cursor came in
+   -------------------------------------------------------------------------- */
+.ab-rec a {
+  position: relative;
+  display: block;
+}
+.ab-rec a::before {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: #0f0f0f;
+  transform: scaleY(0);
+  transform-origin: var(--origin, top);
+  transition: transform 0.4s var(--wk-ease);
+}
+@media (width >= 64rem) {
+  .ab-rec a::before {
+    content: "";
+  }
+}
+.ab-rec a > div {
+  position: relative;
+  transition: color 50ms;
+}
+.ab-rec .ab-rec-kind {
+  display: none;
+}
+@media (width >= 64rem) {
+  .ab-rec .ab-rec-kind {
+    display: flex;
+  }
+}
+.ab-rec-cell {
+  min-height: var(--ab-grid);
+  display: flex;
+  align-items: center;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-rec a:hover::before,
+  .ab-rec a:focus-visible::before {
+    transform: scaleY(1);
+  }
+}
+@media (width >= 64rem) {
+  .ab-rec a:hover > div,
+  .ab-rec a:focus-visible > div {
+    color: #fff;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Currently building
+   -------------------------------------------------------------------------- */
+@media (width >= 64rem) {
+  .ab-build-cover {
+    margin-left: var(--ab-grid);
+  }
+}
+.ab-build-cover a {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #0f0f0f;
+}
+@media (width < 64rem) {
+  .ab-build-cover a {
+    aspect-ratio: 2 / 1;
+  }
+}
+.ab-build-cover_disc {
+  position: absolute;
+  inset: 0;
+  padding: 7%;
+}
+.ab-build-cover_disc > div {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.ab-build-heading {
+  flex-basis: 100%;
+  white-space: nowrap;
+}
+@media (width >= 40rem) {
+  .ab-build-heading {
+    flex-basis: 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-spin {
+    animation: none;
+  }
+  .ab-reveal {
+    transition: opacity 0.3s;
+    transform: none;
+  }
+}

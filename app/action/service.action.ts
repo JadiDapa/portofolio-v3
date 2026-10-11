@@ -15,6 +15,7 @@ export async function createService(
   await ServiceService.create(data);
   revalidatePath("/dashboard/services");
   revalidatePath("/services");
+  revalidatePath("/services/[slug]", "page");
 }
 
 export async function updateService(
@@ -25,10 +26,12 @@ export async function updateService(
   await ServiceService.update(serviceId, data);
   revalidatePath("/dashboard/services");
   revalidatePath("/services");
+  revalidatePath("/services/[slug]", "page");
 }
 
 export async function deleteService(serviceId: number) {
   await ServiceService.delete(serviceId);
   revalidatePath("/dashboard/services");
   revalidatePath("/services");
+  revalidatePath("/services/[slug]", "page");
 }

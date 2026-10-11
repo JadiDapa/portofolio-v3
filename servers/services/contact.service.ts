@@ -6,7 +6,7 @@ export const ContactService = {
     return await prisma.contactSubmission.findMany({ orderBy: { id: "desc" } });
   },
 
-  async create(data: Omit<CreateContactSubmissionDTO, "consent">) {
+  async create(data: Omit<CreateContactSubmissionDTO, "consent" | "formType">) {
     return prisma.contactSubmission.create({ data });
   },
 

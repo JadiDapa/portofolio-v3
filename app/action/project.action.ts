@@ -32,3 +32,13 @@ export async function deleteProject(projectId: number) {
   revalidatePath("/dashboard/projects");
   revalidatePath("/work");
 }
+
+/** Two random projects other than the current page, preferring ones not on screen already. */
+export async function getRelatedProjects(
+  projectId: number,
+  currentIds: number[],
+) {
+  const fresh = await ProjectService.getRelated([projectId, ...currentIds], 2);
+  if (fresh.length === 2) return fresh;
+  return ProjectService.getRelated([projectId], 2);
+}

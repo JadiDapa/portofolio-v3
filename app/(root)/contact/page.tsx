@@ -1,36 +1,41 @@
-import { Mail, MapPin } from "lucide-react";
-import ContactForm from "@/components/root/ContactForm";
+import { Suspense } from "react";
+import { ProjectService } from "@/servers/services/project.service";
+import ContactTitle from "@/components/root/contact/ContactTitle";
+import StudioClock from "@/components/root/contact/StudioClock";
+import ContactTabs from "@/components/root/contact/ContactTabs";
+import ContactPanel from "@/components/root/contact/ContactPanel";
+import ContactShowcase from "@/components/root/contact/ContactShowcase";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { items } = await ProjectService.list({ published: true, pageSize: 100 });
+  const showcase = items
+    .filter((p) => p.coverImage)
+    .map(({ id, title, coverImage }) => ({ id, title, coverImage: coverImage! }));
+
   return (
-    <div className="px-gutter py-24">
-      <div className="mx-auto grid max-w-4xl gap-10 lg:grid-cols-2">
-        <div>
-          <p className="text-muted-foreground text-sm font-medium">
-            Let&apos;s Talk
-          </p>
-          <h1 className="text-section mt-2 font-semibold tracking-tight">Contact</h1>
-          <p className="text-muted-foreground text-lg mt-4">
-            Get in touch, drop me a line, and let&apos;s build something
-            great together.
-          </p>
-
-          <div className="mt-10 space-y-4">
-            <div className="flex items-center gap-3 text-sm">
-              <Mail className="text-primary size-4" />
-              <span>daffa@example.dev</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <MapPin className="text-primary size-4" />
-              <span>Based in Indonesia, open to remote work</span>
+    // overflow-x-clip (not hidden) trims the bleeding showcase rows without breaking the sticky clock
+    <article className="px-gutter overflow-x-clip">
+      <div className="space-y-(--space-2xl-3xl)">
+        <div className="page-grid">
+          <div className="col-span-full lg:col-span-2">
+            <ContactTitle />
+            <Suspense>
+              <ContactTabs />
+            </Suspense>
+            <div className="mt-(--space-xl-2xl) hidden lg:block">
+              <StudioClock />
             </div>
           </div>
+
+          <section className="col-span-full lg:col-span-2" data-cmp="form">
+            <Suspense>
+              <ContactPanel />
+            </Suspense>
+          </section>
         </div>
 
-        <div className="bg-card rounded-lg border p-6 sm:p-8">
-          <ContactForm />
-        </div>
+        <ContactShowcase items={showcase} />
       </div>
-    </div>
+    </article>
   );
 }

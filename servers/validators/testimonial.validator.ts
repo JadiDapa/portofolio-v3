@@ -5,6 +5,7 @@ const TestimonialBaseSchema = z.object({
   authorName: z.string().min(1, "Author name is required"),
   authorTitle: z.string().optional(),
   company: z.string().optional(),
+  logo: z.string().optional(),
   published: z.boolean().default(true),
 });
 

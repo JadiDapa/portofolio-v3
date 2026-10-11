@@ -1,0 +1,324 @@
+/* ==========================================================================
+   /services — intro boxes, service rows and the sticky aside.
+   Builds on the wk-* primitives in work.css (wk-b, wk-btn, wk-box, wk-grid).
+   Layout and motion measured on wondermake.xyz/services (1440 / 1024 / 390).
+   ========================================================================== */
+:root {
+  /* One grid cell: the height of a grid button */
+  --sv-grid: calc(var(--space-m) * 2.666);
+}
+
+/* Intro: heading box steps in from the right, text box steps down/left */
+@media (width >= 64rem) {
+  .sv-intro-heading {
+    margin-right: var(--sv-grid);
+  }
+  .sv-intro-text {
+    margin-top: var(--sv-grid);
+    margin-left: calc(0px - var(--sv-grid));
+  }
+}
+.sv-subtitle {
+  font-size: var(--step-2);
+  font-weight: 500;
+  line-height: 1.25em;
+  letter-spacing: -0.03em;
+}
+.sv-subtext {
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.65em;
+}
+
+/* Square grid tile holding a single icon */
+.sv-tile {
+  align-items: center;
+  justify-content: center;
+  width: var(--sv-grid);
+  height: var(--sv-grid);
+  flex-shrink: 0;
+  font-size: var(--space-m);
+}
+.sv-tile svg {
+  width: 1.4em;
+  height: 1.4em;
+  overflow: visible;
+}
+.sv-tile svg > * {
+  transform-origin: center;
+  transform-box: view-box;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+.sv-tile:hover svg > * {
+  transform: scale(1.25);
+}
+.sv-tile--dark {
+  background: #0f0f0f;
+  color: #fff;
+}
+
+/* Overview: sticky aside sits above the list on small screens */
+.sv-aside {
+  order: -1;
+  grid-column: span 2 / span 2;
+}
+@media (width >= 64rem) {
+  .sv-aside {
+    order: 0;
+    grid-column: span 1 / span 1;
+  }
+}
+.sv-aside-sticky {
+  position: sticky;
+  top: var(--sv-grid);
+}
+.sv-aside-title {
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 1.3em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.sv-list {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Service row: a grid button whose text slides aside for the media */
+.sv-row.wk-btn {
+  height: auto;
+  cursor: pointer;
+}
+.sv-row .wk-btn_panel {
+  font-size: 0.5em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.sv-row .wk-btn_inner {
+  justify-content: flex-start;
+  align-items: flex-start;
+  white-space: normal;
+  padding: 2em var(--space-m-l);
+}
+@media (width >= 80rem) {
+  .sv-row .wk-btn_inner {
+    padding-inline: 2em;
+  }
+}
+.sv-row-text {
+  display: flex;
+  align-items: flex-start;
+  font-size: var(--space-m);
+  letter-spacing: normal;
+  transition: transform 0.8s var(--wk-ease);
+  will-change: transform;
+}
+.sv-row-num {
+  padding-right: 0.8em;
+  color: #b3b3b3;
+}
+.sv-row-heading {
+  font-size: var(--step-4);
+  font-weight: 700;
+  line-height: 0.9em;
+  letter-spacing: -0.03em;
+}
+@media (width >= 40rem) {
+  .sv-row-heading {
+    font-size: var(--step-5);
+    letter-spacing: -0.02em;
+  }
+}
+.sv-row-sub {
+  padding-top: 0.5em;
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.65em;
+  letter-spacing: 0.01em;
+}
+
+.sv-row-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  font-size: var(--space-m);
+  clip-path: inset(8px round 8px);
+}
+.sv-row-media-inner {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 8em;
+  height: calc(100% - 16px);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0f0f0f;
+  transform: translateX(-100%);
+  transition: transform 0.8s var(--wk-ease);
+}
+.sv-row-media-inner > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sv-row-media-inner.sv-tile--dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.sv-row-media-inner.sv-tile--dark svg {
+  width: 1.6em;
+  height: 1.6em;
+}
+@media (width < 40rem) {
+  .sv-row-media {
+    display: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (width >= 40rem) {
+  .sv-row:hover .sv-row-text,
+  .sv-row:focus-visible .sv-row-text {
+    transform: translateX(8em);
+  }
+  .sv-row:hover .sv-row-media-inner,
+  .sv-row:focus-visible .sv-row-media-inner {
+    transform: none;
+  }
+}
+
+/* Small uppercase link button with a sliding arrow (aside CTA) */
+.sv-link.wk-btn {
+  height: var(--sv-grid);
+}
+.sv-link .wk-btn_panel {
+  font-size: 0.5em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sv-link .wk-btn_inner {
+  padding: 1.5em var(--space-m-l);
+}
+@media (width >= 80rem) {
+  .sv-link .wk-btn_inner {
+    padding-inline: 2em;
+  }
+}
+.sv-link .wk-btn_inner > * {
+  transition: transform 0.8s var(--wk-ease);
+  will-change: transform;
+}
+.sv-link-left {
+  position: absolute;
+  width: 1.5em;
+  transform: translateX(-4em);
+}
+.sv-link-text {
+  flex-grow: 1;
+  text-align: left;
+  padding-right: 2.2em;
+}
+.sv-link-right {
+  width: 1.5em;
+  height: 1.5em;
+}
+.sv-link:hover .sv-link-left,
+.sv-link:focus-visible .sv-link-left {
+  transform: translateX(-0.2em);
+  transition-delay: 0.1s;
+}
+.sv-link:hover .sv-link-text,
+.sv-link:focus-visible .sv-link-text {
+  transform: translateX(2em);
+  transition-delay: 50ms;
+}
+.sv-link:hover .sv-link-right,
+.sv-link:focus-visible .sv-link-right {
+  transform: rotate(-12deg) scale(1.15);
+}
+
+/* Bottom toolbar: overview + service shortcuts, pinned to the viewport */
+.sv-toolbar {
+  pointer-events: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  font-size: var(--space-m);
+  animation: sv-toolbar-in 0.7s var(--wk-ease) 0.3s backwards;
+}
+@keyframes sv-toolbar-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+.sv-toolbar nav {
+  pointer-events: auto;
+  margin: var(--space-m-l);
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.3em;
+  border: 1px solid #0f0f0f;
+  border-radius: 9999px;
+  background: #fff;
+}
+@media (width >= 64rem) {
+  .sv-toolbar nav {
+    padding: 0.4em;
+  }
+}
+.sv-toolbar nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 2em;
+  height: 2em;
+  overflow: hidden;
+  padding-left: 0.5em;
+  border-radius: 9999px;
+  font-weight: 400;
+  transition: all 0.5s var(--wk-ease);
+  will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sv-toolbar nav a:hover,
+  .sv-toolbar nav a:focus-visible {
+    background: #ebe9e5;
+  }
+}
+.sv-toolbar nav a:active {
+  transform: scale(0.9);
+}
+.sv-toolbar nav a.is-active {
+  transform: scale(1);
+  background: #0f0f0f;
+  color: #fff;
+}
+@media (width >= 64rem) {
+  .sv-toolbar nav a.is-active {
+    width: calc(var(--item-width, 0px) + 2.7em);
+  }
+}
+.sv-toolbar nav svg {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  aspect-ratio: 1 / 1;
+}
+.sv-toolbar-text {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.6em;
+}

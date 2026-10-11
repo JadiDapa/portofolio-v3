@@ -42,6 +42,10 @@ model Project {
   summary    String
   content    String?
   coverImage String?
+  heroVideo  String?
+  websiteUrl String?
+  gallery    Json     @default("[]")
+  sections   Json     @default("[]")
   year       Int?
   published  Boolean  @default(false)
   featured   Boolean  @default(false)
@@ -54,6 +58,11 @@ model Service {
   slug        String   @unique
   summary     String
   description String?
+  media       String?
+  headline    String?
+  lead        String?
+  process     Json?
+  faqs        Json?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
 }
@@ -64,8 +73,28 @@ model Testimonial {
   authorName  String
   authorTitle String?
   company     String?
+  logo        String?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
+}
+
+enum RecognitionKind {
+  AWARD
+  PRESS
+  CERTIFICATION
+  COMPETITION
+}
+
+model Recognition {
+  id        Int             @id @default(autoincrement())
+  source    String
+  kind      RecognitionKind
+  title     String
+  url       String?
+  year      Int?
+  order     Int             @default(0)
+  published Boolean         @default(true)
+  createdAt DateTime        @default(now())
 }
 
 enum ExperienceType {

@@ -1,5 +1,9 @@
 import { Prisma } from "@/generated/prisma";
-import { CreateProjectDTO, UpdateProjectDTO } from "../validators/project.validator";
+import {
+  CreateProjectDTO,
+  UpdateProjectDTO,
+  resolveSections,
+} from "../validators/project.validator";
 import prisma from "@/lib/prisma";
 import slugify from "slugify";
 
@@ -55,7 +59,26 @@ export const ProjectService = {
   },
 
   async getBySlug(slug: string) {
-    return await prisma.project.findUnique({ where: { slug } });
+    const project = await prisma.project.findUnique({ where: { slug } });
+    if (!project) return null;
+    return { ...project, sections: resolveSections(project) };
+  },
+
+  /** Up to `take` random published projects, excluding `excludeIds`. */
+  async getRelated(excludeIds: number[], take = 2) {
+    const rows = await prisma.project.findMany({
+      where: { published: true, id: { notIn: excludeIds } },
+      select: { id: true },
+    });
+    const ids = rows
+      .map((r) => r.id)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, take);
+    if (ids.length === 0) return [];
+    return prisma.project.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, title: true, slug: true, category: true, coverImage: true },
+    });
   },
 
   async create(data: CreateProjectDTO) {

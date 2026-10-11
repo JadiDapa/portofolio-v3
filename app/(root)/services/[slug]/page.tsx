@@ -1,69 +1,84 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ServiceService } from "@/servers/services/service.service";
 import { ProjectService } from "@/servers/services/project.service";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import ProjectCard from "@/components/root/ProjectCard";
+import {
+  FaqSchema,
+  ProcessStepSchema,
+  parseList,
+} from "@/servers/validators/service.validator";
+import ServiceHero from "@/components/root/services/detail/ServiceHero";
+import ServiceIntro from "@/components/root/services/detail/ServiceIntro";
+import ServiceProcess from "@/components/root/services/detail/ServiceProcess";
+import ServiceRelated from "@/components/root/services/detail/ServiceRelated";
+import ServiceFaq from "@/components/root/services/detail/ServiceFaq";
+import ServiceCta from "@/components/root/services/detail/ServiceCta";
+import ServiceSwitcher from "@/components/root/services/detail/ServiceSwitcher";
 
-export default async function ServiceDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await ServiceService.getBySlug(slug);
+  if (!service) return {};
+  return { title: service.title, description: service.summary };
+}
+
+export default async function ServiceDetailPage({ params }: Params) {
   const { slug } = await params;
   const service = await ServiceService.getBySlug(slug);
 
   if (!service) notFound();
 
-  const { items: relatedProjects } = await ProjectService.list({
-    published: true,
-    category: service.title,
-    pageSize: 3,
+  const [services, own, others] = await Promise.all([
+    ServiceService.getAll(),
+    ProjectService.list({ published: true, category: service.title, pageSize: 12 }),
+    ProjectService.list({ published: true, pageSize: 12 }),
+  ]);
+
+  // Projects in this service first, then anything else so the showcase is never empty
+  const seen = new Set<number>();
+  const projects = [...own.items, ...others.items].filter((p) => {
+    if (seen.has(p.id)) return false;
+    seen.add(p.id);
+    return true;
   });
 
+  const images = projects.flatMap((p) => (p.coverImage ? [p.coverImage] : []));
+  const pool = projects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    category: p.category,
+    coverImage: p.coverImage,
+  }));
+
+  const steps = parseList(ProcessStepSchema, service.process);
+  const faqs = parseList(FaqSchema, service.faqs);
+
   return (
-    <div className="px-gutter py-24">
-      <div className="mx-auto max-w-2xl">
-        <Link
-          href="/services"
-          className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-        >
-          ← All services
-        </Link>
-
-        <h1 className="text-section mt-6 font-semibold tracking-tight">
-          {service.title}
-        </h1>
-        <p className="text-muted-foreground text-lg mt-4">
-          {service.summary}
-        </p>
-
-        {service.description && (
-          <div
-            className="prose prose-neutral dark:prose-invert mt-8 max-w-none"
-            dangerouslySetInnerHTML={{ __html: service.description }}
-          />
-        )}
-
-        <div className="mt-10">
-          <Link
-            href="/contact"
-            className="bg-primary text-primary-foreground text-sm inline-flex items-center gap-2 rounded-full px-8 py-3 font-medium transition hover:opacity-90"
-          >
-            Start a project
-          </Link>
+    <article className="sd-page px-gutter pb-(--space-xl-2xl)">
+      <div className="space-y-(--space-2xl-3xl)">
+        <ServiceHero
+          slug={service.slug}
+          title={service.title}
+          summary={service.summary}
+          images={images}
+        />
+        <ServiceIntro
+          headline={service.headline || service.title}
+          lead={service.lead || service.summary}
+          description={service.description}
+        />
+        <ServiceProcess steps={steps} title={service.title} />
+        <ServiceRelated pool={pool} />
+        <ServiceFaq faqs={faqs} title={service.title} />
+        <div className="-mt-(--space-l-xl)">
+          <ServiceCta slug={service.slug} />
         </div>
       </div>
 
-      {relatedProjects.length > 0 && (
-        <div className="mx-auto mt-24 max-w-5xl">
-          <h2 className="text-3xl font-semibold tracking-tight">Related work</h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+      <ServiceSwitcher services={services} active={service.slug} />
+    </article>
   );
 }

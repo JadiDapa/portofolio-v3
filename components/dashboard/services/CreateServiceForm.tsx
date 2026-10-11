@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { FaqEditor, ProcessEditor, cleanFaqs, cleanProcess } from "@/components/dashboard/services/ServiceContentEditors";
+import { MediaSlot } from "@/components/dashboard/projects/GalleryEditor";
 import { CreateServiceSchema } from "@/servers/validators/service.validator";
 import { createService } from "@/app/action/service.action";
 
@@ -29,6 +31,11 @@ export default function CreateServiceForm() {
       title: "",
       summary: "",
       description: "",
+      headline: "",
+      lead: "",
+      process: [],
+      faqs: [],
+      media: null,
       order: 0,
     },
   });
@@ -38,6 +45,8 @@ export default function CreateServiceForm() {
       try {
         await createService({
           ...values,
+          process: cleanProcess(values.process),
+          faqs: cleanFaqs(values.faqs),
           slug: slugify(values.title, { lower: true, strict: true }),
         });
         toast.success("Service created!");
@@ -65,6 +74,42 @@ export default function CreateServiceForm() {
                 {fieldState.error.message}
               </p>
             )}
+          </div>
+        )}
+      />
+
+      <Controller
+        name="headline"
+        control={form.control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label htmlFor="headline">Page headline</Label>
+            <p className="text-muted-foreground text-sm">
+              Big heading in the intro. Wrap one word in *asterisks* to extrude it.
+            </p>
+            <Input
+              id="headline"
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              placeholder="e.g. Built to *load* fast and last long"
+            />
+          </div>
+        )}
+      />
+
+      <Controller
+        name="lead"
+        control={form.control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label htmlFor="lead">Lead sentence</Label>
+            <Textarea
+              id="lead"
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              placeholder="Larger text beside the description"
+              className="min-h-20 resize-y"
+            />
           </div>
         )}
       />
@@ -101,6 +146,53 @@ export default function CreateServiceForm() {
               {...field}
               placeholder="Long-form detail shown on the service page"
               className="min-h-48 resize-y"
+            />
+          </div>
+        )}
+      />
+
+      <Controller
+        name="process"
+        control={form.control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label>How it works</Label>
+            <p className="text-muted-foreground text-sm">
+              Numbered steps shown on the service page.
+            </p>
+            <ProcessEditor value={field.value ?? []} onChange={field.onChange} />
+          </div>
+        )}
+      />
+
+      <Controller
+        name="faqs"
+        control={form.control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label>Common questions</Label>
+            <p className="text-muted-foreground text-sm">
+              The first one opens by default.
+            </p>
+            <FaqEditor value={field.value ?? []} onChange={field.onChange} />
+          </div>
+        )}
+      />
+
+      <Controller
+        name="media"
+        control={form.control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label>Hover media</Label>
+            <p className="text-muted-foreground text-sm">
+              Slides in on the /services list when the row is hovered.
+            </p>
+            <MediaSlot
+              value={field.value}
+              onChange={field.onChange}
+              label="image or video (mp4/webm, up to 50MB)"
+              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
             />
           </div>
         )}

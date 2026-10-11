@@ -1,62 +1,73 @@
-import { ProjectService } from "@/servers/services/project.service";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import { ProjectService } from "@/servers/services/project.service";
+import ProjectHero from "@/components/root/work/project/ProjectHero";
+import ProjectIntro from "@/components/root/work/project/ProjectIntro";
+import ProjectGallery from "@/components/root/work/project/ProjectGallery";
+import RelatedWork from "@/components/root/work/project/RelatedWork";
+import {
+  FeaturesSection,
+  ResultsSection,
+  TextSection,
+  ToolsSection,
+} from "@/components/root/work/project/ProjectSections";
 
-export default async function ProjectDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await ProjectService.getBySlug(slug);
+  if (!project || !project.published) return {};
+  return { title: project.title, description: project.summary };
+}
+
+export default async function ProjectDetailPage({ params }: Params) {
   const { slug } = await params;
   const project = await ProjectService.getBySlug(slug);
 
   if (!project || !project.published) notFound();
 
+  const related = await ProjectService.getRelated([project.id], 2);
+
   return (
-    <div className="px-gutter py-24">
-      <div className="mx-auto max-w-3xl">
-        <Link
-          href="/work"
-          className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-        >
-          ← All projects
-        </Link>
-
-        <article className="mt-8">
-          <header className="mb-8 space-y-3 border-b pb-8">
-            <p className="text-primary text-sm font-medium">
-              {project.category}
-            </p>
-            <h1 className="text-section font-semibold tracking-tight">
-              {project.title}
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              {[project.client, project.year].filter(Boolean).join(" · ")}
-            </p>
-          </header>
-
-          {project.coverImage && (
-            <div className="relative mb-8 aspect-video w-full overflow-hidden rounded-lg border">
-              <Image
-                src={project.coverImage}
-                alt={project.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-          )}
-
-          <p className="text-lg leading-relaxed">{project.summary}</p>
-
-          {project.content && (
-            <div
-              className="prose prose-neutral dark:prose-invert mt-6 max-w-none"
-              dangerouslySetInnerHTML={{ __html: project.content }}
-            />
-          )}
-        </article>
+    <article className="px-gutter pb-(--space-xl-2xl)">
+      <div className="space-y-(--space-xl-2xl)">
+        {project.sections.map((section) => {
+          switch (section.type) {
+            case "hero":
+              return (
+                <ProjectHero
+                  key={section.id}
+                  title={project.title}
+                  coverImage={project.coverImage}
+                  heroVideo={project.heroVideo}
+                />
+              );
+            case "intro":
+              return (
+                <ProjectIntro
+                  key={section.id}
+                  title={project.title}
+                  category={project.category}
+                  summary={project.summary}
+                  content={project.content}
+                  websiteUrl={project.websiteUrl || null}
+                />
+              );
+            case "gallery":
+              return <ProjectGallery key={section.id} blocks={section.blocks} />;
+            case "features":
+              return <FeaturesSection key={section.id} section={section} />;
+            case "tools":
+              return <ToolsSection key={section.id} section={section} />;
+            case "results":
+              return <ResultsSection key={section.id} section={section} />;
+            case "text":
+              return <TextSection key={section.id} section={section} />;
+          }
+        })}
+        <RelatedWork projectId={project.id} initial={related} />
       </div>
-    </div>
+    </article>
   );
 }

@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import LogoField from "./LogoField";
 import { UpdateTestimonialSchema } from "@/servers/validators/testimonial.validator";
 import { updateTestimonial } from "@/app/action/testimonial.action";
 import { Testimonial } from "@/generated/prisma";
@@ -41,6 +42,7 @@ export default function EditTestimonialDialog({
       authorName: testimonial.authorName,
       authorTitle: testimonial.authorTitle ?? "",
       company: testimonial.company ?? "",
+      logo: testimonial.logo ?? "",
       published: testimonial.published,
     },
   });
@@ -121,6 +123,14 @@ export default function EditTestimonialDialog({
               )}
             />
           </div>
+
+          <Controller
+            name="logo"
+            control={form.control}
+            render={({ field }) => (
+              <LogoField value={field.value} onChange={field.onChange} />
+            )}
+          />
 
           <Controller
             name="published"

@@ -9,14 +9,15 @@ export async function submitContactForm(
   input: z.input<typeof CreateContactSubmissionSchema>,
 ) {
   const parsed = CreateContactSubmissionSchema.parse(input);
+  const enquiry = parsed.formType === "enquiry";
   await ContactService.create({
     name: parsed.name,
-    company: parsed.company,
+    company: enquiry ? parsed.company : undefined,
     email: parsed.email,
-    timeline: parsed.timeline,
-    budget: parsed.budget,
+    timeline: enquiry ? parsed.timeline : undefined,
+    budget: enquiry ? parsed.budget : undefined,
     message: parsed.message,
-    projectTypes: parsed.projectTypes,
+    projectTypes: enquiry ? parsed.projectTypes : [],
   });
   revalidatePath("/dashboard/inquiries");
 }

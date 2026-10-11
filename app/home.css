@@ -1,0 +1,891 @@
+/* ==========================================================================
+   Home page + shared chrome (header, fixed menu bar, menu overlay, footer).
+   Values are lifted from wondermake.xyz (measured 1440 / 1024 / 390).
+   Builds on the wk-* primitives in work.css and the sv-* link/tile pieces.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Header: wordmark block (the hamburger tile sits to its left)
+   -------------------------------------------------------------------------- */
+.hm-logo {
+  margin-left: var(--sv-grid);
+  overflow: clip;
+  /* leave room for the outline, the hover lift of the CTA sits elsewhere */
+  overflow-clip-margin: 2px;
+}
+.hm-logo-link {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--sv-grid);
+  border: 1px solid #0f0f0f;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: calc(var(--space-m) * 1.25);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  animation: hm-slide-in 0.8s var(--wk-ease) both;
+}
+@media (width >= 40rem) {
+  .hm-logo-link {
+    width: calc(var(--sv-grid) * 3.392);
+    max-width: 100%;
+  }
+}
+.hm-logo-link--dark {
+  border-color: #262626;
+}
+
+/* --------------------------------------------------------------------------
+   Fixed bar: hamburger + monogram tile
+   -------------------------------------------------------------------------- */
+.hm-fab {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+}
+.hm-fab--mono {
+  z-index: 15;
+}
+.hm-fab--btn {
+  z-index: 50;
+}
+.hm-fab-row {
+  display: flex;
+  font-size: var(--space-m);
+}
+.hm-fab-row > * {
+  pointer-events: auto;
+}
+.hm-mono-clip {
+  margin-left: var(--sv-grid);
+  overflow: clip;
+}
+.hm-mono {
+  animation: hm-slide-in 0.8s var(--wk-ease) both;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--sv-grid);
+  height: var(--sv-grid);
+  border: 1px solid #0f0f0f;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 1.4em;
+  font-weight: 900;
+  line-height: 1;
+}
+.hm-menu-btn .wk-btn_panel {
+  font-size: 0.5em;
+}
+.hm-menu-btn .wk-btn_inner {
+  width: 100%;
+}
+.hm-menu-btn svg {
+  width: 1.8em;
+  height: 1.8em;
+}
+
+/* --------------------------------------------------------------------------
+   Menu overlay: dark panel wiped in from the left
+   -------------------------------------------------------------------------- */
+.hm-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  background: #0f0f0f;
+  color: #fff;
+  visibility: hidden;
+  clip-path: inset(0 100% 0 0);
+  /* close: eases out immediately (measured: 0.6s, easeOutQuint) */
+  transition:
+    clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s 0.6s;
+}
+.hm-menu[data-open] {
+  visibility: visible;
+  clip-path: inset(0);
+  /* open: 0.25s beat, then 0.6s easeInOutQuart */
+  transition:
+    clip-path 0.6s cubic-bezier(0.77, 0, 0.175, 1) 0.25s,
+    visibility 0s 0s;
+}
+.hm-menu-rules {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+.hm-menu-rule {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+.hm-menu-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  font-size: var(--space-m);
+}
+/* the drawn outlines are #0f0f0f, invisible on the dark panel */
+.hm-menu .wk-b {
+  border-color: #262626;
+}
+.hm-menu .wk-b::before,
+.hm-menu .wk-b::after {
+  background: #262626;
+}
+.hm-menu-nav {
+  display: grid;
+  flex: 1;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #262626;
+  border-inline: 1px solid #262626;
+}
+.hm-menu-link {
+  display: flex;
+  font-size: clamp(2.8rem, 5vw, 8rem);
+  font-weight: 850;
+  line-height: 0.88em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #262626;
+  text-align: center;
+  transition-property: background-color, color;
+  transition-duration: 0.25s;
+  transition-timing-function: var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hm-menu-link:hover,
+  .hm-menu-link:focus-visible {
+    background: #fff;
+    color: #0f0f0f;
+  }
+}
+.hm-menu-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (width >= 64rem) {
+  .hm-menu-bottom {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Showreel
+   -------------------------------------------------------------------------- */
+.hm-reel {
+  padding: 0;
+}
+@media (width >= 40rem) {
+  .hm-reel {
+    padding: var(--space-m);
+  }
+}
+.hm-reel-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0f0f0f;
+}
+@media (width >= 40rem) {
+  .hm-reel-media {
+    border-radius: 8px;
+  }
+}
+.hm-reel-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hm-reel-video[data-playing] {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Featured work. <64rem: stacked, full width, square media, no chips.
+   64rem+: three-column cards staggered left / right / left.
+   80rem+: masonry (4 × 319 at 1440): the wide card is 3/4 wide at 16:9, the
+   right card starts below its media, the left card one column further.
+   -------------------------------------------------------------------------- */
+.hm-feat {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+}
+.hm-feat .wk-cats {
+  display: none;
+}
+.hm-feat-tiles {
+  display: flex;
+  order: 0;
+}
+.hm-feat-tiles--card {
+  display: none;
+}
+.hm-feat-1 {
+  order: 1;
+}
+.hm-feat-2 {
+  order: 2;
+}
+.hm-feat-3 {
+  order: 3;
+}
+.hm-feat-btn {
+  order: 4;
+  margin-top: var(--gutter-pad);
+}
+@media (width >= 64rem) {
+  .wk-pv--land .wk-inset-this {
+    aspect-ratio: 16 / 9;
+  }
+  .hm-feat {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+  .hm-feat .wk-cats {
+    display: flex;
+  }
+  .hm-feat-tiles {
+    grid-column: 1 / span 2;
+  }
+  .hm-feat-1 {
+    grid-column: 1 / span 3;
+  }
+  .hm-feat-2 {
+    grid-column: 2 / span 3;
+  }
+  .hm-feat-3 {
+    grid-column: 1 / span 3;
+  }
+  .hm-feat-btn {
+    grid-column: 3 / span 2;
+  }
+}
+@media (width >= 80rem) {
+  .hm-feat > * {
+    grid-row: 1;
+  }
+  .hm-feat-tiles {
+    display: none;
+  }
+  .hm-feat-tiles--card {
+    display: flex;
+  }
+  .hm-feat-3 {
+    position: relative;
+    z-index: 2;
+    grid-column: 3 / span 2;
+    margin-top: calc(75cqw * 9 / 16);
+  }
+  .hm-feat-2 {
+    grid-column: 1 / span 2;
+    margin-top: calc(75cqw * 9 / 16 + 25cqw);
+  }
+  .hm-feat-btn {
+    align-self: end;
+    grid-column: 4;
+    margin-top: 0;
+  }
+  .hm-feat-tiles--card {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Enquiry: submit button is one page column wide even though the form is 3
+   columns minus a cell; the aside slides back under the form's right gap.
+   -------------------------------------------------------------------------- */
+.hm-enq-form [data-cmp="submit"] {
+  grid-template-columns: calc((100% + var(--sv-grid)) / 3) 1fr;
+}
+.hm-enq-aside {
+  position: relative;
+}
+@media (width >= 64rem) {
+  .hm-enq-aside {
+    margin-left: calc(0px - var(--sv-grid));
+  }
+}
+.hm-switch {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 1em;
+  font-size: calc(var(--space-m) * 0.666);
+  text-align: left;
+}
+.hm-switch-track {
+  position: relative;
+  flex: none;
+  width: 6.6em;
+  height: 3.39em;
+  border: 2px solid #0f0f0f;
+  border-radius: 9999px;
+  background: #0f0f0f;
+  transition: background-color 0.3s var(--wk-ease);
+}
+.hm-switch[data-state="unchecked"] .hm-switch-track {
+  background: transparent;
+}
+.hm-switch-icon {
+  position: absolute;
+  top: 50%;
+  right: 0.35em;
+  width: 1.7em;
+  height: 1.7em;
+  translate: 0 -50%;
+  color: #0f0f0f;
+  opacity: 0;
+  transition: opacity 0.3s var(--wk-ease);
+}
+.hm-switch[data-state="unchecked"] .hm-switch-icon {
+  opacity: 1;
+}
+.hm-switch-knob {
+  position: absolute;
+  top: 50%;
+  left: 0.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3em;
+  height: 3em;
+  border-radius: 9999px;
+  background: #0f0f0f;
+  color: #fff;
+  translate: 0 -50%;
+  transition:
+    transform 0.8s var(--wk-ease),
+    background-color 0.3s var(--wk-ease),
+    color 0.3s var(--wk-ease);
+}
+.hm-switch-knob svg {
+  width: 1.7em;
+  height: 1.7em;
+}
+.hm-switch[data-state="checked"] .hm-switch-knob {
+  width: 2.6em;
+  height: 2.6em;
+  background: #ebe9e5;
+  color: #0f0f0f;
+  transform: translateX(3.5em);
+}
+.hm-switch-label {
+  font-weight: 450;
+  line-height: 1.5em;
+}
+.hm-enq-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.hm-info-btn .wk-btn_panel {
+  font-size: 0.5em;
+}
+.hm-info-btn .wk-btn_inner {
+  width: 100%;
+}
+.hm-info-btn svg {
+  width: 2.2em;
+  height: 2.2em;
+}
+.hm-info-panel {
+  display: grid;
+  width: 100%;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s var(--wk-ease);
+}
+.hm-info-panel[data-open] {
+  grid-template-rows: 1fr;
+}
+.hm-info-inner {
+  overflow: hidden;
+  background: #0f0f0f;
+  color: #fff;
+}
+.hm-info-content {
+  padding: var(--space-s-m);
+}
+.hm-info-lead {
+  font-size: var(--step-1);
+  font-weight: 520;
+  line-height: 1.47em;
+}
+.hm-info-text {
+  margin-top: var(--space-s-m);
+  font-size: var(--step-0);
+  line-height: 1.4em;
+}
+
+/* Wide form: name/company and timeline/budget sit side by side */
+.hm-enq-form {
+  container-type: inline-size;
+}
+@container (min-width: 44rem) {
+  .hm-enq-form [data-cmp="field-name"],
+  .hm-enq-form [data-cmp="field-company"],
+  .hm-enq-form [data-cmp="field-timeline"],
+  .hm-enq-form [data-cmp="field-budget"] {
+    flex-basis: calc(50% - var(--space-m-l) / 2);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Testimonials slider
+   -------------------------------------------------------------------------- */
+.hm-tc {
+  position: relative;
+  margin-top: var(--gutter-pad);
+}
+.hm-tc-arrow {
+  position: absolute;
+  bottom: 100%;
+  z-index: 2;
+  width: var(--sv-grid);
+  font-size: var(--space-m);
+}
+.hm-tc-arrow--prev {
+  left: 0;
+}
+.hm-tc-arrow--next {
+  right: 0;
+}
+.hm-arrow-btn svg {
+  width: 2.2em;
+  height: 2.2em;
+}
+.hm-arrow-btn:disabled {
+  cursor: default;
+}
+.hm-arrow-btn:disabled .wk-btn_panel {
+  color: #b3b3b3;
+  transform: none;
+}
+.hm-tc-clip {
+  overflow: hidden;
+}
+.hm-tc-track {
+  display: flex;
+  will-change: transform;
+}
+.hm-tc-card {
+  display: flex;
+  flex: 0 0 70%;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-s-m);
+  border-right: 1px solid #0f0f0f;
+  color: #b3b3b3;
+  transition: color 0.6s var(--wk-ease);
+}
+.hm-tc-card--active {
+  color: #0f0f0f;
+}
+.hm-tc-company {
+  color: #b3b3b3;
+}
+.hm-tc-quote {
+  margin-top: var(--space-m);
+  font-size: var(--step-0);
+  font-weight: 400;
+  line-height: 1.3em;
+  letter-spacing: -0.02em;
+}
+.hm-tc-card {
+  padding: var(--space-s-m);
+}
+@media (width >= 40rem) {
+  .hm-tc-card {
+    padding: var(--space-l-xl);
+  }
+  .hm-tc-quote {
+    font-size: var(--step-2);
+  }
+}
+@media (width >= 64rem) {
+  .hm-tc-quote {
+    font-size: var(--step-3);
+  }
+}
+.hm-tc-author {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  padding-top: var(--space-m);
+  font-size: var(--step-0);
+  line-height: 1.4em;
+}
+.hm-tc-author strong {
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Footer (4 cols: thumbs tile on col 2's edge, chat block spanning two rows)
+   -------------------------------------------------------------------------- */
+.hm-footer {
+  container-type: inline-size;
+  padding-top: calc(var(--gutter-pad) * 2.74);
+  padding-bottom: var(--gutter-pad);
+}
+.hm-foot {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  font-size: var(--space-m);
+}
+.hm-foot-thumb {
+  grid-column: 2;
+  justify-self: end;
+}
+.hm-foot-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: calc(var(--space-xs-s) * 1.1);
+}
+.hm-foot-menu--1 {
+  grid-column: 1;
+}
+.hm-foot-menu--2 {
+  grid-column: 2;
+}
+.hm-chat {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-m);
+  background: #0f0f0f;
+  color: #fff;
+  text-align: center;
+}
+.hm-chat-icon {
+  width: 0.75em;
+  height: 0.75em;
+  margin-top: 0.2em;
+}
+.hm-chat-title {
+  margin-top: 0.12em;
+  font-size: var(--step-5);
+  font-weight: 800;
+  line-height: 0.88em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.hm-chat-sub {
+  margin-top: 0;
+  font-size: var(--step-1);
+  font-weight: 400;
+  line-height: 1.47em;
+}
+.hm-chat-btn {
+  width: 100%;
+  margin-top: var(--space-m);
+}
+/* light panel on a dark block: the hard shadow underneath turns grey */
+.hm-chat .wk-btn,
+.hm-chat .wk-btn::before,
+.hm-chat .wk-btn::after {
+  background: #333;
+}
+.hm-foot-links {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (width >= 40rem) {
+  .hm-foot-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.hm-foot-legal {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.hm-foot-text {
+  order: 3;
+  width: 100%;
+  padding-block: var(--space-s-m);
+}
+.hm-hide-sm {
+  display: none;
+}
+@media (width >= 40rem) {
+  .hm-hide-sm {
+    display: flex;
+  }
+  .hm-foot-text {
+    order: 0;
+    width: auto;
+    flex: 1;
+    padding-block: 0;
+  }
+}
+.hm-foot-text {
+  padding-inline: var(--space-xs-s);
+  font-size: var(--step--2);
+  line-height: 1.75em;
+  text-align: center;
+}
+.hm-foot-text a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+}
+.hm-foot-version {
+  width: auto;
+  min-width: var(--sv-grid);
+  padding-inline: 0.5em;
+  font-size: var(--step-0);
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+@media (width >= 40rem) {
+  .hm-foot-menu {
+    display: flex;
+  }
+}
+
+@media (width >= 64rem) {
+  .hm-foot {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .hm-chat {
+    grid-column: 3 / span 2;
+    grid-row: 1 / span 2;
+  }
+  .hm-foot-thumb {
+    grid-row: 1;
+  }
+  .hm-foot-menu {
+    grid-row: 2;
+  }
+  .hm-foot-links {
+    grid-row: 3;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .hm-foot-legal {
+    grid-row: 4;
+  }
+}
+
+/* Nav rows */
+.hm-foot-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.1em;
+  padding: 0.2em var(--space-s-m);
+  color: #0f0f0f;
+  font-size: calc(var(--space-m) * 0.537);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hm-foot-link::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 0.3em;
+  background: #0f0f0f;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hm-foot-link[aria-current="page"]::before {
+  opacity: 1;
+}
+.hm-foot-arrow {
+  position: absolute;
+  left: var(--space-s-m);
+  width: 1.2em;
+  height: 1.2em;
+  opacity: 0;
+  transform: translateX(-1em);
+  transition:
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hm-foot-label {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hm-foot-menu:hover .hm-foot-link:not(:hover) {
+    color: #808080;
+  }
+  .hm-foot-menu:hover .hm-foot-link[aria-current="page"]:not(:hover)::before {
+    opacity: 0.4;
+  }
+  .hm-foot-link:hover::before {
+    opacity: 1;
+  }
+  .hm-foot-link:hover .hm-foot-arrow {
+    opacity: 1;
+    transform: none;
+  }
+  .hm-foot-link:hover .hm-foot-label {
+    transform: translateX(2.4em);
+  }
+}
+
+/* Wordmark: fills the width; the tall condensed caps are squashed to the reference's 176px cap height */
+.hm-wordmark {
+  height: 13.8cqw;
+  margin-top: calc(var(--space-s-m) * 0.8);
+  text-align: center;
+}
+.hm-wordmark-inner {
+  position: relative;
+  top: -1.17cqw;
+  display: block;
+  transform: scaleY(0.82);
+  transform-origin: 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 19.5cqw;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Client logo row under the slider: the active one is in colour, the rest fade back */
+.hm-tc-logos {
+  display: none;
+  margin-top: calc(var(--space-m) * 1.35);
+  font-size: var(--space-m);
+}
+@media (width >= 40rem) {
+  .hm-tc-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width >= 64rem) {
+  .hm-tc-logos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.hm-tc-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(var(--sv-grid) * 2.12);
+  padding: var(--space-m-l);
+  border-top: 1px solid #e5e5e5;
+  transition: border-color 0.6s var(--wk-ease);
+}
+.hm-tc-timer {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #0f0f0f;
+  transform-origin: left center;
+  animation: hm-timer linear both;
+}
+@keyframes hm-timer {
+  from {
+    transform: scaleX(0);
+  }
+}
+.hm-tc-logo-img {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.35;
+  filter: grayscale(1);
+  transition:
+    opacity 0.6s var(--wk-ease),
+    filter 0.6s var(--wk-ease);
+}
+.hm-tc-logo-text {
+  font-size: var(--step-2);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  color: #b3b3b3;
+  transition: color 0.6s var(--wk-ease);
+}
+.hm-tc-logo[data-active] .hm-tc-logo-img {
+  opacity: 1;
+  filter: none;
+}
+.hm-tc-logo[data-active] .hm-tc-logo-text {
+  color: #0f0f0f;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hm-tc-logo:hover .hm-tc-logo-img {
+    opacity: 0.7;
+  }
+  .hm-tc-logo:hover .hm-tc-logo-text {
+    color: #666;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Always-on / load animations (measured on wondermake.xyz)
+   -------------------------------------------------------------------------- */
+@keyframes hm-slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+/* page grid rules draw down from the top: 2s ease-in-out, outer frame 0.2s late */
+@keyframes hm-grid {
+  from {
+    transform: scaleY(0);
+  }
+}
+.hm-gl,
+.hm-gl > * {
+  transform-origin: 50% 0;
+  animation: hm-grid 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+}
+.hm-gl {
+  animation-delay: 0.2s;
+}
+/* dark icon tiles turn forever, counter-clockwise, once every 12s */
+@keyframes hm-spin {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+.sv-tile--dark > svg {
+  animation: hm-spin 12s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-gl,
+  .hm-gl > *,
+  .hm-logo-link,
+  .hm-mono,
+  .sv-tile--dark > svg {
+    animation: none;
+  }
+}

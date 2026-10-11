@@ -61,9 +61,10 @@ Run `npx prisma generate` after any schema change. Migrations live in `prisma/mi
 - **Service** — a skill/offering shown for freelance/contract work; `title`, `slug` (unique), `summary`, `description`, `order`
 - **Testimonial** — client quote; `quote`, `authorName`, `authorTitle`, `company`, `published`
 - **Experience** — work/education timeline entry shown on the About page; `type` (`WORK` | `EDUCATION` enum), `organization`, `role`, `description`, `startDate`, `endDate` (`null` = "Present"), `order`
+- **Recognition** — award/press/certification/competition row shown in the About page's "Recognition" list; `source`, `kind` (`AWARD` | `PRESS` | `CERTIFICATION` | `COMPETITION`), `title`, `url?`, `year?`, `order`, `published`. Managed in `/dashboard/recognition` (single create/edit dialog, `RecognitionDialog`).
 - **ContactSubmission** — inquiry from the public contact form; `name`, `email`, `message`, `projectType`, `read`. Only `create` is public; list/mark-read/delete are dashboard-only (`/dashboard/inquiries`).
 
-`Project`/`Service`/`Testimonial`/`Experience`/`ContactSubmission` each follow the same layered pattern as `Post` (`servers/validators/`, `servers/services/`, `app/action/`). `Project` and `Service` use dedicated create/update dashboard pages (mirrors `Post`); `Testimonial` and `Experience` use dialog-based create/edit (mirrors `User`).
+`Project`/`Service`/`Testimonial`/`Experience`/`Recognition`/`ContactSubmission` each follow the same layered pattern as `Post` (`servers/validators/`, `servers/services/`, `app/action/`). `Project` and `Service` use dedicated create/update dashboard pages (mirrors `Post`); `Testimonial`, `Experience` and `Recognition` use dialog-based create/edit (mirrors `User`).
 
 ### Auth
 
@@ -74,7 +75,7 @@ Clerk (`@clerk/nextjs`) handles identity. `getCurrentUser()` in `app/action/user
 - `components/ui/` — shadcn/ui primitives (radix-ui based); do not edit these manually, use the `shadcn` CLI
 - `components/dashboard/` — dashboard-specific: `DataTable`, `TablePagination`, `TableSorter`, `SearchDataTable`, `DashboardSidebar`, `DashboardNavbar`, `DynamicBreadcrumb`, `PageHeader`
 - `components/auth/` — sign-in/sign-up forms and layout pieces
-- `components/root/` — public page sections
+- `components/root/` — public page sections. `/about` lives in `components/root/about/` with its styles in `app/about.css` (`ab-` prefix, built on the `wk-` primitives from `app/work.css`); `ExperienceTimeline` is no longer rendered there.
 
 ### Providers
 

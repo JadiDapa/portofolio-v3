@@ -16,6 +16,12 @@ import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { UpdateProjectSchema } from "@/servers/validators/project.validator";
 import { updateProject } from "@/app/action/project.action";
+import { MediaSlot } from "@/components/dashboard/projects/GalleryEditor";
+import SectionsEditor from "@/components/dashboard/projects/SectionsEditor";
+import {
+  cleanSections,
+  resolveSections,
+} from "@/servers/validators/project.validator";
 import { uploadImage } from "@/app/action/upload.action";
 import { Project } from "@/generated/prisma";
 
@@ -37,6 +43,9 @@ export default function UpdateProjectForm({ project }: { project: Project }) {
       summary: project.summary,
       content: project.content ?? "",
       coverImage: project.coverImage,
+      heroVideo: project.heroVideo,
+      websiteUrl: project.websiteUrl ?? "",
+      sections: resolveSections(project),
       year: project.year ?? undefined,
       published: project.published,
       featured: project.featured,
@@ -73,7 +82,11 @@ export default function UpdateProjectForm({ project }: { project: Project }) {
           const { url } = await uploadImage(fd);
           coverImageUrl = url;
         }
-        await updateProject(project.id, { ...values, coverImage: coverImageUrl });
+        await updateProject(project.id, {
+          ...values,
+          coverImage: coverImageUrl,
+          sections: cleanSections(values.sections),
+        });
         toast.success("Project updated!");
         router.push("/dashboard/projects");
       } catch (err) {
@@ -208,6 +221,58 @@ export default function UpdateProjectForm({ project }: { project: Project }) {
           accept="image/*"
           className="hidden"
           onChange={handleFileChange}
+        />
+      </div>
+
+      <Controller
+        name="websiteUrl"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="space-y-1.5">
+            <Label htmlFor="websiteUrl">Website URL</Label>
+            <Input
+              id="websiteUrl"
+              {...field}
+              value={field.value ?? ""}
+              placeholder="https://example.com"
+            />
+            {fieldState.error && (
+              <p className="text-destructive text-sm">
+                {fieldState.error.message}
+              </p>
+            )}
+          </div>
+        )}
+      />
+
+      <div className="space-y-1.5">
+        <Label>Hero video (optional, replaces the cover image on the project page)</Label>
+        <Controller
+          name="heroVideo"
+          control={form.control}
+          render={({ field }) => (
+            <MediaSlot
+              value={field.value}
+              onChange={field.onChange}
+              label="hero video (mp4/webm, up to 50MB)"
+              accept="video/mp4,video/webm"
+            />
+          )}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Page layout</Label>
+        <p className="text-muted-foreground text-sm">
+          The sections below make up the project page, top to bottom. Reorder
+          them or add features, tools, results, images and text.
+        </p>
+        <Controller
+          name="sections"
+          control={form.control}
+          render={({ field }) => (
+            <SectionsEditor value={field.value ?? []} onChange={field.onChange} />
+          )}
         />
       </div>
 

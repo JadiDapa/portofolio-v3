@@ -1,0 +1,328 @@
+/* ==========================================================================
+   /services/[slug] — hero showcase, process, FAQ accordion and the floating
+   service switcher. Layout and motion measured on
+   wondermake.xyz/services/product-design (1440 / 1024 / 390).
+   Builds on wk-* (work.css) and sv-* (services.css).
+   ========================================================================== */
+
+/* The reference page body runs at weight 450 */
+.sd-page {
+  font-weight: 450;
+}
+
+/* Hero: glass box that fades in after its hairlines are drawn */
+.sd-hero {
+  position: relative;
+  padding-bottom: calc(var(--space-m) * 0.6);
+  font-size: var(--space-m);
+}
+.sd-hero-glass {
+  background-color: transparent;
+  transition: background-color 3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+}
+.sd-hero-glass[data-visible] {
+  background-color: rgba(248, 248, 248, 0.64);
+}
+.sd-hero-title {
+  position: relative;
+  clip-path: inset(calc(var(--space-m) * 0.6) round 8px);
+  background: #0f0f0f;
+  color: #fff;
+}
+/* Fitted to 52.8 / 55.4 / 57.1 / 60px at 390 / 768 / 1024 / 1440 */
+.sd-title-icon {
+  display: block;
+  width: calc(3.134rem + 0.685vi);
+  height: calc(3.134rem + 0.685vi);
+  margin-inline: auto;
+}
+.sd-title-label {
+  padding-bottom: 1em;
+}
+.sd-opening {
+  font-weight: 400;
+}
+/* CTA box: same as wk-pad but with a taller top edge on phones */
+.sd-cta-pad {
+  padding: var(--space-l-xl) var(--space-m-l);
+}
+@media (width >= 40rem) {
+  .sd-cta-pad {
+    padding: var(--space-xl-2xl) var(--space-l-xl);
+  }
+}
+@media (width >= 96.0625rem) {
+  .sd-cta-pad {
+    padding-inline: var(--space-xl-2xl);
+  }
+}
+
+/* Showcase: two rows of 16:9 slides drifting in opposite directions */
+.sd-showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  font-size: var(--space-m);
+}
+.sd-row {
+  margin-inline: calc(var(--space-s-m) / -2);
+  overflow: hidden;
+}
+@media (width >= 40rem) {
+  .sd-row {
+    margin-inline: calc(var(--space-m-l) * -1);
+  }
+}
+.sd-track {
+  --sd-set: calc(6 * 11.6em);
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: sd-drift-left 37s linear infinite;
+}
+.sd-row--right .sd-track {
+  animation-name: sd-drift-right;
+}
+@keyframes sd-drift-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(var(--sd-set) * -1));
+  }
+}
+@keyframes sd-drift-right {
+  from {
+    transform: translateX(calc(var(--sd-set) * -1));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.sd-slide {
+  flex: none;
+  width: 11em;
+  margin-right: 0.6em;
+  aspect-ratio: 16 / 9;
+  background: #0f0f0f;
+  clip-path: inset(-1px 100% -1px -1px);
+  animation: sd-wipe 1s var(--wk-ease) var(--sd-delay, 0s) forwards;
+}
+@keyframes sd-wipe {
+  to {
+    clip-path: inset(-1px calc(0% - 1px) -1px -1px);
+  }
+}
+.sd-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Intro: the info tile hangs just above the heading box */
+.sd-intro-tile {
+  position: static;
+}
+@media (width >= 40rem) {
+  .sd-intro-tile {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+  }
+}
+
+/* Headings */
+.sd-subheading,
+.sd-cta-heading {
+  font-size: var(--step-4);
+  line-height: 1em;
+  letter-spacing: -0.03em;
+}
+.sd-subheading {
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.sd-cta-heading {
+  font-weight: 700;
+}
+@media (width >= 40rem) {
+  .sd-subheading,
+  .sd-cta-heading {
+    font-size: var(--step-5);
+  }
+}
+@media (width >= 64rem) {
+  .sd-subheading,
+  .sd-cta-heading {
+    line-height: 0.88em;
+    letter-spacing: -0.02em;
+  }
+}
+.sd-title {
+  font-size: var(--step-2);
+  font-weight: 500;
+  line-height: 1.25em;
+  letter-spacing: -0.03em;
+}
+
+/* Process */
+.sd-how-head {
+  position: sticky;
+  top: calc(var(--space-m) * 2.666 * 2);
+}
+@media (width < 64rem) {
+  .sd-how-head {
+    position: relative;
+    top: auto;
+  }
+}
+.sd-step {
+  display: flex;
+  padding: calc(var(--space-m) * 1.5) var(--space-s-m);
+  background: #f8f8f8;
+}
+@media (width >= 40rem) {
+  .sd-step {
+    padding-inline: var(--space-l-xl);
+  }
+}
+.sd-step-num {
+  flex: none;
+  padding-top: 0.1em;
+  padding-right: 1em;
+}
+.sd-outcomes {
+  font-size: var(--step-0);
+  font-weight: 900;
+  line-height: 1.4em;
+  letter-spacing: 0.008em;
+  text-transform: uppercase;
+}
+
+/* FAQ accordion */
+.sd-acc {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(248, 248, 248, 0.64);
+}
+.sd-acc-item {
+  display: flex;
+}
+.sd-acc-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex: none;
+  width: calc(var(--space-m) * 2.666);
+  font-size: var(--space-m);
+  background: #f0f0f0;
+  cursor: pointer;
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sd-acc-item[data-open] .sd-acc-trigger {
+  background: #ebe9e5;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sd-acc-trigger:hover {
+    background: #ebe9e5;
+  }
+}
+.sd-acc-icon {
+  width: 0.8em;
+  height: 0.8em;
+  transition: transform 0.6s var(--wk-ease);
+}
+.sd-acc-item[data-open] .sd-acc-icon {
+  transform: rotate(-135deg);
+}
+.sd-acc-header {
+  display: block;
+  width: 100%;
+  padding: var(--space-xs-s) var(--space-s-m);
+  text-align: left;
+  cursor: pointer;
+}
+.sd-acc-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.8s var(--wk-ease);
+}
+.sd-acc-item[data-open] .sd-acc-body {
+  grid-template-rows: 1fr;
+}
+.sd-acc-body > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.sd-acc-area {
+  padding: 0 var(--space-s-m) var(--space-xs-s);
+}
+
+/* Related Work covers stay 16:9 at every width */
+.wk-pv--land .wk-inset-this {
+  aspect-ratio: 16 / 9;
+}
+
+/* Floating service switcher */
+.sd-switcher {
+  position: fixed;
+  bottom: var(--space-m-l);
+  left: 50%;
+  z-index: 50;
+  display: flex;
+  gap: calc(var(--space-m) * 0.4);
+  padding: calc(var(--space-m) * 0.4);
+  font-size: var(--space-m);
+  background: #fff;
+  border: 1px solid #0f0f0f;
+  border-radius: 9999px;
+  translate: -50% 0;
+  max-width: calc(100vw - var(--space-s-m) * 2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sd-switcher::-webkit-scrollbar {
+  display: none;
+}
+.sd-sw-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 2em;
+  padding-left: 0.5em;
+  overflow: hidden;
+  white-space: nowrap;
+  color: #0f0f0f;
+  border-radius: 9999px;
+  transition-property: background-color, color;
+  transition-duration: 0.5s;
+  transition-timing-function: var(--wk-ease);
+}
+.sd-sw-item:not([aria-current="page"]) {
+  width: 2em;
+}
+.sd-sw-item svg {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+.sd-sw-item span {
+  font-size: 0.6em;
+  line-height: 1.5em;
+}
+.sd-sw-item[aria-current="page"] {
+  padding-right: 0.7em;
+  color: #fff;
+  background: #0f0f0f;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sd-sw-item:not([aria-current="page"]):hover {
+    background: #ebe9e5;
+  }
+}

@@ -1,21 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const NAME = "Daffa Althaf R.";
+const NAME = "DAFFA ALTHAF";
 
 // Letters fade in while rising, then settle with a small
-// up-down-up-down bounce, staggered left to right.
+// up-down-up-down bounce, staggered left to right. Plays the first time the
+// wordmark scrolls into view; click to replay.
 export default function NameReveal() {
   const [playKey, setPlayKey] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const replay = () => setPlayKey((k) => k + 1);
 
   return (
     <p
+      ref={ref}
       onClick={replay}
       title="Click to replay"
-      className="mt-10 cursor-pointer overflow-hidden text-[10rem] leading-[0.8] font-bold tracking-tighter uppercase select-none"
+      aria-label={NAME}
+      className="hm-wordmark cursor-pointer select-none"
     >
       <style>{`
         @keyframes letter-rise {
@@ -27,21 +48,26 @@ export default function NameReveal() {
           100% { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+      <span className="hm-wordmark-inner">
       {NAME.split("").map((ch, i) => (
         <span
           key={`${playKey}-${i}`}
-          className="text-foreground inline-block"
+          aria-hidden
+          className="inline-block"
           style={{
             opacity: 0,
-            width: ch === " " ? "0.28em" : undefined,
-            animation:
-              "letter-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+            width: ch === " " ? "0.22em" : undefined,
+            animationName: started ? "letter-rise" : "none",
+            animationDuration: "0.9s",
+            animationTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+            animationFillMode: "forwards",
             animationDelay: `${i * 0.035}s`,
           }}
         >
-          {ch === " " ? "\u00A0" : ch}
+          {ch === " " ? " " : ch}
         </span>
       ))}
+      </span>
     </p>
   );
 }

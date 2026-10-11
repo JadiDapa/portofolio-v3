@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Anton, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/providers/Providers";
@@ -23,6 +23,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Tall condensed display face for the footer wordmark
+const anton = Anton({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Daffa Althaf Ridovani | Software Engineer",
   description:
@@ -36,7 +43,12 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={cn(geistSans.variable, geistMono.variable, generalSans.variable)}
+      className={cn(
+        geistSans.variable,
+        geistMono.variable,
+        generalSans.variable,
+        anton.variable,
+      )}
       suppressHydrationWarning
       lang="en"
     >

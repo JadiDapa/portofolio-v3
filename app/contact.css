@@ -1,0 +1,411 @@
+/* ==========================================================================
+   /contact â€” form controls, studio clock and showcase strip.
+   Values are lifted from wondermake.xyz/contact (measured 1440 / 1024 / 390).
+   Builds on the wk-* primitives in work.css (wk-b, wk-btn, wk-box, wk-pad).
+   ========================================================================== */
+
+/* Glass fill behind the drawn boxes; fades in after the lines start drawing */
+.ct-glass {
+  background-color: transparent;
+  transition: background-color 3s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+}
+.ct-glass[data-visible],
+.ct-tile-glass {
+  background-color: rgba(248, 248, 248, 0.64);
+}
+
+.ct-subheading {
+  font-size: var(--step-4);
+  font-weight: 800;
+  line-height: 1em;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+@media (width >= 40rem) {
+  .ct-subheading {
+    font-size: var(--step-5);
+  }
+}
+@media (width >= 64rem) {
+  .ct-subheading {
+    line-height: 0.88em;
+    letter-spacing: -0.02em;
+  }
+}
+.ct-subtext {
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.65em;
+}
+
+/* Label/uppercase button text (Enquiry / General / Submit) */
+.ct-btn .wk-btn_panel {
+  font-size: 0.5em;
+}
+.ct-btn .wk-btn_inner {
+  padding: 1.5em var(--space-m-l);
+}
+@media (width >= 80rem) {
+  .ct-btn .wk-btn_inner {
+    padding-inline: 2em;
+  }
+}
+/* Compact tabs when they drop under the title on phones */
+@media (width < 40rem) {
+  .ct-tabs--inline .ct-btn .wk-btn_panel {
+    font-size: 0.45em;
+  }
+  .ct-tabs--inline .ct-btn .wk-btn_inner {
+    gap: 0.5em;
+    padding-block: 1.3em;
+  }
+  .ct-tabs--inline .ct-btn-text {
+    padding-right: 0;
+  }
+}
+.ct-btn-text {
+  flex-grow: 1;
+  padding-right: 2.2em;
+  font-weight: 700;
+  line-height: 1.5em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ct-btn svg {
+  width: 1.5em;
+  height: 1.5em;
+  flex-shrink: 0;
+  transition: transform 0.4s var(--wk-ease);
+}
+.ct-btn--expand {
+  width: 100%;
+}
+.ct-btn--expand .wk-btn_panel,
+.ct-btn--expand .wk-btn_inner {
+  width: 100%;
+}
+.ct-tabs > :first-child {
+  z-index: 3;
+}
+.ct-tabs > * {
+  position: relative;
+  z-index: 2;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ct-btn:hover svg {
+    transform: scale(1.1);
+  }
+  .ct-submit:hover svg {
+    transform: translate(0.25em, -0.25em) scale(1.1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Form
+   -------------------------------------------------------------------------- */
+.ct-form {
+  animation: ct-fade 0.5s ease;
+}
+.ct-form > * {
+  animation: ct-fade 0.5s ease;
+}
+@keyframes ct-fade {
+  from {
+    opacity: 0;
+  }
+}
+.ct-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-m-l);
+}
+.ct-item {
+  flex-basis: 100%;
+}
+
+.ct-label {
+  display: block;
+  margin-bottom: var(--space-3xs-2xs);
+}
+.ct-required {
+  color: #b3b3b3;
+}
+
+.ct-area {
+  display: flex;
+  width: 100%;
+  border: 1px solid #0f0f0f;
+  border-radius: 0;
+  background-color: #f8f8f8;
+  padding: 1em 1.2em;
+  color: #0f0f0f;
+  font-size: var(--step-0);
+  font-weight: 450;
+  line-height: 1.6em;
+  letter-spacing: 0.02em;
+  text-align: left;
+  outline: 0;
+  scroll-padding-block: 1.6em;
+  transition-property: var(--wk-tp);
+  transition-duration: 0.4s;
+  transition-timing-function: var(--wk-ease);
+}
+.ct-area::placeholder {
+  color: rgba(15, 15, 15, 0.33);
+}
+.ct-area:focus::placeholder {
+  color: transparent;
+}
+.ct-area:hover,
+.ct-area:focus-visible {
+  background-color: #ebe9e5;
+  box-shadow: inset 0 -4px #0f0f0f;
+}
+.ct-area:focus {
+  border-color: #00be7a;
+  background-color: #fff;
+  box-shadow: inset 0 0 #0f0f0f;
+}
+.ct-invalid .ct-area {
+  border-color: #ff2e79;
+  background-color: rgba(255, 46, 121, 0.08);
+}
+.ct-invalid .ct-area:hover {
+  box-shadow: inset 0 -4px #ff2e79;
+}
+.ct-invalid .ct-area:focus {
+  box-shadow: inset 0 0 #ff2e79;
+}
+
+.ct-textarea {
+  position: relative;
+}
+.ct-textarea textarea {
+  display: block;
+  min-height: 240px;
+  max-height: 960px;
+  resize: vertical;
+}
+.ct-textarea textarea::-webkit-resizer {
+  background: transparent;
+}
+.ct-textarea svg {
+  pointer-events: none;
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  width: 20px;
+  height: 20px;
+}
+
+/* Helper / error line: grows open, collapses shut */
+.ct-context-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.ct-context {
+  flex-grow: 1;
+  overflow: hidden;
+  margin-top: var(--space-3xs-2xs);
+  max-height: 6rem;
+}
+.ct-invalid .ct-context {
+  color: #ff2e79;
+}
+.ct-counter {
+  margin-top: var(--space-3xs-2xs);
+  min-width: 8em;
+  text-align: right;
+  opacity: 0.33;
+}
+
+/* Checkbox rows */
+.ct-checkgroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs-xs);
+}
+@media (width >= 40rem) {
+  .ct-checkgroup {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.ct-panel-pad {
+  padding: var(--space-s-m);
+}
+@media (width >= 40rem) {
+  .ct-panel-pad {
+    padding: var(--space-l-xl);
+  }
+}
+.ct-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  text-align: left;
+}
+.ct-inline > p {
+  flex-grow: 1;
+}
+.ct-box {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  width: 2.5em;
+  height: 2.5em;
+  border: 1px solid #0f0f0f;
+  font-size: var(--step-0);
+  transition-property: var(--wk-tp);
+  transition-duration: 0.4s;
+  transition-timing-function: var(--wk-ease);
+}
+.ct-box:hover,
+.ct-inline:focus-visible .ct-box {
+  background-color: #ebe9e5;
+  box-shadow: inset 0 -4px #0f0f0f;
+}
+[data-state="checked"] .ct-box {
+  background-color: #ebe9e5;
+  color: #fff;
+  box-shadow: inset 0 -2.5em #0f0f0f;
+}
+.ct-invalid .ct-box {
+  border-color: #ff2e79;
+  background-color: rgba(255, 46, 121, 0.08);
+}
+
+/* Enquiry â†” General swap */
+.ct-form-outer {
+  min-height: 37.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Studio clock
+   -------------------------------------------------------------------------- */
+.ct-sticky {
+  position: sticky;
+  top: 2.666em;
+  font-size: var(--space-m);
+}
+.ct-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.666em;
+  height: 2.666em;
+}
+.ct-tile svg {
+  width: 1.4em;
+  height: 1.4em;
+}
+.ct-tile svg line {
+  transform-origin: 12px 12px;
+  transition: transform 0.4s var(--wk-ease);
+}
+.ct-time {
+  margin-left: 2.666em;
+  max-width: 30rem;
+}
+.ct-text {
+  font-weight: 450;
+}
+.ct-black {
+  font-weight: 900;
+}
+.ct-p-sm {
+  padding: var(--space-s-m);
+}
+.ct-dark {
+  background-color: #0f0f0f;
+  color: #fff;
+}
+.ct-dark.wk-b,
+.ct-dark.wk-b::before,
+.ct-dark.wk-b::after {
+  border-color: #0f0f0f;
+}
+
+/* --------------------------------------------------------------------------
+   Showcase strip
+   -------------------------------------------------------------------------- */
+.ct-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  font-size: var(--space-m);
+}
+.ct-carousel {
+  pointer-events: none;
+  display: flex;
+  width: max-content;
+  animation: ct-marquee var(--ct-duration, 60s) linear infinite;
+}
+.ct-carousel--reverse {
+  animation-direction: reverse;
+}
+@keyframes ct-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ct-media {
+  position: relative;
+  margin-right: 0.6em;
+  aspect-ratio: 1280 / 720;
+  width: 11em;
+  min-width: 11em;
+  overflow: hidden;
+  border: 1px solid #0f0f0f;
+  background: #ebe9e5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-carousel {
+    animation: none;
+  }
+}
+.ct-showcase-pad {
+  padding-top: var(--space-s-m);
+  padding-bottom: var(--space-s-m);
+}
+@media (width >= 40rem) {
+  .ct-showcase-pad {
+    padding-top: var(--space-l-xl);
+    padding-bottom: var(--space-l-xl);
+  }
+}
+
+/* Tiles wipe in once the strip is on screen: 1s, 50ms apart; the reverse row wipes the other way, a beat later */
+@keyframes ct-wipe-right {
+  from {
+    clip-path: inset(-1px 101% -1px -1px);
+  }
+}
+@keyframes ct-wipe-left {
+  from {
+    clip-path: inset(-1px -1px -1px 101%);
+  }
+}
+.ct-media[data-wipe] {
+  clip-path: inset(-1px 101% -1px -1px);
+}
+[data-visible] .ct-media[data-wipe="right"] {
+  clip-path: inset(-1px);
+  animation: ct-wipe-right 1s var(--wk-ease) calc(var(--i, 0) * 50ms) both;
+}
+[data-visible] .ct-media[data-wipe="left"] {
+  clip-path: inset(-1px);
+  animation: ct-wipe-left 1s var(--wk-ease) calc(300ms + var(--i, 0) * 50ms) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-media[data-wipe],
+  [data-visible] .ct-media[data-wipe] {
+    clip-path: none;
+    animation: none;
+  }
+}

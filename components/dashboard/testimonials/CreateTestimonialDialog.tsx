@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import LogoField from "./LogoField";
 import { CreateTestimonialSchema } from "@/servers/validators/testimonial.validator";
 import { createTestimonial } from "@/app/action/testimonial.action";
 
@@ -35,6 +36,7 @@ export default function CreateTestimonialDialog() {
       authorName: "",
       authorTitle: "",
       company: "",
+      logo: "",
       published: true,
     },
   });
@@ -128,6 +130,14 @@ export default function CreateTestimonialDialog() {
               )}
             />
           </div>
+
+          <Controller
+            name="logo"
+            control={form.control}
+            render={({ field }) => (
+              <LogoField value={field.value} onChange={field.onChange} />
+            )}
+          />
 
           <DialogFooter className="pt-2">
             <Button

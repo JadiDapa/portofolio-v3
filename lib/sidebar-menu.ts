@@ -7,6 +7,7 @@ import {
   Quote,
   GraduationCap,
   Mail,
+  Award,
   LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +47,12 @@ export const overviewItems: MenuItem[] = [
     title: "Experience",
     url: "/dashboard/experience",
     icon: GraduationCap,
+    roles: ["ADMIN"],
+  },
+  {
+    title: "Recognition",
+    url: "/dashboard/recognition",
+    icon: Award,
     roles: ["ADMIN"],
   },
   {

@@ -49,3 +49,6 @@ next-env.d.ts
 CLAUDE.md
 
 /CLAUDE.md
+
+# Playwright MCP captures
+.playwright-mcp/

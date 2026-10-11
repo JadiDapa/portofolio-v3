@@ -1,121 +1,172 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Asterisk } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { animate, useMotionValue, motion } from "motion/react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Testimonial } from "@/generated/prisma";
+import GridButton from "@/components/root/work/GridButton";
+import SectionTitle from "@/components/root/home/SectionTitle";
+import { ReviewArt } from "@/components/root/work/WorkArt";
 import { cn } from "@/lib/utils";
 
-const AUTOPLAY_MS = 5000;
+// Measured on the reference: the progress bar under the active logo fills in 7.55s
+const AUTOPLAY_MS = 7550;
+// Critically damped spring, fitted to the reference's slide (≈1s, soft landing)
+const SLIDE = { type: "spring", stiffness: 100, damping: 20, mass: 1 } as const;
 
+/**
+ * Contained slider: the active card sits centred, the first and last card hug
+ * the edges, and the neighbours peek in grey on either side.
+ */
 export default function Testimonials({
   testimonials,
 }: {
   testimonials: Testimonial[];
 }) {
   const [index, setIndex] = useState(0);
+  const viewport = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  const [ratio, setRatio] = useState(0.7);
+  const x = useMotionValue(0);
+  const count = testimonials.length;
+
+  // Cards are 70% of the viewport wide on desktop, 90% below 1024px
+  const cardWidth = width * ratio;
 
   useEffect(() => {
-    if (testimonials.length <= 1) return;
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % testimonials.length);
-    }, AUTOPLAY_MS);
-    return () => clearInterval(id);
-  }, [index, testimonials.length]);
+    const el = viewport.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width);
+      setRatio(window.innerWidth >= 1024 ? 0.7 : 0.9);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [count]);
 
-  if (testimonials.length === 0) return null;
+  useEffect(() => {
+    if (!width) return;
+    const centred = (width - cardWidth) / 2 - index * cardWidth;
+    const min = -(count * cardWidth - width);
+    const target = Math.min(0, Math.max(min, centred));
+    if (x.get() === 0 && index === 0) x.set(target);
+    else animate(x, target, SLIDE);
+  }, [index, width, cardWidth, count, x]);
+
+  useEffect(() => {
+    if (count <= 1) return;
+    const id = setTimeout(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    return () => clearTimeout(id);
+  }, [index, count]);
+
+  if (count === 0) return null;
+
+  // The logo row shows four at a time, sliding along with the active card
+  const first = Math.min(Math.max(0, index - 1), Math.max(0, count - 4));
+  const visibleLogos = testimonials.slice(first, first + 4);
 
   return (
-    <section className="px-gutter py-24">
-      {/* Centered header */}
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="text-eyebrow flex items-center justify-center gap-3 font-medium tracking-[0.2em] uppercase">
-          <span>Five Star</span>
-          <Asterisk className="text-primary size-5" />
-          <span>Reviews</span>
-        </p>
+    <section className="px-gutter pt-(--gutter-pad)" data-sec="testimonials">
+      <SectionTitle
+        className="pt-(--gutter-pad)"
+        labelLeft="Five star"
+        labelRight="Reviews"
+        art={<ReviewArt />}
+        heading="*Testimonials*"
+        opening="Hear from the people I've helped along the way"
+      />
 
-        <h2 className="text-section mt-6 leading-[0.9] font-bold tracking-tight uppercase">
-          Testimonials
-        </h2>
-
-        <p className="text-lead mt-6">
-          Hear from the people I&apos;ve helped along the way
-        </p>
-      </div>
-
-      {/* Carousel */}
-      <div className="mx-auto">
-        {/* Top bar: corner arrows */}
-        <div className="border-foreground flex items-stretch justify-between">
-          <button
-            type="button"
-            aria-label="Previous testimonial"
-            onClick={() =>
-              setIndex(
-                (i) => (i - 1 + testimonials.length) % testimonials.length,
-              )
-            }
-            className="border-foreground hover:bg-foreground hover:text-background flex size-20 items-center justify-center border border-r transition-colors md:size-16"
+      <div className="hm-tc">
+        <div className="hm-tc-arrow hm-tc-arrow--prev hidden lg:block">
+          <GridButton
+            icon
+            disabled={index === 0}
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            ariaLabel="Previous testimonial"
+            className="hm-menu-btn hm-arrow-btn"
           >
-            <ArrowLeft className="size-8" />
-          </button>
-
-          <button
-            type="button"
-            aria-label="Next testimonial"
-            onClick={() => setIndex((i) => (i + 1) % testimonials.length)}
-            className="border-foreground hover:bg-foreground hover:text-background flex size-20 items-center justify-center border border-r transition-colors md:size-16"
+            <ArrowLeft strokeWidth={1.2} aria-hidden />
+          </GridButton>
+        </div>
+        <div className="hm-tc-arrow hm-tc-arrow--next hidden lg:block">
+          <GridButton
+            icon
+            disabled={index === count - 1}
+            onClick={() => setIndex((i) => Math.min(count - 1, i + 1))}
+            ariaLabel="Next testimonial"
+            className="hm-menu-btn hm-arrow-btn"
           >
-            <ArrowRight className="size-8" />
-          </button>
+            <ArrowRight strokeWidth={1.2} aria-hidden />
+          </GridButton>
         </div>
 
-        {/* Accordion strip: active card expands, others shrink into tabs */}
-        <div className="border-foreground flex h-120 items-stretch overflow-hidden border">
-          {testimonials.map((t, i) => {
-            const active = i === index;
-            return (
-              <button
+        <div className="hm-tc-viewport wk-b">
+          <div ref={viewport} className="hm-tc-clip">
+          <motion.ul className="hm-tc-track" style={{ x }}>
+            {testimonials.map((t, i) => (
+              <li
                 key={t.id}
-                type="button"
-                onClick={() => setIndex(i)}
-                style={{
-                  flexGrow: active ? 6 : 1,
-                  flexBasis: 0,
-                  minWidth: active ? undefined : "3.5rem",
-                }}
-                className={cn(
-                  "border-foreground min-w-0 border-l text-left transition-all duration-500 ease-out first:border-l-0",
-                  active
-                    ? "bg-background text-foreground p-8 md:p-12"
-                    : "bg-foreground text-background flex items-center justify-center p-3",
-                )}
+                style={{ flexBasis: `${ratio * 100}%` }}
+                className={cn("hm-tc-card", i === index && "hm-tc-card--active")}
+                aria-hidden={i !== index}
               >
-                {active ? (
-                  <>
-                    <p className="text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase">
-                      {t.company}
-                    </p>
-                    <p className="text-title mt-6 leading-snug font-light">
-                      {t.quote}
-                    </p>
-                    <footer className="mt-8">
-                      <p className="text-sm font-semibold">{t.authorName}</p>
-                      <p className="text-muted-foreground text-sm">
-                        {t.authorTitle}
-                      </p>
-                    </footer>
-                  </>
+                <p className="hm-tc-company wk-label">{t.company}</p>
+                <blockquote className="hm-tc-quote">{t.quote}</blockquote>
+                <footer className="hm-tc-author">
+                  <strong>{t.authorName}</strong>
+                  {t.authorTitle && <span>{t.authorTitle}</span>}
+                </footer>
+              </li>
+            ))}
+          </motion.ul>
+          </div>
+        </div>
+      </div>
+
+      <motion.ul
+        className="hm-tc-logos"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+      >
+        {visibleLogos.map((t, i) => {
+          const active = first + i === index;
+          return (
+            <li key={t.id}>
+              <button
+                type="button"
+                className="hm-tc-logo"
+                data-active={active || undefined}
+                aria-label={t.company ?? t.authorName}
+                aria-current={active || undefined}
+                onClick={() => setIndex(first + i)}
+              >
+                {active && (
+                  <span
+                    key={index}
+                    aria-hidden
+                    className="hm-tc-timer"
+                    style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
+                  />
+                )}
+                {t.logo ? (
+                  <Image
+                    src={t.logo}
+                    alt=""
+                    width={240}
+                    height={90}
+                    className="hm-tc-logo-img"
+                  />
                 ) : (
-                  <span className="rotate-180 text-sm font-bold tracking-widest uppercase [writing-mode:vertical-rl]">
-                    {t.company?.split(" ")[0] ?? t.authorName.split(" ")[0]}
-                  </span>
+                  <span className="hm-tc-logo-text">{t.company ?? t.authorName}</span>
                 )}
               </button>
-            );
-          })}
-        </div>
-      </div>
+            </li>
+          );
+        })}
+      </motion.ul>
     </section>
   );
 }

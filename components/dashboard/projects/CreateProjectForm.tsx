@@ -17,6 +17,12 @@ import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { CreateProjectSchema } from "@/servers/validators/project.validator";
 import { createProject } from "@/app/action/project.action";
+import { MediaSlot } from "@/components/dashboard/projects/GalleryEditor";
+import SectionsEditor from "@/components/dashboard/projects/SectionsEditor";
+import {
+  cleanSections,
+  defaultSections,
+} from "@/servers/validators/project.validator";
 import { uploadImage } from "@/app/action/upload.action";
 
 type ProjectFormType = z.input<typeof CreateProjectSchema>;
@@ -37,6 +43,9 @@ export default function CreateProjectForm() {
       summary: "",
       content: "",
       coverImage: undefined,
+      heroVideo: undefined,
+      websiteUrl: "",
+      sections: defaultSections(),
       year: new Date().getFullYear(),
       published: false,
       featured: false,
@@ -68,6 +77,7 @@ export default function CreateProjectForm() {
       try {
         await createProject({
           ...values,
+          sections: cleanSections(values.sections),
           slug: slugify(values.title, { lower: true, strict: true }),
         });
         toast.success("Project created!");
@@ -230,6 +240,58 @@ export default function CreateProjectForm() {
           accept="image/*"
           className="hidden"
           onChange={handleFileChange}
+        />
+      </div>
+
+      <Controller
+        name="websiteUrl"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="space-y-1.5">
+            <Label htmlFor="websiteUrl">Website URL</Label>
+            <Input
+              id="websiteUrl"
+              {...field}
+              value={field.value ?? ""}
+              placeholder="https://example.com"
+            />
+            {fieldState.error && (
+              <p className="text-destructive text-sm">
+                {fieldState.error.message}
+              </p>
+            )}
+          </div>
+        )}
+      />
+
+      <div className="space-y-1.5">
+        <Label>Hero video (optional, replaces the cover image on the project page)</Label>
+        <Controller
+          name="heroVideo"
+          control={form.control}
+          render={({ field }) => (
+            <MediaSlot
+              value={field.value}
+              onChange={field.onChange}
+              label="hero video (mp4/webm, up to 50MB)"
+              accept="video/mp4,video/webm"
+            />
+          )}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Page layout</Label>
+        <p className="text-muted-foreground text-sm">
+          The sections below make up the project page, top to bottom. Reorder
+          them or add features, tools, results, images and text.
+        </p>
+        <Controller
+          name="sections"
+          control={form.control}
+          render={({ field }) => (
+            <SectionsEditor value={field.value ?? []} onChange={field.onChange} />
+          )}
         />
       </div>
 

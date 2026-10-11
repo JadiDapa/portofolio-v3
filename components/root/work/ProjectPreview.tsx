@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { blurProps } from "@/lib/placeholder";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -51,11 +52,12 @@ function Article({
                 src={project.coverImage}
                 alt=""
                 fill
+                {...blurProps(project.coverImage)}
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
             ) : (
-              <div className="flex size-full items-center justify-center bg-[#0f0f0f] text-white">
+              <div className="flex size-full items-center justify-center bg-foreground text-(--on-foreground)">
                 {project.title}
               </div>
             )}

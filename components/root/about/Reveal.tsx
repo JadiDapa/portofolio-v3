@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
 import { cn } from "@/lib/utils";
 
 /** Rises (or with `x`, slides) into place the first time it scrolls into view. */
@@ -16,25 +16,8 @@ export default function Reveal({
   className?: string;
   children: React.ReactNode;
 } & React.HTMLAttributes<HTMLElement>) {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      // The element starts 200px off its slot; trigger a little before it lands.
-      { rootMargin: "0px 0px -10% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  // The element starts 200px off its slot; trigger a little before it lands.
+  const [ref, visible] = useInViewOnce<HTMLElement>({ rootMargin: "0px 0px -10% 0px" });
 
   return (
     <Tag

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { pad2 } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -94,11 +95,14 @@ export default function Hero() {
 
   return (
     <section className="px-gutter">
+      <h1 className="sr-only">
+        Daffa Althaf Ridovani — Software Engineer &amp; Electrical Engineer
+      </h1>
       <AnimatedBorderBox delay={0} duration={1.2}>
-        <div className="relative mx-auto flex h-[70vh] flex-col items-center overflow-hidden px-6">
+        <div className="hm-hero">
           {/* Intro */}
-          <div className="absolute top-12 right-[2%] z-30 flex max-w-xs flex-col italic">
-            <p className="mb-4 text-lg font-medium italic">
+          <div className="hm-hero_intro">
+            <p className="hm-hero_greet">
               {typedGreeting}
               <motion.span
                 aria-hidden
@@ -112,16 +116,16 @@ export default function Hero() {
               />
             </p>
 
-            <p className="text-sm font-medium italic">
+            <p className="hm-hero_desc">
               {typedDescription}
             </p>
           </div>
 
           {/* DAFFA */}
-          <div className="absolute bottom-44 left-[10%] z-10 font-bold tracking-tight uppercase">
+          <div className="hm-hero_daffa">
             <WigglyText
               text="DAFFA"
-              className="text-[9rem] font-black"
+              className="hm-hero_name"
               delay={NAME_DAFFA_DELAY_MS / 1000}
               stagger={NAME_STAGGER_MS / 1000}
               y={40}
@@ -130,10 +134,10 @@ export default function Hero() {
           </div>
 
           {/* ALTHAF */}
-          <div className="absolute right-[8%] bottom-5 z-30 font-bold tracking-tight uppercase">
+          <div className="hm-hero_althaf">
             <WigglyText
               text="ALTHAF"
-              className="text-[9rem] font-black"
+              className="hm-hero_name"
               delay={NAME_ALTHAF_DELAY_MS / 1000}
               stagger={NAME_STAGGER_MS / 1000}
               y={40}
@@ -150,19 +154,21 @@ export default function Hero() {
               delay: PORTRAIT_DELAY_MS / 1000,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="absolute -bottom-58 left-1/2 z-20 -translate-x-1/2 transform"
+            className="hm-hero_portrait"
           >
             <Image
               src="/images/self-hero-123.png"
               alt="Portrait"
-              width={600}
-              height={600}
-              className="object-cover"
+              width={1120}
+              height={1400}
+              sizes="(min-width: 48rem) 46vw, 92vw"
+              className="size-full object-contain object-bottom"
+              priority
             />
           </motion.div>
 
           {/* Specialties */}
-          <div className="absolute bottom-4 left-[2%] z-30 flex flex-col italic">
+          <div className="hm-hero_skills">
             {specialties.map((specialty, index) => {
               const isActive = activeIndex === index;
 
@@ -179,13 +185,13 @@ export default function Hero() {
                 >
                   <motion.div
                     animate={{
-                      x: isActive ? 32 : 0,
+                      x: isActive ? "2.2cqw" : 0,
                     }}
                     transition={{
                       duration: 0.5,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="flex items-center gap-4"
+                    className="hm-hero_skill"
                   >
                     {/* Number */}
                     <motion.span
@@ -197,9 +203,9 @@ export default function Hero() {
                       transition={{
                         duration: 0.4,
                       }}
-                      className="text-lg font-medium"
+                      className="hm-hero_num"
                     >
-                      ({String(index + 1).padStart(2, "0")})
+                      ({pad2(index + 1)})
                     </motion.span>
 
                     {/* Specialty */}
@@ -212,7 +218,7 @@ export default function Hero() {
                       transition={{
                         duration: 0.4,
                       }}
-                      className="text-3xl font-medium"
+                      className="hm-hero_spec"
                     >
                       {specialty}
                     </motion.span>

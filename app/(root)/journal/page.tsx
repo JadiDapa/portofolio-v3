@@ -1,60 +1,46 @@
+import type { Metadata } from "next";
+import { PenLine } from "lucide-react";
 import { PostService } from "@/servers/services/post.service";
-import Link from "next/link";
+import WorkTitle from "@/components/root/work/WorkTitle";
+import JournalFeatured from "@/components/root/journal/JournalFeatured";
+import JournalList from "@/components/root/journal/JournalList";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/journal" },
+  title: "Journal",
+  description: "A collection of clippings from my engineering journey.",
+};
 
 export default async function PostListPage() {
   const { items: posts } = await PostService.list({
     published: true,
     pageSize: 100,
   });
+  const [latest, ...rest] = posts;
 
   return (
-    <div className="px-gutter py-24">
-      <div className="mx-auto max-w-2xl">
-        <p className="text-muted-foreground text-sm font-medium">
-          Experts · Excerpts
-        </p>
-        <h1 className="text-section mt-2 font-semibold tracking-tight">
-          The Journal
-        </h1>
-        <p className="text-muted-foreground text-lg mt-2">
-          A collection of clippings from my engineering journey.
-        </p>
+    <article className="px-gutter pb-(--space-xl-2xl)">
+      <div className="space-y-(--space-xl-2xl)">
+        <WorkTitle
+          labelLeft="Excerpts"
+          labelRight="Clippings"
+          heading="Journal"
+          compactLabel
+          opening="Notes, build logs and clippings from my engineering journey."
+          art={<PenLine className="size-full" strokeWidth={1} aria-hidden />}
+        />
 
-        {posts.length === 0 ? (
-          <p className="text-muted-foreground mt-10">No entries published yet.</p>
+        {latest ? (
+          <>
+            <JournalFeatured post={latest} />
+            {rest.length > 0 && <JournalList posts={rest} />}
+          </>
         ) : (
-          <div className="mt-10 divide-y">
-            {posts.map((post) => (
-              <article key={post.id} className="py-8">
-                <p className="text-muted-foreground text-xs">
-                  {new Date(post.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                  {" · "}By {post.author.name ?? post.author.username}
-                </p>
-                <Link href={`/journal/${post.slug}`} className="group mt-2 block">
-                  <h2 className="text-xl font-semibold group-hover:underline group-hover:underline-offset-4">
-                    {post.title}
-                  </h2>
-                </Link>
-                {post.content && (
-                  <p className="text-muted-foreground mt-2 line-clamp-3">
-                    {post.content}
-                  </p>
-                )}
-                <Link
-                  href={`/journal/${post.slug}`}
-                  className="hover:text-muted-foreground mt-4 inline-block text-sm font-medium underline underline-offset-4 transition-colors"
-                >
-                  Read more
-                </Link>
-              </article>
-            ))}
-          </div>
+          <p className="jn-none wk-b wk-glass">
+            Nothing here yet. The first entry is on its way.
+          </p>
         )}
       </div>
-    </div>
+    </article>
   );
 }

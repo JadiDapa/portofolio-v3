@@ -1,0 +1,598 @@
+/* ==========================================================================
+   /journal/[slug] — article page. Prefix `jn-`. Built on the .wk-* grid and tokens.
+   The article body gets real typography here because no prose plugin is installed.
+   ========================================================================== */
+.jn-page {
+  scroll-behavior: smooth;
+}
+
+/* Reading progress: a pink line across the top of the window */
+.jn-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  background: var(--accent-pink);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* ---- Aside --------------------------------------------------------------- */
+.jn-aside {
+  padding: var(--space-s-m);
+}
+.jn-aside_sticky {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+}
+@media (width >= 64rem) {
+  .jn-aside_sticky {
+    position: sticky;
+    top: var(--space-m);
+  }
+}
+.jn-toc {
+  margin-top: var(--space-2xs-xs);
+  list-style: none;
+  padding: 0;
+  border-top: 1px solid var(--foreground);
+}
+.jn-toc li {
+  border-bottom: 1px solid var(--grid);
+}
+.jn-toc a {
+  display: flex;
+  gap: 0.8em;
+  padding: 0.75em 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.3;
+  transition:
+    padding 0.5s var(--wk-ease),
+    color 0.3s;
+}
+.jn-toc a span {
+  flex: none;
+  font-size: var(--step--2);
+  font-weight: 700;
+  color: #b3b3b3;
+  font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) and (pointer: fine) {
+  .jn-toc a:hover {
+    padding-left: 0.6em;
+    color: var(--accent-pink);
+  }
+}
+.jn-aside_tools {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--foreground);
+}
+.jn-aside_btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.85em 0;
+  border-bottom: 1px solid var(--grid);
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  transition: padding 0.5s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .jn-aside_btn:hover {
+    padding-inline: 0.6em;
+  }
+}
+
+/* ---- Article typography -------------------------------------------------- */
+.jn-prose {
+  max-width: 44rem;
+  margin-inline: auto;
+  font-size: var(--step-0);
+  font-weight: 450;
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+  counter-reset: jn-h;
+  overflow-wrap: anywhere;
+}
+.jn-prose ::selection {
+  background: var(--accent-pink);
+  color: #fff;
+}
+.jn-prose > :first-child {
+  margin-top: 0;
+}
+.jn-prose p,
+.jn-prose ul,
+.jn-prose ol,
+.jn-prose figure,
+.jn-prose pre,
+.jn-prose table,
+.jn-prose blockquote {
+  margin-block: 0 1.4em;
+}
+/* A standfirst: the opening paragraph is set larger, like the public intro text */
+.jn-prose > p:first-child {
+  font-size: var(--step-2);
+  font-weight: 560;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+.jn-prose strong {
+  font-weight: 800;
+}
+.jn-prose em {
+  font-style: italic;
+}
+.jn-prose a {
+  text-decoration: underline dotted rgba(128, 128, 128, 0.7);
+  text-underline-offset: 0.25em;
+  transition:
+    text-decoration-color 0.15s,
+    color 0.15s;
+}
+.jn-prose a:hover {
+  color: var(--accent-pink);
+  text-decoration-style: solid;
+}
+
+/* Numbered section headings: "(01)" in grey above the title */
+.jn-prose h2 {
+  counter-increment: jn-h;
+  margin: 2.2em 0 0.7em;
+  padding-top: 0.9em;
+  border-top: 1px solid var(--foreground);
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  scroll-margin-top: var(--space-m);
+}
+.jn-prose h2::before {
+  content: "(" counter(jn-h, decimal-leading-zero) ")";
+  display: block;
+  margin-bottom: 0.6em;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #b3b3b3;
+}
+.jn-prose h3 {
+  margin: 1.8em 0 0.5em;
+  font-size: var(--step-1);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  scroll-margin-top: var(--space-m);
+}
+.jn-prose h4 {
+  margin: 1.6em 0 0.4em;
+  font-size: var(--step--1);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Lists: square bullets and tabular grey numerals */
+.jn-prose ul,
+.jn-prose ol {
+  padding: 0;
+  list-style: none;
+}
+.jn-prose li {
+  position: relative;
+  padding-left: 1.8em;
+}
+.jn-prose li + li {
+  margin-top: 0.5em;
+}
+.jn-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.62em;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--foreground);
+}
+.jn-prose ol {
+  counter-reset: jn-li;
+}
+.jn-prose ol > li {
+  counter-increment: jn-li;
+}
+.jn-prose ol > li::before {
+  content: counter(jn-li, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.3em;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #b3b3b3;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quote: a big outlined mark and a pink rule */
+.jn-prose blockquote {
+  position: relative;
+  padding: 0.2em 0 0.2em 1.4em;
+  border-left: 0.35rem solid var(--accent-pink);
+  font-size: var(--step-2);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  text-wrap: pretty;
+}
+.jn-prose blockquote p {
+  margin: 0;
+}
+.jn-prose blockquote p + p {
+  margin-top: 0.6em;
+}
+.jn-prose blockquote cite,
+.jn-prose blockquote footer {
+  display: block;
+  margin-top: 0.8em;
+  font-size: var(--step--2);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+/* Media: square, hairline frame, hard offset base like the buttons */
+.jn-prose img,
+.jn-prose video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--foreground);
+}
+.jn-prose figure {
+  margin-inline: 0;
+  margin-block: 2em;
+}
+.jn-prose figure img,
+.jn-prose figure video {
+  box-shadow: 0.6rem 0.6rem 0 var(--foreground);
+}
+.jn-prose > p > img:only-child {
+  margin-block: 2em;
+  box-shadow: 0.6rem 0.6rem 0 var(--foreground);
+}
+.jn-prose figcaption {
+  margin-top: 1.1em;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+/* Code */
+.jn-prose code {
+  padding: 0.12em 0.4em;
+  background: #ebe9e5;
+  color: #0f0f0f;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.88em;
+}
+.jn-prose pre {
+  padding: var(--space-xs-s) var(--space-s);
+  overflow-x: auto;
+  background: var(--foreground);
+  color: var(--on-foreground);
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+.jn-prose pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* Rule and table */
+.jn-prose hr {
+  margin: 2.4em 0;
+  border: 0;
+  border-top: 2px solid var(--foreground);
+}
+.jn-prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+.jn-prose th,
+.jn-prose td {
+  padding: 0.7em 1em;
+  border: 1px solid var(--foreground);
+  text-align: left;
+}
+.jn-prose th {
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--glass);
+}
+
+.jn-empty {
+  padding-block: var(--space-l);
+  text-align: center;
+  font-size: var(--step-0);
+  color: var(--muted-foreground);
+}
+.jn-end {
+  margin-top: var(--space-l-xl);
+  padding-top: var(--space-xs-s);
+  border-top: 1px solid var(--grid);
+  text-align: center;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b3b3b3;
+}
+
+/* ---- Previous / next ----------------------------------------------------- */
+.jn-next {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 14rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-s-m);
+  overflow: hidden;
+  padding: var(--space-s-m);
+  transition: color 0.5s var(--wk-ease);
+}
+.jn-next::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--foreground);
+  transform: translateY(101%);
+  transition: transform 0.6s var(--wk-ease);
+}
+.jn-next[data-dir="next"] {
+  text-align: right;
+}
+.jn-next_title {
+  font-size: var(--step-4);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+@media (hover: hover) and (pointer: fine) {
+  .jn-next:hover {
+    color: var(--on-foreground);
+  }
+  .jn-next:hover::before {
+    transform: none;
+  }
+}
+@media (width >= 64rem) {
+  /* A lone "next" sits on the right, like the pager it replaces */
+  .jn-next[data-dir="next"]:first-child {
+    grid-column: 3 / span 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jn-page {
+    scroll-behavior: auto;
+  }
+}
+
+/* ==========================================================================
+   /journal — featured entry and the year-grouped list
+   ========================================================================== */
+.jn-cover_fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--foreground);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--on-foreground);
+  font-size: var(--step-10);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.jn-feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-m);
+  padding: var(--space-s-m);
+}
+@media (width >= 64rem) {
+  .jn-feature {
+    padding: var(--space-l-xl);
+  }
+}
+.jn-feature_title {
+  font-size: var(--step-5);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.jn-feature_title a {
+  transition: color 0.3s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .jn-feature_title a:hover {
+    color: var(--accent-pink);
+  }
+}
+.jn-feature_ex {
+  max-width: 52ch;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+.jn-feature_cta {
+  display: flex;
+}
+
+.jn-year {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1em;
+  padding: var(--space-m) var(--space-s-m) var(--space-xs-s);
+  border-bottom: 1px solid var(--foreground);
+}
+.jn-year_num {
+  font-size: var(--step-8);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.jn-list ul {
+  list-style: none;
+  padding: 0;
+}
+.jn-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2xs-xs) var(--space-s);
+  padding: var(--space-s-m);
+  border-bottom: 1px solid var(--foreground);
+  transition: color 0.5s var(--wk-ease);
+}
+@media (width >= 48rem) {
+  .jn-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+.jn-row_num {
+  padding-top: 0.5em;
+  color: #b3b3b3;
+}
+.jn-row_main {
+  display: block;
+  min-width: 0;
+  transition: transform 0.8s var(--wk-ease);
+}
+.jn-row_title {
+  display: block;
+  font-size: var(--step-4);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.jn-row_ex {
+  display: -webkit-box;
+  max-width: 60ch;
+  margin-top: 0.8em;
+  overflow: hidden;
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--muted-foreground);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.jn-row_meta {
+  display: flex;
+  grid-column: 2;
+  gap: 1.2em;
+}
+@media (width >= 48rem) {
+  .jn-row_meta {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2em;
+    text-align: right;
+    transition: opacity 0.4s var(--wk-ease);
+  }
+}
+/* A cover that slides in from the right edge on hover, like the services rows */
+.jn-row_thumb {
+  position: absolute;
+  top: 50%;
+  right: var(--space-m);
+  display: none;
+  width: 11rem;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--foreground);
+  background: var(--foreground);
+  color: var(--on-foreground);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(2.5rem, -50%);
+  clip-path: inset(0 0 0 100%);
+  transition:
+    transform 0.8s var(--wk-ease),
+    clip-path 0.8s var(--wk-ease),
+    opacity 0.3s;
+}
+.jn-row_thumb > span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  font-size: var(--step-4);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+@media (hover: hover) and (pointer: fine) and (width >= 64rem) {
+  .jn-row_thumb {
+    display: block;
+  }
+  .jn-row:hover .jn-row_main {
+    transform: translateX(1rem);
+  }
+  .jn-row:hover .jn-row_thumb {
+    opacity: 1;
+    transform: translate(0, -50%);
+    clip-path: inset(0);
+  }
+  .jn-row:hover .jn-row_meta {
+    opacity: 0;
+  }
+  /* The hovered row stays inked; its siblings step back */
+  .jn-list:has(.jn-row:hover) .jn-row:not(:hover) {
+    color: #b3b3b3;
+  }
+}
+.jn-row:active .jn-row_thumb {
+  transform: translate(0, -50%) scale(0.97);
+}
+.jn-none {
+  padding: var(--space-xl-2xl) var(--space-s-m);
+  text-align: center;
+  font-size: var(--step-2);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}

@@ -1,6 +1,4 @@
-"use client";
-
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 /** Footer CTA heading: letters rise in once it scrolls into view. */
 export default function ChatTitle({ text }: { text: string }) {

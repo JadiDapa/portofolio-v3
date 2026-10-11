@@ -48,8 +48,8 @@ export default function ServicesIntro() {
             deployed, maintained product without handing it&nbsp;off.
           </p>
           <p className="sv-subtext text-balance">
-            Web and mobile apps, machine-learning features, IoT devices and
-            the PCBs inside them — every project gets the full toolkit, so
+            Web and mobile software, IoT and machine learning, power systems
+            and process control — every project gets the full toolkit, so
             there are fewer gaps between the parts and a sturdier result.
           </p>
         </motion.div>

@@ -1,8 +1,9 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import { ProjectService } from "@/servers/services/project.service";
 import DynamicBreadcrumb from "@/components/dashboard/DynamicBreadcrumb";
 import PageHeader from "@/components/dashboard/PageHeader";
-import UpdateProjectForm from "@/components/dashboard/projects/UpdateProjectForm";
+import ProjectForm from "@/components/dashboard/projects/ProjectForm";
+import { ServiceService } from "@/servers/services/service.service";
 import { notFound, redirect } from "next/navigation";
 
 export default async function UpdateProjectPage({
@@ -19,14 +20,16 @@ export default async function UpdateProjectPage({
 
   if (!project) notFound();
 
+  const categories = (await ServiceService.getAll()).map((s) => s.title);
+
   return (
     <main className="w-full space-y-6">
       <div className="space-y-2">
         <DynamicBreadcrumb />
-        <PageHeader title="Update Project" subtitle="Edit this portfolio project." />
+        <PageHeader eyebrow="Work" title="Edit project" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <UpdateProjectForm project={project} />
+      <ProjectForm project={project} categories={categories} />
     </main>
   );
 }

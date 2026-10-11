@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import ExtrudeChar from "@/components/root/about/ExtrudeChar";
+import ExtrudeChar from "@/components/root/shared/ExtrudeChar";
 
 /**
  * Letters rise out of a clipped box with a springy overshoot.

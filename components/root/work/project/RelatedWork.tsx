@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useOpenCategory } from "@/hooks/use-open-category";
 import { RefreshCw } from "lucide-react";
 import { getRelatedProjects } from "@/app/action/project.action";
 import GridButton from "../GridButton";
 import ProjectPreview, { type WorkProject } from "../ProjectPreview";
-import RevealHeading from "../RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 /** Two other projects; the reload button swaps them using the same cross-fade as /work. */
 export default function RelatedWork({
@@ -16,7 +16,7 @@ export default function RelatedWork({
   projectId: number;
   initial: WorkProject[];
 }) {
-  const router = useRouter();
+  const openCategory = useOpenCategory();
   const [projects, setProjects] = useState(initial);
   const [pending, startTransition] = useTransition();
 
@@ -31,8 +31,6 @@ export default function RelatedWork({
       if (next.length) setProjects(next);
     });
 
-  const openCategory = (category: string) =>
-    router.push(`/work?category=${encodeURIComponent(category)}`);
 
   return (
     <section>

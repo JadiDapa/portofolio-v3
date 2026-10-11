@@ -1,5 +1,5 @@
 import type { Section } from "@/servers/validators/project.validator";
-import RevealHeading from "../RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import Body from "./Body";
 
 type Of<T extends Section["type"]> = Extract<Section, { type: T }>;

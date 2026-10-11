@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+
+const subscribe = () => () => {};
 
 /** Grid tile that flips light / dark. Sits in the footer's legal bar. */
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
   // next-themes can't know the stored theme until after hydration, so render a
   // same-sized placeholder first to avoid a mismatch and layout shift.
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   if (!mounted) {
     return <div aria-hidden className="sv-tile wk-b flex" />;

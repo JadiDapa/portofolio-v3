@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useTransition } from "react";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
+import BoxFrame from "@/components/root/shared/BoxFrame";
 import { z } from "zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,11 +22,10 @@ import { submitContactForm } from "@/app/action/contact.action";
 type ContactFormValues = z.input<typeof CreateContactSubmissionSchema>;
 
 const PROJECT_TYPES = [
-  "Web Development",
-  "App Development",
-  "AI & ML",
-  "IoT & Hardware",
-  "PCB & Electronics",
+  "Software Development",
+  "IoT & AI Systems",
+  "Electrical Engineering",
+  "Process & Control",
   "Something else...",
 ];
 
@@ -32,15 +33,17 @@ const MESSAGE_MAX = 1000;
 
 function Label({
   htmlFor,
+  id,
   required,
   children,
 }: {
   htmlFor?: string;
+  id?: string;
   required?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <label htmlFor={htmlFor} className="ct-label wk-label">
+    <label htmlFor={htmlFor} id={id} className="ct-label wk-label">
       <span>{children}</span>
       {required && <span className="ct-required"> *</span>}
     </label>
@@ -48,7 +51,7 @@ function Label({
 }
 
 /** Helper text that swaps to the error message and grows/collapses between them. */
-function Context({ error, hint }: { error?: string; hint?: string }) {
+function Context({ id, error, hint }: { id?: string; error?: string; hint?: string }) {
   const text = error ?? hint;
   return (
     <div className="ct-context-wrap">
@@ -56,6 +59,8 @@ function Context({ error, hint }: { error?: string; hint?: string }) {
         {text && (
           <motion.p
             key="context"
+            id={id}
+            role={error ? "alert" : undefined}
             className="ct-context wk-caption"
             initial={{ maxHeight: 0, marginTop: 0 }}
             animate={{ maxHeight: "6rem", marginTop: "var(--space-3xs-2xs)" }}
@@ -94,7 +99,7 @@ function Checkbox({
       onClick={() => onChange(!checked)}
     >
       <span className="ct-box" />
-      <p className={textClassName}>{children}</p>
+      <span className={textClassName}>{children}</span>
     </button>
   );
 }
@@ -108,27 +113,10 @@ export default function ContactForm({
   framed?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [visible, setVisible] = useState(false);
   const enquiry = formType === "enquiry";
 
-  const panel = useRef<HTMLDivElement>(null);
-
   // Draw the frame the first time the panel scrolls into view
-  useEffect(() => {
-    const el = panel.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const [panel, visible] = useInViewOnce({ threshold: 0.1 });
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(CreateContactSubmissionSchema),
@@ -146,7 +134,7 @@ export default function ContactForm({
   });
   const message = useWatch({ control: form.control, name: "message" }) ?? "";
 
-  async function onSubmit(values: ContactFormValues) {
+  function onSubmit(values: ContactFormValues) {
     startTransition(async () => {
       try {
         await submitContactForm({ ...values, formType });
@@ -181,9 +169,12 @@ export default function ContactForm({
             className="ct-area"
             placeholder={placeholder}
             autoComplete="off"
+            aria-required={opts.required}
+            aria-invalid={!!fieldState.error}
+            aria-describedby={`${name}-context`}
             {...field}
           />
-          <Context error={fieldState.error?.message} hint={opts.hint} />
+          <Context id={`${name}-context`} error={fieldState.error?.message} hint={opts.hint} />
         </div>
       )}
     />
@@ -192,14 +183,7 @@ export default function ContactForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
       <div ref={panel} className="relative" data-cmp="panel">
-        {framed && (
-          <div className="wk-box ct-glass" data-visible={visible || undefined} aria-hidden>
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-        )}
+        {framed && <BoxFrame visible={visible} className="ct-glass" />}
         <div className={cn("relative", framed && "ct-panel-pad overflow-hidden")}>
           <div className="ct-form ct-items">
       {enquiry && (
@@ -208,8 +192,8 @@ export default function ContactForm({
           control={form.control}
           render={({ field }) => (
             <div className="ct-item" data-cmp="field-projectTypes">
-              <Label>What are you looking for?</Label>
-              <div className="ct-checkgroup">
+              <Label id="projectTypes-label">What are you looking for?</Label>
+              <div className="ct-checkgroup" role="group" aria-labelledby="projectTypes-label">
                 {PROJECT_TYPES.map((type) => {
                   const value = field.value ?? [];
                   return (
@@ -267,6 +251,9 @@ export default function ContactForm({
                 className="ct-area"
                 placeholder={enquiry ? "Your project details" : "Your message"}
                 maxLength={MESSAGE_MAX}
+                aria-required
+                aria-invalid={!!fieldState.error}
+                aria-describedby="message-context"
                 {...field}
               />
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden>
@@ -275,7 +262,7 @@ export default function ContactForm({
             </div>
             <div className="ct-context-wrap">
               <div className="grow">
-                <Context error={fieldState.error?.message} />
+                <Context id="message-context" error={fieldState.error?.message} />
               </div>
               <p className="ct-counter wk-caption">
                 {message.length} / {MESSAGE_MAX}
@@ -301,7 +288,7 @@ export default function ContactForm({
             >
               I agree to the processing of my personal data
             </Checkbox>
-            <Context error={fieldState.error?.message} />
+            <Context id="consent-context" error={fieldState.error?.message} />
           </div>
         )}
       />
@@ -314,7 +301,6 @@ export default function ContactForm({
           type="submit"
           disabled={isPending}
           className="ct-btn ct-btn--expand ct-submit"
-          ariaLabel="Submit"
         >
           <span className="ct-btn-text">Submit</span>
           {isPending ? <Spinner /> : <Send strokeWidth={1.5} />}

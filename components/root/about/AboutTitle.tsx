@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import { useEntered } from "@/hooks/use-entered";
+import BoxFrame from "@/components/root/shared/BoxFrame";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import { cn } from "@/lib/utils";
 
 /** Thin ampersand drawn between the two label words. */
@@ -47,23 +48,11 @@ export default function AboutTitle({
   className?: string;
   cmp: string;
 }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const visible = useEntered();
 
   return (
     <div className={cn("relative", className)} data-cmp={cmp}>
-      {boxed && (
-        <div className="wk-box" data-visible={visible || undefined} aria-hidden>
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-      )}
+      {boxed && <BoxFrame visible={visible} />}
       <header className="relative space-y-(--space-3xs-2xs) text-center">
         <p
           className={cn(

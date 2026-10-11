@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { optionalUrl } from "./common";
 
 const RecognitionBaseSchema = z.object({
   source: z.string().min(1, "Source is required"),
   kind: z.enum(["AWARD", "PRESS", "CERTIFICATION", "COMPETITION"]),
   title: z.string().min(1, "Title is required"),
-  url: z.union([z.url("Must be a valid URL"), z.literal("")]).optional(),
+  url: optionalUrl.optional(),
   year: z.preprocess(
     (v) => (v === "" || v === null ? undefined : v),
     z.coerce.number().int().min(1900).max(2100).optional(),

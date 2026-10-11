@@ -1,41 +1,12 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Asterisk,
-  BookOpen,
-  Mail,
-  Send,
-  Smile,
-  ThumbsUp,
-} from "lucide-react";
+import { Asterisk, Mail, Send, Smile, ThumbsUp } from "lucide-react";
 import NameReveal from "./NameReveal";
 import ThemeToggle from "./ThemeToggle";
 import ContactAware from "./contact/ContactAware";
 import FooterLink from "./FooterLink";
 import ChatTitle from "./ChatTitle";
 import ServiceLink from "./services/detail/ServiceLink";
-
-const NAV_LINKS = [
-  { title: "Home", href: "/" },
-  { title: "Work", href: "/work" },
-  { title: "About", href: "/about" },
-  { title: "Contact", href: "/contact" },
-];
-
-const SERVICE_LINKS = [
-  { title: "Services", href: "/services" },
-  { title: "Web Development", href: "/services/web-development" },
-  { title: "App Development", href: "/services/app-development" },
-  { title: "AI & Machine Learning", href: "/services/ai-machine-learning" },
-  { title: "IoT & Hardware", href: "/services/iot-hardware" },
-];
-
-const BUTTON_LINKS = [
-  { title: "Journal", href: "/journal", icon: BookOpen },
-  { title: "GitHub", href: "#", icon: ArrowUpRight },
-  { title: "LinkedIn", href: "#", icon: ArrowUpRight },
-  { title: "Resume", href: "#", icon: ArrowUpRight },
-];
+import { FOOTER_EXTRA_LINKS, FOOTER_PAGE_LINKS, FOOTER_SERVICE_LINKS } from "./siteLinks";
 
 export default function Footer() {
   return (
@@ -46,7 +17,7 @@ export default function Footer() {
         </div>
 
         <nav className="hm-foot-menu hm-foot-menu--1 wk-b" aria-label="Pages">
-          {NAV_LINKS.map((link) => (
+          {FOOTER_PAGE_LINKS.map((link) => (
             <FooterLink key={link.title} href={link.href}>
               {link.title}
             </FooterLink>
@@ -54,7 +25,7 @@ export default function Footer() {
         </nav>
 
         <nav className="hm-foot-menu hm-foot-menu--2 wk-b" aria-label="Services">
-          {SERVICE_LINKS.map((link) => (
+          {FOOTER_SERVICE_LINKS.map((link) => (
             <FooterLink key={link.title} href={link.href}>
               {link.title}
             </FooterLink>
@@ -77,7 +48,7 @@ export default function Footer() {
         </ContactAware>
 
         <div className="hm-foot-links">
-          {BUTTON_LINKS.map((link) => (
+          {FOOTER_EXTRA_LINKS.map((link) => (
             <ServiceLink
               key={link.title}
               href={link.href}
@@ -99,7 +70,7 @@ export default function Footer() {
 
           <div className="hm-foot-text">
             <p>
-              All work © Daffa Althaf Ridovani 2026. All rights reserved.{" "}
+              All work © Daffa Althaf Ridovani {new Date().getFullYear()}. All rights reserved.{" "}
               <Link href="#">Privacy Policy</Link> | <Link href="#">Terms</Link>
             </p>
             <p>Software Engineer at Taruna Anugerah Mandiri · Based in Indonesia</p>

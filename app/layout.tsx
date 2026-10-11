@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/providers/Providers";
 import { Toaster } from "sonner";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const generalSans = localFont({
   src: "./fonts/GeneralSans-Variable.woff2",
@@ -30,10 +31,35 @@ const anton = Anton({
   weight: "400",
 });
 
+const DESCRIPTION =
+  "Portfolio of Daffa Althaf Ridovani — Software Engineer and Electrical Engineer building software, IoT, AI, electrical and control systems.";
+
 export const metadata: Metadata = {
-  title: "Daffa Althaf Ridovani | Software Engineer",
-  description:
-    "Portfolio of Daffa Althaf Ridovani — Software Engineer and Electrical Engineer building web, app, AI, hardware and IoT projects.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | Software Engineer`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DESCRIPTION,
+  keywords: [
+    "Daffa Althaf Ridovani",
+    "Software Engineer",
+    "Electrical Engineer",
+    "IoT",
+    "Control & Automation",
+    "Indonesia",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Software Engineer`,
+    description: DESCRIPTION,
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: { card: "summary_large_image" },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
 
 export default function RootLayout({
@@ -58,7 +84,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Toaster richColors position="top-right" />
-          <main>{children}</main>
+          {children}
         </Providers>
       </body>
     </html>

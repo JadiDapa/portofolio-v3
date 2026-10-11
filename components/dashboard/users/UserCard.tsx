@@ -1,26 +1,26 @@
 import { User } from "@/generated/prisma";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function UserCard({ user }: { user: User }) {
   return (
-    <Card className="border-border/60">
-      <CardContent className="flex items-start gap-4 p-5">
-        <div className="bg-primary text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
-          {(user.name || user.username).charAt(0).toUpperCase()}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-foreground truncate font-medium">
-            {user.name || "—"}
-          </p>
-          <p className="text-muted-foreground truncate text-sm">
-            @{user.username}
-          </p>
-          <Badge variant="outline" className="mt-2 text-xs capitalize">
+    <div className="db-card" data-tone={user.role === "ADMIN" ? "pink" : undefined}>
+      <div className="db-card_panel">
+        <div className="db-card_top">
+          <div className="db-avatar">
+            {(user.name || user.username).charAt(0)}
+          </div>
+          <span
+            className="db-stamp"
+            data-tone={user.role === "ADMIN" ? "alert" : "quiet"}
+          >
             {user.role.toLowerCase()}
-          </Badge>
+          </span>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="db-card_foot">
+          <p className="db-cell-title truncate">{user.name || "Unnamed"}</p>
+          <p className="db-cell-sub">@{user.username}</p>
+        </div>
+      </div>
+    </div>
   );
 }

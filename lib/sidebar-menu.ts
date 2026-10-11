@@ -26,7 +26,7 @@ export const overviewItems: MenuItem[] = [
     icon: LayoutDashboard,
   },
   {
-    title: "Projects",
+    title: "Work",
     url: "/dashboard/projects",
     icon: Briefcase,
     roles: ["ADMIN"],

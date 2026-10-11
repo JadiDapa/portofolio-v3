@@ -1,0 +1,618 @@
+/* ==========================================================================
+   Dashboard ledger — inputs, tables ("ledgers"), stamps, cards, pager, empty.
+   Still the public site's DNA, pushed further: outlined numerals that fill,
+   tilted thumbnails on hard-offset bases, rotated stamps, lifting cards.
+   ========================================================================== */
+
+/* ---- Field: the contact-form look (hover underline, green focus) -------- */
+.db-input {
+  display: block;
+  width: 100%;
+  padding: 0.85em 1em;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 450;
+  line-height: 1.5em;
+  letter-spacing: 0.02em;
+  outline: none;
+  transition:
+    background-color 0.3s var(--wk-ease),
+    box-shadow 0.3s var(--wk-ease),
+    border-color 0.3s var(--wk-ease);
+}
+.db-input::placeholder {
+  color: rgba(15, 15, 15, 0.33);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-input:hover {
+    background: #ebe9e5;
+    box-shadow: inset 0 -4px var(--foreground);
+  }
+}
+.db-input:focus,
+.db-input:focus-visible {
+  border-color: #00be7a;
+  background: var(--surface);
+  box-shadow: none;
+}
+.db-input[aria-invalid="true"] {
+  border-color: var(--accent-pink);
+  background: rgba(255, 46, 121, 0.08);
+}
+.db-search {
+  position: relative;
+}
+.db-search svg {
+  position: absolute;
+  left: 1em;
+  top: 50%;
+  translate: 0 -50%;
+  width: 1.1em;
+  height: 1.1em;
+  stroke-width: 1.4;
+  pointer-events: none;
+}
+.db-search .db-input {
+  padding-left: 2.9em;
+}
+
+/* ---- Toolbar ------------------------------------------------------------ */
+.db-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-xs-s);
+  padding-block: var(--space-s-m);
+}
+.db-bar_filters {
+  display: grid;
+  flex: 1;
+  min-width: 14rem;
+  gap: var(--space-xs-s);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+.db-tabs {
+  display: inline-flex;
+  border: 1px solid var(--foreground);
+}
+.db-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0 1.1em;
+  min-height: 2.9rem;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.4s var(--wk-ease),
+    color 0.4s var(--wk-ease);
+}
+.db-tabs button + button {
+  border-left: 1px solid var(--foreground);
+}
+.db-tabs button sup {
+  font-size: 0.9em;
+  color: #b3b3b3;
+}
+.db-tabs button[aria-pressed="true"] {
+  background: var(--foreground);
+  color: var(--on-foreground);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-tabs button[aria-pressed="false"]:hover {
+    background: #ebe9e5;
+  }
+}
+
+/* ---- Ledger (table) ----------------------------------------------------- */
+.db-tablewrap {
+  overflow-x: auto;
+  border-top: 2px solid var(--foreground);
+  border-bottom: 1px solid var(--foreground);
+}
+.db-table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  text-align: left;
+}
+.db-table th {
+  padding: var(--space-2xs-xs) var(--space-xs-s);
+  border-bottom: 1px solid var(--foreground);
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #8a8a8a;
+}
+.db-table td {
+  padding: var(--space-xs-s);
+  border-bottom: 1px solid var(--grid);
+  font-size: var(--step--1);
+  vertical-align: middle;
+}
+.db-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Row: black wipe from whichever edge the cursor entered */
+.db-row {
+  background-image: linear-gradient(#0f0f0f, #0f0f0f);
+  background-repeat: no-repeat;
+  background-size: 100% 0;
+  background-position: 0 var(--origin, 100%);
+  transition:
+    background-size 0.5s var(--wk-ease),
+    color 0.3s var(--wk-ease);
+  animation: db-rise 0.8s var(--wk-ease) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-row:hover,
+  .db-row:focus-within {
+    background-size: 100% 100%;
+    color: #fff;
+    --foreground: #fff;
+    --muted-foreground: #b3b3b3;
+    --muted: #262626;
+    --grid: #262626;
+  }
+  .db-row:hover .db-idx,
+  .db-row:focus-within .db-idx {
+    color: #fff;
+    -webkit-text-stroke-color: #fff;
+  }
+  .db-row:hover .db-thumb,
+  .db-row:focus-within .db-thumb {
+    transform: rotate(-4deg) translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--accent-pink);
+  }
+  .db-row:hover .db-stamp,
+  .db-row:focus-within .db-stamp {
+    transform: rotate(-4deg) scale(1.08);
+  }
+}
+@keyframes db-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.8em);
+  }
+}
+
+/* Giant outlined numeral that fills when the row is hovered */
+.db-idx {
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px #b3b3b3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 0.4s var(--wk-ease);
+}
+.db-cell-title {
+  font-size: var(--step-0);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.db-cell-sub {
+  font-size: var(--step--2);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+/* Thumbnail: square, hard base, tilts on hover */
+.db-thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  border: 1px solid var(--foreground);
+  background: var(--foreground);
+  color: var(--on-foreground);
+  font-size: var(--step-1);
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--foreground);
+  transition:
+    transform 0.5s var(--wk-ease),
+    box-shadow 0.5s var(--wk-ease);
+}
+.db-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Stamp: rotated, boxed status mark */
+.db-stamp {
+  display: inline-block;
+  padding: 0.35em 0.8em;
+  border: 2px solid var(--stamp, var(--foreground));
+  color: var(--stamp, var(--foreground));
+  font-size: var(--step--2);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: rotate(-3deg);
+  transition: transform 0.5s var(--wk-ease);
+}
+.db-stamp[data-tone="live"] {
+  --stamp: #00be7a;
+}
+.db-stamp[data-tone="alert"] {
+  --stamp: var(--accent-pink);
+}
+.db-stamp[data-tone="quiet"] {
+  --stamp: #b3b3b3;
+  border-style: dashed;
+}
+
+.db-chip {
+  display: inline-block;
+  padding: 0.25em 0.7em;
+  border: 1px solid currentColor;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---- Row actions -------------------------------------------------------- */
+.db-acts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs-s);
+  white-space: nowrap;
+}
+.db-act {
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline dotted rgba(128, 128, 128, 0.7);
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.15s;
+}
+.db-act:hover {
+  text-decoration-style: solid;
+}
+.db-act[data-tone="danger"] {
+  color: var(--accent-pink);
+}
+.db-act:disabled {
+  opacity: 0.4;
+}
+
+/* ---- Sorter ------------------------------------------------------------- */
+.db-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  font-weight: inherit;
+  transition: color 0.3s var(--wk-ease);
+}
+.db-sort svg {
+  width: 1.2em;
+  height: 1.2em;
+  stroke-width: 1.6;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.db-sort:hover,
+.db-sort[data-sorted="true"] {
+  color: #0f0f0f;
+}
+.db-sort:hover svg,
+.db-sort[data-sorted="true"] svg {
+  opacity: 1;
+}
+
+/* ---- Pager: giant count + square tiles ---------------------------------- */
+.db-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs-s);
+  padding-top: var(--space-s-m);
+}
+.db-pager_count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+}
+.db-pager_count strong {
+  font-size: var(--step-5);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+.db-pager_ctrl {
+  display: flex;
+  align-items: stretch;
+}
+.db-tile {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--foreground);
+  transition:
+    background-color 0.4s var(--wk-ease),
+    color 0.4s var(--wk-ease);
+}
+.db-tile + .db-tile {
+  border-left: 0;
+}
+.db-tile svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke-width: 1.4;
+}
+.db-tile:disabled {
+  color: #d0d0d0;
+  border-color: #d0d0d0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-tile:not(:disabled):hover {
+    background: var(--foreground);
+    color: var(--on-foreground);
+  }
+}
+.db-pager_page {
+  display: grid;
+  place-items: center;
+  min-width: 6.5rem;
+  border: 1px solid var(--foreground);
+  border-left: 0;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.db-select {
+  height: 2.75rem;
+  margin-right: var(--space-xs-s);
+  padding-inline: 0.8em;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: var(--background);
+  font: inherit;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- Card: base + panel that lifts, same trick as the public button ----- */
+.db-card {
+  position: relative;
+  display: block;
+  background: var(--foreground);
+}
+.db-card_panel {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: var(--space-xs-s);
+  padding: var(--space-s-m);
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  transition: transform 0.5s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-card:hover .db-card_panel,
+  .db-card:focus-within .db-card_panel {
+    transform: translate(0.7rem, -0.7rem);
+  }
+}
+.db-card[data-tone="pink"] {
+  background: var(--accent-pink);
+}
+
+/* ---- Empty state ------------------------------------------------------- */
+.db-empty {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-s-m);
+  padding: var(--space-xl-2xl) var(--space-s-m);
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--foreground);
+}
+.db-empty_title {
+  font-size: var(--step-5);
+  font-weight: 900;
+  line-height: 0.9em;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.db-empty_title em {
+  font-style: normal;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--foreground);
+}
+.db-empty_text {
+  max-width: 36ch;
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.6em;
+  color: var(--muted-foreground);
+}
+
+/* ---- Confirm dialog (alert-dialog skinned from outside) ---------------- */
+.db-confirm {
+  border: 1px solid #0f0f0f !important;
+  border-radius: 0 !important;
+  box-shadow: 0.8rem -0.8rem 0 #0f0f0f !important;
+  background: #f8f8f8 !important;
+  padding: var(--space-m) !important;
+  gap: var(--space-s-m) !important;
+  color: #0f0f0f;
+}
+.db-confirm h2 {
+  font-size: var(--step-2);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.db-confirm p {
+  font-size: var(--step--1);
+  color: #6b6b6b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-row {
+    animation: none;
+  }
+}
+
+/* ---- Bulk selection ------------------------------------------------------ */
+.db-check {
+  appearance: none;
+  display: block;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.25s var(--wk-ease),
+    box-shadow 0.25s var(--wk-ease);
+}
+/* Checked: a solid square inside the box, ringed by the row colour */
+.db-check:checked {
+  background: var(--foreground);
+  box-shadow: inset 0 0 0 0.22rem var(--ring-bg, #f8f8f8);
+}
+.db-check:indeterminate {
+  background:
+    linear-gradient(var(--foreground), var(--foreground)) center / 60% 2px no-repeat;
+}
+.db-check:focus-visible {
+  outline: 2px solid #00be7a;
+  outline-offset: 2px;
+}
+.db-table th:has(.db-check),
+.db-table td:has(.db-check) {
+  width: 1px;
+  padding-right: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-row:hover,
+  .db-row:focus-within {
+    --ring-bg: #0f0f0f;
+  }
+}
+.db-row[data-selected="true"] {
+  box-shadow: inset 0.3rem 0 0 var(--accent-pink);
+  background-color: rgba(255, 46, 121, 0.06);
+}
+
+/* Floating bar: slides up from the bottom of the content column */
+.db-bulk {
+  position: fixed;
+  bottom: var(--space-s-m);
+  left: 50%;
+  z-index: 35;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs-s) var(--space-m);
+  max-width: calc(100vw - 2rem);
+  padding: 0.5rem 0.5rem 0.5rem var(--space-s-m);
+  background: #0f0f0f;
+  color: #fff;
+  box-shadow: 0.5rem 0.5rem 0 var(--accent-pink);
+  translate: -50% 140%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    translate 0.6s var(--wk-ease),
+    opacity 0.3s;
+}
+@media (width >= 64rem) {
+  .db-bulk {
+    left: calc(var(--db-rail) + (100vw - var(--db-rail)) / 2);
+  }
+}
+.db-bulk[data-open="true"] {
+  translate: -50% 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+.db-bulk_count {
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b3b3b3;
+}
+.db-bulk_count strong {
+  margin-right: 0.4em;
+  font-size: var(--step-1);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.db-bulk_ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.db-bulk_ctrl button {
+  padding: 0.7em 1.1em;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid #333;
+  transition:
+    background-color 0.3s var(--wk-ease),
+    color 0.3s var(--wk-ease);
+}
+.db-bulk_ctrl button:disabled {
+  opacity: 0.4;
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-bulk_ctrl button:not(:disabled):hover {
+    background: #fff;
+    color: #0f0f0f;
+  }
+}
+.db-bulk_ctrl button[data-tone="danger"] {
+  color: var(--accent-pink);
+  border-color: var(--accent-pink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-bulk_ctrl button[data-tone="danger"]:not(:disabled):hover {
+    background: var(--accent-pink);
+    color: #fff;
+  }
+}

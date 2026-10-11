@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProjectService } from "@/servers/services/project.service";
 import ContactTitle from "@/components/root/contact/ContactTitle";
@@ -6,9 +7,15 @@ import ContactTabs from "@/components/root/contact/ContactTabs";
 import ContactPanel from "@/components/root/contact/ContactPanel";
 import ContactShowcase from "@/components/root/contact/ContactShowcase";
 
+export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
+  title: "Contact",
+  description: "Have a project in mind? Send a message and let's build it together.",
+};
+
 export default async function ContactPage() {
-  const { items } = await ProjectService.list({ published: true, pageSize: 100 });
-  const showcase = items
+  const projects = await ProjectService.listCards({ take: 100 });
+  const showcase = projects
     .filter((p) => p.coverImage)
     .map(({ id, title, coverImage }) => ({ id, title, coverImage: coverImage! }));
 

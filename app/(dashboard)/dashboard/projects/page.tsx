@@ -1,10 +1,9 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import PageHeader from "@/components/dashboard/PageHeader";
 import ProjectTable from "@/components/dashboard/projects/ProjectTable";
-import { Button } from "@/components/ui/button";
+import DbEmpty from "@/components/dashboard/ui/DbEmpty";
+import GridButton from "@/components/root/work/GridButton";
 import { ProjectService } from "@/servers/services/project.service";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProjectsPage() {
@@ -12,35 +11,27 @@ export default async function ProjectsPage() {
 
   if (user.role !== "ADMIN") redirect("/dashboard");
 
-  const projects = await ProjectService.getAll();
+  const items = await ProjectService.getAll();
 
   return (
     <main className="w-full space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader title="Work" subtitle="Manage your portfolio projects." />
-        <Button asChild>
-          <Link href="/dashboard/projects/create">
-            <Plus className="size-4" />
-            New Project
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="(02) Portfolio"
+        title="Work"
+        subtitle="Every project on the public site, live or draft."
+        actions={<GridButton href="/dashboard/projects/create">New project</GridButton>}
+      />
 
-      <div className="space-y-2">
-        <ProjectTable projects={projects} />
-
-        {projects.length === 0 && (
-          <p className="text-muted-foreground py-16 text-center text-sm">
-            No projects yet.{" "}
-            <Link
-              href="/dashboard/projects/create"
-              className="text-foreground underline underline-offset-4"
-            >
-              Add your first project →
-            </Link>
-          </p>
-        )}
-      </div>
+      {items.length === 0 ? (
+        <DbEmpty
+          title="Nothing *shipped* yet"
+          text="No projects yet. Add the first case study."
+          href="/dashboard/projects/create"
+          cta="New project"
+        />
+      ) : (
+        <ProjectTable projects={items} />
+      )}
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { isVideo } from "@/lib/format";
 import { useInView } from "motion/react";
 import { cn } from "@/lib/utils";
 import type {
@@ -8,7 +9,6 @@ import type {
   GalleryItem,
 } from "@/servers/validators/project.validator";
 
-const isVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
 
 /** One bordered media box that rises into place once it is on screen. */
 function Media({
@@ -37,7 +37,7 @@ function Media({
     <div
       ref={ref}
       data-visible={seen || undefined}
-      className={cn("wk-b wk-media-wipe overflow-hidden bg-[#0f0f0f]", className)}
+      className={cn("wk-b wk-media-wipe overflow-hidden bg-foreground", className)}
     >
       {isVideo(item.src) ? (
         <video

@@ -1,18 +1,10 @@
-import {
-  Brain,
-  CircuitBoard,
-  Code2,
-  Smartphone,
-  Wifi,
-  type LucideIcon,
-} from "lucide-react";
+import { Code2, Cpu, Gauge, Zap, type LucideIcon } from "lucide-react";
 
 export const SERVICE_ICONS: Record<string, LucideIcon> = {
-  "web-development": Code2,
-  "app-development": Smartphone,
-  "ai-machine-learning": Brain,
-  "iot-hardware": Wifi,
-  "electronics-engineering": CircuitBoard,
+  "software-development": Code2,
+  "iot-ai-systems": Cpu,
+  "electrical-engineering": Zap,
+  "process-control-engineering": Gauge,
 };
 
 export const DEFAULT_SERVICE_ICON = Code2;

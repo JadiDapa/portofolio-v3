@@ -1,7 +1,8 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import DynamicBreadcrumb from "@/components/dashboard/DynamicBreadcrumb";
 import PageHeader from "@/components/dashboard/PageHeader";
-import CreateProjectForm from "@/components/dashboard/projects/CreateProjectForm";
+import ProjectForm from "@/components/dashboard/projects/ProjectForm";
+import { ServiceService } from "@/servers/services/service.service";
 import { redirect } from "next/navigation";
 
 export default async function CreateProjectPage() {
@@ -9,14 +10,16 @@ export default async function CreateProjectPage() {
 
   if (user.role !== "ADMIN") redirect("/dashboard");
 
+  const categories = (await ServiceService.getAll()).map((s) => s.title);
+
   return (
     <main className="w-full space-y-6">
       <div className="space-y-2">
         <DynamicBreadcrumb />
-        <PageHeader title="New Project" subtitle="Add a project to your portfolio." />
+        <PageHeader eyebrow="Work" title="New project" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <CreateProjectForm />
+      <ProjectForm categories={categories} />
     </main>
   );
 }

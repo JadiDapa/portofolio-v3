@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Overview — greeting, numeral grid, inquiry "barcode", quick actions.
+   ========================================================================== */
+.db-hello {
+  padding-block: var(--space-m-l) var(--space-l-xl);
+  border-bottom: 1px solid var(--foreground);
+}
+.db-hello_date {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em 1.4em;
+  color: #b3b3b3;
+}
+.db-hello_title {
+  margin-top: var(--space-xs-s);
+  font-size: var(--step-7);
+  font-weight: 900;
+  line-height: 0.85em;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.db-hello_title em {
+  font-style: normal;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--foreground);
+}
+.db-hello_line {
+  max-width: 44ch;
+  margin-top: var(--space-s-m);
+  font-size: var(--step-0);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+/* Numeral grid: shared hairlines like the public page grid */
+.db-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-left: 1px solid var(--foreground);
+}
+@media (width >= 64rem) {
+  .db-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.db-metric {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 15rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-s-m);
+  border-right: 1px solid var(--foreground);
+  border-bottom: 1px solid var(--foreground);
+  overflow: hidden;
+  transition: color 0.5s var(--wk-ease);
+}
+.db-metric::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--foreground);
+  transform: translateY(101%);
+  transition: transform 0.6s var(--wk-ease);
+}
+.db-metric_num {
+  font-size: var(--step-9);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+}
+.db-metric[data-tone="alert"] .db-metric_num {
+  color: var(--accent-pink);
+}
+.db-metric_foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+}
+.db-metric_arrow {
+  transition: transform 0.6s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-metric:hover {
+    color: var(--on-foreground);
+  }
+  .db-metric:hover::before {
+    transform: none;
+  }
+  .db-metric:hover .db-metric_arrow {
+    transform: translate(0.3em, -0.3em) rotate(-12deg) scale(1.15);
+  }
+}
+
+/* Two-column band under the numerals */
+.db-band {
+  display: grid;
+  gap: var(--space-m-l);
+  margin-top: var(--space-l-xl);
+}
+@media (width >= 64rem) {
+  .db-band {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+.db-section_head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+  padding-bottom: var(--space-2xs-xs);
+  border-bottom: 1px solid var(--foreground);
+}
+.db-section_title {
+  font-size: var(--step-2);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+/* Inquiry "barcode": 12 thin bars, the current month in pink */
+.db-bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(0.25rem, 1vw, 0.75rem);
+  height: 14rem;
+  padding-top: var(--space-s-m);
+}
+.db-bar_col {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5em;
+}
+.db-bar_fill {
+  width: 100%;
+  min-height: 2px;
+  height: calc(var(--h) * 1%);
+  background: var(--foreground);
+  transform-origin: bottom;
+  animation: db-grow 1.2s var(--wk-ease) both;
+  animation-delay: calc(var(--i) * 50ms);
+  transition: background-color 0.3s;
+}
+.db-bar_col[data-now="true"] .db-bar_fill {
+  background: var(--accent-pink);
+}
+.db-bar_col:hover .db-bar_fill {
+  background: var(--accent-pink);
+}
+.db-bar_val {
+  position: absolute;
+  top: 0;
+  font-size: var(--step--2);
+  font-weight: 800;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.db-bar_col:hover .db-bar_val {
+  opacity: 1;
+}
+.db-bar_lbl {
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b3b3b3;
+}
+@keyframes db-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* Recent list rows reuse .db-row / .db-idx from the ledger */
+.db-recent {
+  width: 100%;
+  border-collapse: collapse;
+}
+.db-recent td {
+  padding: var(--space-xs-s);
+  border-bottom: 1px solid var(--grid);
+  vertical-align: middle;
+}
+
+.db-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  margin-top: var(--space-l-xl);
+  padding-top: var(--space-s-m);
+  border-top: 1px solid var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-bar_fill {
+    animation: none;
+  }
+}

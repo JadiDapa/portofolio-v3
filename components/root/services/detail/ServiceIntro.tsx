@@ -1,7 +1,5 @@
-"use client";
-
 import { Info } from "lucide-react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 /** Splits stored HTML into its first paragraph (the opening) and the rest. */
 function splitDescription(html: string | null) {

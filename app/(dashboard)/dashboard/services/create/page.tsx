@@ -1,7 +1,7 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import DynamicBreadcrumb from "@/components/dashboard/DynamicBreadcrumb";
 import PageHeader from "@/components/dashboard/PageHeader";
-import CreateServiceForm from "@/components/dashboard/services/CreateServiceForm";
+import ServiceForm from "@/components/dashboard/services/ServiceForm";
 import { redirect } from "next/navigation";
 
 export default async function CreateServicePage() {
@@ -13,10 +13,10 @@ export default async function CreateServicePage() {
     <main className="w-full space-y-6">
       <div className="space-y-2">
         <DynamicBreadcrumb />
-        <PageHeader title="New Service" subtitle="Add a service offering." />
+        <PageHeader eyebrow="Services" title="New service" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <CreateServiceForm />
+      <ServiceForm />
     </main>
   );
 }

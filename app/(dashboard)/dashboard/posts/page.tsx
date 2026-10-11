@@ -1,10 +1,9 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import PageHeader from "@/components/dashboard/PageHeader";
 import PostTable from "@/components/dashboard/posts/PostTable";
-import { Button } from "@/components/ui/button";
-import prisma from "@/lib/prisma";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import DbEmpty from "@/components/dashboard/ui/DbEmpty";
+import GridButton from "@/components/root/work/GridButton";
+import { PostService } from "@/servers/services/post.service";
 import { redirect } from "next/navigation";
 
 export default async function PostsPage() {
@@ -12,38 +11,27 @@ export default async function PostsPage() {
 
   if (user.role !== "ADMIN") redirect("/dashboard");
 
-  const posts = await prisma.post.findMany({
-    orderBy: { id: "desc" },
-    include: { author: true },
-  });
+  const items = await PostService.getAll();
 
   return (
     <main className="w-full space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader title="Journal" subtitle="Manage your journal entries." />
-        <Button asChild>
-          <Link href="/dashboard/posts/create">
-            <Plus className="size-4" />
-            New Entry
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="(07) Writing"
+        title="Journal"
+        subtitle="Essays, notes and build logs."
+        actions={<GridButton href="/dashboard/posts/create">New entry</GridButton>}
+      />
 
-      <div className="space-y-2">
-        <PostTable posts={posts} />
-
-        {posts.length === 0 && (
-          <p className="text-muted-foreground py-16 text-center text-sm">
-            No journal entries yet.{" "}
-            <Link
-              href="/dashboard/posts/create"
-              className="text-foreground underline underline-offset-4"
-            >
-              Create your first entry →
-            </Link>
-          </p>
-        )}
-      </div>
+      {items.length === 0 ? (
+        <DbEmpty
+          title="The page is *blank*"
+          text="No journal entries yet. Write the first one."
+          href="/dashboard/posts/create"
+          cta="New entry"
+        />
+      ) : (
+        <PostTable posts={items} />
+      )}
     </main>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEntered } from "@/hooks/use-entered";
+import BoxFrame from "@/components/root/shared/BoxFrame";
 import { LabelArt } from "@/components/root/work/WorkArt";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 const LABEL_LEFT = "Let's talk";
 const LABEL_RIGHT = "Build together";
@@ -16,25 +17,11 @@ const OPENING = (
 );
 
 export default function ContactTitle() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const visible = useEntered();
 
   return (
     <div className="relative" data-cmp="title">
-      <div
-        className="wk-box ct-glass"
-        data-visible={visible || undefined}
-        aria-hidden
-      >
-        <span />
-        <span />
-        <span />
-        <span />
-      </div>
+      <BoxFrame visible={visible} className="ct-glass" />
 
       <header className="wk-pad relative space-y-(--space-3xs-2xs) text-center">
         <p

@@ -17,6 +17,10 @@ export const TestimonialService = {
     });
   },
 
+  async count() {
+    return await prisma.testimonial.count();
+  },
+
   async getById(id: number) {
     return await prisma.testimonial.findUnique({ where: { id } });
   },

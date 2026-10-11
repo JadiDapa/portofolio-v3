@@ -2,11 +2,17 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import Image from "next/image";
 
 import DataTable from "../DataTable";
 import SearchDataTable from "../SearchDataTable";
 import TableSorter from "../TableSorter";
-import Image from "next/image";
+import { PublishedBadge, RowActions, indexColumn } from "../table-columns";
+import {
+  deleteProject,
+  deleteProjects,
+  setProjectsPublished,
+} from "@/app/action/project.action";
 
 export interface ProjectTableType {
   id: number;
@@ -31,73 +37,55 @@ export default function ProjectTable({ projects }: ProjectTableProps) {
     <DataTable
       columns={projectColumns}
       data={projects}
+      statusColumn="published"
+      bulk={{ noun: "projects", publish: setProjectsPublished, remove: deleteProjects }}
       filters={(table) => (
-        <div className="grid w-full items-end gap-4 p-4 lg:grid-cols-3 lg:gap-6">
-          <SearchDataTable
-            table={table}
-            column="title"
-            placeholder="Search Title..."
-          />
-
+        <>
+          <SearchDataTable table={table} column="title" placeholder="Title" />
           <SearchDataTable
             table={table}
             column="category"
-            placeholder="Search Category..."
+            placeholder="Category"
           />
-
-          <SearchDataTable
-            table={table}
-            column="client"
-            placeholder="Search Client..."
-          />
-        </div>
+          <SearchDataTable table={table} column="client" placeholder="Client" />
+        </>
       )}
     />
   );
 }
 
 export const projectColumns: ColumnDef<ProjectTableType>[] = [
-  {
-    id: "index",
-    header: ({ column }) => <TableSorter isFirst column={column} header="#" />,
-    cell: ({ row }) => (
-      <div className="text-muted-foreground max-w-fit ps-5 text-center text-xs">
-        {row.index + 1}
-      </div>
-    ),
-  },
+  indexColumn<ProjectTableType>(),
 
   {
     accessorKey: "title",
-    header: ({ column }) => <TableSorter column={column} header="TITLE" />,
+    header: ({ column }) => <TableSorter column={column} header="Project" />,
     cell: ({ row }) => {
       const project = row.original;
 
       return (
-        <div className="flex items-center gap-3">
-          {project.coverImage ? (
-            <Image
-              src={project.coverImage}
-              alt={project.title}
-              className="rounded-md object-cover"
-              width={48}
-              height={48}
-            />
-          ) : (
-            <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-md text-sm font-semibold">
-              {project.title.charAt(0)}
-            </div>
-          )}
+        <div className="flex items-center gap-4">
+          <div className="db-thumb">
+            {project.coverImage ? (
+              <Image
+                src={project.coverImage}
+                alt={project.title}
+                width={56}
+                height={56}
+              />
+            ) : (
+              project.title.charAt(0)
+            )}
+          </div>
 
-          <div className="flex flex-col leading-tight">
+          <div className="flex min-w-0 flex-col gap-1">
             <Link
-              href={`/work/${project.slug}`}
-              className="line-clamp-1 font-medium hover:underline"
+              href={`/dashboard/projects/update/${project.slug}`}
+              className="db-cell-title line-clamp-1"
             >
               {project.title}
             </Link>
-
-            <span className="text-muted-foreground line-clamp-1 text-xs">
+            <span className="db-cell-sub line-clamp-1 max-w-md">
               {project.summary}
             </span>
           </div>
@@ -108,74 +96,48 @@ export const projectColumns: ColumnDef<ProjectTableType>[] = [
 
   {
     accessorKey: "category",
-    header: ({ column }) => <TableSorter column={column} header="CATEGORY" />,
-    cell: ({ row }) => (
-      <span className="bg-muted rounded-md px-2 py-1 text-xs font-medium">
-        {row.original.category}
-      </span>
-    ),
+    header: ({ column }) => <TableSorter column={column} header="Category" />,
+    cell: ({ row }) => <span className="db-chip">{row.original.category}</span>,
   },
 
   {
     accessorKey: "client",
-    header: ({ column }) => <TableSorter column={column} header="CLIENT" />,
+    header: ({ column }) => <TableSorter column={column} header="Client" />,
     cell: ({ row }) => (
-      <span className="text-muted-foreground text-sm">
-        {row.original.client || "—"}
-      </span>
+      <div className="flex flex-col gap-1">
+        <span className="font-semibold">{row.original.client || "—"}</span>
+        {row.original.year && (
+          <span className="db-cell-sub">{row.original.year}</span>
+        )}
+      </div>
     ),
   },
 
   {
     accessorKey: "published",
-    header: ({ column }) => <TableSorter column={column} header="STATUS" />,
-    cell: ({ row }) => {
-      const project = row.original;
-
-      return (
-        <div className="flex items-center gap-2">
-          <span
-            className={`rounded-md px-2 py-1 text-xs font-medium ${
-              project.published
-                ? "bg-green-500/10 text-green-600"
-                : "bg-yellow-500/10 text-yellow-600"
-            }`}
-          >
-            {project.published ? "PUBLISHED" : "DRAFT"}
+    header: ({ column }) => <TableSorter column={column} header="Status" />,
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        <PublishedBadge published={row.original.published} />
+        {row.original.featured && (
+          <span className="db-stamp" data-tone="alert">
+            Featured
           </span>
-          {project.featured && (
-            <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs font-medium">
-              FEATURED
-            </span>
-          )}
-        </div>
-      );
-    },
+        )}
+      </div>
+    ),
   },
 
   {
     id: "actions",
-    header: () => <span className="text-xs">ACTIONS</span>,
-    cell: ({ row }) => {
-      const project = row.original;
-
-      return (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/work/${project.slug}`}
-            className="bg-muted hover:bg-muted/80 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            View
-          </Link>
-
-          <Link
-            href={`/dashboard/projects/update/${project.slug}`}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            Edit
-          </Link>
-        </div>
-      );
-    },
+    header: () => "Actions",
+    cell: ({ row }) => (
+      <RowActions
+        viewHref={`/work/${row.original.slug}`}
+        editHref={`/dashboard/projects/update/${row.original.slug}`}
+        name={row.original.title}
+        onDelete={() => deleteProject(row.original.id)}
+      />
+    ),
   },
 ];

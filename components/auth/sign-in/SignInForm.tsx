@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { useClerk, useSignIn } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import DbButton from "@/components/dashboard/ui/DbButton";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +33,7 @@ export default function SignInForm() {
     defaultValues: { username: "", password: "" },
   });
 
-  async function onSubmit(values: LoginFormType) {
+  function onSubmit(values: LoginFormType) {
     startTransition(async () => {
       if (!loaded) return;
 
@@ -55,7 +52,7 @@ export default function SignInForm() {
         if (signIn.status === "complete") {
           await signIn.finalize({
             navigate: ({ decorateUrl }) => {
-              router.push(decorateUrl("/"));
+              router.push(decorateUrl("/dashboard"));
             },
           });
         }
@@ -67,51 +64,56 @@ export default function SignInForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="username">Username</Label>
-        <Input
+    <form onSubmit={handleSubmit(onSubmit)} className="db-auth_form">
+      <div className="db-field">
+        <label htmlFor="username" className="db-label">Username</label>
+        <input
           id="username"
           {...register("username")}
+          className="db-input"
           placeholder="Enter your username"
           autoComplete="username"
+          aria-invalid={!!errors.username}
         />
         {errors.username && (
-          <p className="text-destructive text-sm">{errors.username.message}</p>
+          <p className="db-field_error" role="alert">{errors.username.message}</p>
         )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="password">Password</Label>
-        <div className="relative">
-          <Input
+      <div className="db-field">
+        <label htmlFor="password" className="db-label">Password</label>
+        <div className="db-auth_pw">
+          <input
             id="password"
             {...register("password")}
+            className="db-input"
             type={isVisible ? "text" : "password"}
             placeholder="Enter your password"
             autoComplete="current-password"
-            className="pr-10"
+            aria-invalid={!!errors.password}
           />
           <button
             type="button"
             onClick={() => setIsVisible(!isVisible)}
-            className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+            className="db-auth_eye"
+            aria-label={isVisible ? "Hide password" : "Show password"}
           >
-            {isVisible ? (
-              <EyeOff className="size-4" />
-            ) : (
-              <Eye className="size-4" />
-            )}
+            {isVisible ? <EyeOff size={18} strokeWidth={1.4} /> : <Eye size={18} strokeWidth={1.4} />}
           </button>
         </div>
         {errors.password && (
-          <p className="text-destructive text-sm">{errors.password.message}</p>
+          <p className="db-field_error" role="alert">{errors.password.message}</p>
         )}
       </div>
 
-      <Button type="submit" disabled={isPending || !loaded} className="w-full">
-        {isPending ? <Spinner /> : "Sign in"}
-      </Button>
+      <DbButton
+        type="submit"
+        dark
+        disabled={isPending || !loaded}
+        className="wk-btn--expand"
+      >
+        {isPending ? "Signing in…" : "Sign in"}
+      </DbButton>
     </form>
   );
 }

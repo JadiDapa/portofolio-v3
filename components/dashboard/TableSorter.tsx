@@ -1,30 +1,34 @@
-import { ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { Column } from "@tanstack/react-table";
 
 type TableSorterProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   column: Column<any, unknown>;
   header: string;
-  isFirst?: boolean;
 };
 
-const TableSorter: React.FC<TableSorterProps> = ({
-  column,
-  header,
-  isFirst,
-}) => {
-  function handleClick() {
-    column.toggleSorting(column.getIsSorted() === "asc");
+/** Cycles none, ascending, descending, none, so a sort can always be cleared. */
+const TableSorter: React.FC<TableSorterProps> = ({ column, header }) => {
+  const sorted = column.getIsSorted();
+  const Icon =
+    sorted === "asc" ? ArrowUp : sorted === "desc" ? ArrowDown : ArrowUpDown;
+
+  function cycle() {
+    if (!sorted) column.toggleSorting(false);
+    else if (sorted === "asc") column.toggleSorting(true);
+    else column.clearSorting();
   }
 
   return (
-    <div
-      onClick={handleClick}
-      className={`group flex w-full items-center gap-3 hover:bg-transparent ${isFirst && "translate-x-4"}`}
+    <button
+      type="button"
+      onClick={cycle}
+      data-sorted={!!sorted}
+      className="db-sort"
     >
       {header}
-      <ArrowUpDown className="ml-6 h-4 w-4 opacity-0 duration-150 group-hover:opacity-100" />
-    </div>
+      <Icon aria-hidden />
+    </button>
   );
 };
 

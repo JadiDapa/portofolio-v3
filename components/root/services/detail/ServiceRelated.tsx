@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useOpenCategory } from "@/hooks/use-open-category";
 import { RefreshCw } from "lucide-react";
 import GridButton from "@/components/root/work/GridButton";
 import ProjectPreview, { type WorkProject } from "@/components/root/work/ProjectPreview";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 /** Two projects at a time from `pool`; the reload button pages through it. */
 export default function ServiceRelated({ pool }: { pool: WorkProject[] }) {
-  const router = useRouter();
+  const openCategory = useOpenCategory();
   const [start, setStart] = useState(0);
 
   if (pool.length === 0) return null;
@@ -18,8 +18,6 @@ export default function ServiceRelated({ pool }: { pool: WorkProject[] }) {
     .map((n) => pool[(start + n) % pool.length])
     .filter((p, i, all) => all.findIndex((q) => q.id === p.id) === i);
 
-  const openCategory = (category: string) =>
-    router.push(`/work?category=${encodeURIComponent(category)}`);
 
   return (
     <section>

@@ -63,6 +63,7 @@ model Service {
   lead        String?
   process     Json?
   faqs        Json?
+  skills      Json?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
 }
@@ -99,6 +100,7 @@ model Recognition {
 
 enum ExperienceType {
   WORK
+  ORGANIZATION
   EDUCATION
 }
 
@@ -108,6 +110,8 @@ model Experience {
   organization String
   role         String
   description  String?
+  highlights   String[]       @default([])
+  tools        String[]       @default([])
   startDate    DateTime
   endDate      DateTime?
   order        Int            @default(0)

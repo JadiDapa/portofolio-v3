@@ -16,6 +16,9 @@ type GridButtonProps = {
   onClick?: () => void;
   onPointerEnter?: () => void;
   ariaLabel?: string;
+  ariaExpanded?: boolean;
+  ariaControls?: string;
+  ariaCurrent?: "page";
   type?: "button" | "submit";
   disabled?: boolean;
 };
@@ -47,6 +50,9 @@ export default function GridButton({
   onClick,
   onPointerEnter,
   ariaLabel,
+  ariaExpanded,
+  ariaControls,
+  ariaCurrent,
   type = "button",
   disabled,
 }: GridButtonProps) {
@@ -68,7 +74,8 @@ export default function GridButton({
     </span>
   );
 
-  if (href && /^https?:\/\//.test(href)) {
+  // Off-site URLs and files (e.g. the resume PDF) are plain anchors, not router links
+  if (href && /^https?:\/\/|\.pdf$/i.test(href)) {
     return (
       <a
         href={href}
@@ -76,6 +83,7 @@ export default function GridButton({
         rel="noreferrer"
         className={cls}
         aria-label={ariaLabel}
+        aria-current={ariaCurrent}
         onClick={onClick}
         onPointerMove={track}
         onPointerEnter={onPointerEnter}
@@ -91,6 +99,7 @@ export default function GridButton({
         href={href}
         className={cls}
         aria-label={ariaLabel}
+        aria-current={ariaCurrent}
         onClick={onClick}
         onPointerMove={track}
         onPointerEnter={onPointerEnter}
@@ -106,6 +115,8 @@ export default function GridButton({
       disabled={disabled}
       className={cls}
       aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
       onClick={onClick}
       onPointerMove={track}
       onPointerEnter={onPointerEnter}

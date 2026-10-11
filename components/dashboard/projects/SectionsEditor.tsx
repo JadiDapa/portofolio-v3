@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { Reorder, useDragControls } from "motion/react";
 import {
   ArrowDown,
   ArrowUp,
   BarChart3,
   Film,
+  GripVertical,
   Images,
   LayoutTemplate,
   ListChecks,
@@ -340,6 +342,29 @@ function SectionBody({
   }
 }
 
+/** A reorderable row that only starts a drag from its grip, so inputs inside stay selectable. */
+function DragItem({
+  section,
+  children,
+}: {
+  section: Section;
+  children: (startDrag: (e: React.PointerEvent) => void) => React.ReactNode;
+}) {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={section}
+      dragListener={false}
+      dragControls={controls}
+      className="db-section space-y-3 p-3"
+      whileDrag={{ scale: 1.01, boxShadow: "0.6rem -0.6rem 0 #0f0f0f" }}
+    >
+      {children((e) => controls.start(e))}
+    </Reorder.Item>
+  );
+}
+
 /** Ordered list of page sections. The order here is the order on the public project page. */
 export default function SectionsEditor({
   value,
@@ -361,12 +386,27 @@ export default function SectionsEditor({
 
   return (
     <div className="space-y-4">
+      {/* Drag a section by its grip to reorder; the arrows stay for keyboard use */}
+      <Reorder.Group
+        axis="y"
+        values={value}
+        onReorder={onChange}
+        className="space-y-4"
+      >
       {value.map((section, i) => {
         const { label, icon: Icon } = META[section.type];
         return (
-          <div key={section.id} className="space-y-3 rounded-lg border p-3">
+          <DragItem key={section.id} section={section}>
+           {(startDrag) => (
+            <>
             <div className="flex items-center justify-between">
               <p className="flex items-center gap-2 text-sm font-medium">
+                <GripVertical
+                  aria-label="Drag to reorder"
+                  onPointerDown={startDrag}
+                  style={{ touchAction: "none" }}
+                  className="db-grip text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing"
+                />
                 <Icon className="text-muted-foreground h-4 w-4" />
                 {i + 1}. {label}
               </p>
@@ -403,9 +443,12 @@ export default function SectionsEditor({
               </div>
             </div>
             <SectionBody section={section} onChange={(s) => update(i, s)} />
-          </div>
+            </>
+           )}
+          </DragItem>
         );
       })}
+      </Reorder.Group>
 
       <div className="flex flex-wrap gap-2">
         {(Object.keys(META) as SectionType[]).map((type) => {

@@ -1,12 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./shared.css";
 @import "./work.css";
 @import "./contact.css";
 @import "./services.css";
 @import "./service-detail.css";
 @import "./about.css";
 @import "./home.css";
+@import "./journal.css";
+@import "./dashboard.css";
+@import "./dashboard-ledger.css";
+@import "./dashboard-inbox.css";
+@import "./dashboard-overview.css";
+@import "./dashboard-cards.css";
+@import "./dashboard-editor.css";
+@import "./dashboard-auth.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -99,6 +108,12 @@
   --chart-5: #0f0f0f;
   --radius: 0.5rem;
   --grid: #e5e5e5;
+  /* Public-site tokens. Light values are the source design's literals; the
+     .dark block inverts them so the tile/border system reads the same. */
+  --on-foreground: #fff; /* text on a --foreground fill */
+  --surface: #fff; /* raised white panels */
+  --glass: rgba(248, 248, 248, 0.64);
+  --accent-pink: #ff2e79;
   /* ~1rem on phones, settling at 6.5rem once the viewport passes ~1920px,
      which is where the source design's rules sit. */
   --gutter: max(var(--gutter-pad), calc((100% - 1500px) / 2));
@@ -185,6 +200,10 @@
   --input: oklch(0.32 0 0);
   --ring: oklch(0.72 0 0);
   --grid: #2a2a2a;
+  --on-foreground: #000;
+  --surface: oklch(0.14 0 0);
+  --glass: rgba(0, 0, 0, 0.64);
+  --accent-pink: #ff2e79;
   --chart-1: #ff2e79;
   --chart-2: #6fc2ef;
   --chart-3: #e1a3ee;
@@ -239,3 +258,4 @@
 .dark .outline-text {
   -webkit-text-stroke: 2px #fff;
 }
+

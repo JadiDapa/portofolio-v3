@@ -3,13 +3,11 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import GridButton from "./GridButton";
+import { ARROW_PATH } from "@/components/root/services/detail/ServiceLink";
+import { pad2 } from "@/lib/format";
 import ProjectPreview, { type WorkProject } from "./ProjectPreview";
 
 const ALL = "All";
-const pad = (n: number) => String(n).padStart(2, "0");
-
-const ARROW =
-  "M4.77 11.943h13.321m1.025 0L11.943 4.77m7.173 7.173-7.173 7.173";
 
 export default function WorkBrowser({
   projects,
@@ -74,7 +72,7 @@ export default function WorkBrowser({
             >
               <span className="wk-tab-btn">
                 <span className="wk-opening">{tab.name}</span>
-                <span className="wk-caption">{pad(tab.count)}</span>
+                <span className="wk-caption">{pad2(tab.count)}</span>
               </span>
             </GridButton>
           </div>
@@ -135,7 +133,7 @@ export default function WorkBrowser({
                     className="wk-ico"
                   >
                     <path
-                      d={ARROW}
+                      d={ARROW_PATH}
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="square"

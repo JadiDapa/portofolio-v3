@@ -1,7 +1,5 @@
-"use client";
-
 import { Send } from "lucide-react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import { DEFAULT_SERVICE_ICON, SERVICE_ICONS } from "@/components/root/serviceIcons";
 import ServiceLink from "./ServiceLink";
 
@@ -12,7 +10,7 @@ export default function ServiceCta({ slug }: { slug: string }) {
     <section>
       <div
         data-cmp="cta"
-        className="wk-b sd-cta-pad relative space-y-(--space-3xs-2xs) bg-[#0f0f0f] text-center text-white"
+        className="wk-b sd-cta-pad relative space-y-(--space-3xs-2xs) bg-foreground text-center text-(--on-foreground)"
       >
         <p className="wk-label sd-title-label">
           <Icon className="sd-title-icon" strokeWidth={1} aria-hidden />

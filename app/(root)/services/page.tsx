@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CircuitBoard } from "lucide-react";
 import { ServiceService } from "@/servers/services/service.service";
 import WorkTitle from "@/components/root/work/WorkTitle";
@@ -5,6 +6,12 @@ import WorkExpertise from "@/components/root/work/WorkExpertise";
 import ServicesIntro from "@/components/root/services/ServicesIntro";
 import ServicesOverview from "@/components/root/services/ServicesOverview";
 import ServicesToolbar from "@/components/root/services/ServicesToolbar";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/services" },
+  title: "Services",
+  description: "Software, IoT and AI, electrical and process control engineering, built end to end.",
+};
 
 export default async function ServicesPage() {
   const services = await ServiceService.getAll();

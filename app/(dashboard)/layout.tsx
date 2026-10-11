@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
-import { getCurrentUser } from "../action/user.action";
+import { redirect } from "next/navigation";
+import DbRail from "@/components/dashboard/ui/DbRail";
+import { getCurrentUser } from "@/lib/auth";
+import { SearchService } from "@/servers/services/search.service";
+import { ContactService } from "@/servers/services/contact.service";
 
 type Props = {
   children: ReactNode;
@@ -11,19 +12,19 @@ type Props = {
 export default async function DashboardLayout({ children }: Props) {
   const user = await getCurrentUser();
 
+  if (user.role !== "ADMIN") redirect("/");
+
+  const [unread, entries] = await Promise.all([
+    ContactService.countUnread(),
+    SearchService.index(),
+  ]);
+
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <DashboardSidebar user={user} />
-
-        {/* Main area */}
-        <main className="bg-background flex flex-1 flex-col">
-          <DashboardNavbar user={user} />
-
-          {/* Content takes remaining space */}
-          <div className="flex-1 overflow-auto p-6">{children}</div>
-        </main>
+    <div className="db-root">
+      <DbRail user={user} unread={unread} entries={entries} />
+      <div className="db-main">
+        <div className="db-content">{children}</div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }

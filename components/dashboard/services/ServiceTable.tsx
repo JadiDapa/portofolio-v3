@@ -6,6 +6,8 @@ import Link from "next/link";
 import DataTable from "../DataTable";
 import SearchDataTable from "../SearchDataTable";
 import TableSorter from "../TableSorter";
+import { RowActions, indexColumn } from "../table-columns";
+import { deleteService, deleteServices } from "@/app/action/service.action";
 
 export interface ServiceTableType {
   id: number;
@@ -24,45 +26,32 @@ export default function ServiceTable({ services }: ServiceTableProps) {
     <DataTable
       columns={serviceColumns}
       data={services}
+      bulk={{ noun: "services", remove: deleteServices }}
       filters={(table) => (
-        <div className="grid w-full items-end gap-4 p-4 lg:grid-cols-2 lg:gap-6">
-          <SearchDataTable
-            table={table}
-            column="title"
-            placeholder="Search Title..."
-          />
-        </div>
+        <SearchDataTable table={table} column="title" placeholder="Title" />
       )}
     />
   );
 }
 
 export const serviceColumns: ColumnDef<ServiceTableType>[] = [
-  {
-    id: "index",
-    header: ({ column }) => <TableSorter isFirst column={column} header="#" />,
-    cell: ({ row }) => (
-      <div className="text-muted-foreground max-w-fit ps-5 text-center text-xs">
-        {row.index + 1}
-      </div>
-    ),
-  },
+  indexColumn<ServiceTableType>(),
 
   {
     accessorKey: "title",
-    header: ({ column }) => <TableSorter column={column} header="TITLE" />,
+    header: ({ column }) => <TableSorter column={column} header="Service" />,
     cell: ({ row }) => {
       const service = row.original;
 
       return (
-        <div className="flex flex-col leading-tight">
+        <div className="flex min-w-0 flex-col gap-1">
           <Link
-            href={`/services/${service.slug}`}
-            className="line-clamp-1 font-medium hover:underline"
+            href={`/dashboard/services/update/${service.slug}`}
+            className="db-cell-title line-clamp-1"
           >
             {service.title}
           </Link>
-          <span className="text-muted-foreground line-clamp-1 text-xs">
+          <span className="db-cell-sub line-clamp-1 max-w-lg">
             {service.summary}
           </span>
         </div>
@@ -72,37 +61,20 @@ export const serviceColumns: ColumnDef<ServiceTableType>[] = [
 
   {
     accessorKey: "order",
-    header: ({ column }) => <TableSorter column={column} header="ORDER" />,
-    cell: ({ row }) => (
-      <span className="text-muted-foreground text-sm">
-        {row.original.order}
-      </span>
-    ),
+    header: ({ column }) => <TableSorter column={column} header="Order" />,
+    cell: ({ row }) => <span className="db-chip">#{row.original.order}</span>,
   },
 
   {
     id: "actions",
-    header: () => <span className="text-xs">ACTIONS</span>,
-    cell: ({ row }) => {
-      const service = row.original;
-
-      return (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/services/${service.slug}`}
-            className="bg-muted hover:bg-muted/80 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            View
-          </Link>
-
-          <Link
-            href={`/dashboard/services/update/${service.slug}`}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            Edit
-          </Link>
-        </div>
-      );
-    },
+    header: () => "Actions",
+    cell: ({ row }) => (
+      <RowActions
+        viewHref={`/services/${row.original.slug}`}
+        editHref={`/dashboard/services/update/${row.original.slug}`}
+        name={row.original.title}
+        onDelete={() => deleteService(row.original.id)}
+      />
+    ),
   },
 ];

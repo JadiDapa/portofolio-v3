@@ -6,42 +6,40 @@ import {
   UpdateUserSchema,
 } from "@/servers/validators/user.validator";
 import { UserService } from "@/servers/services/user.service";
+import { requireAdmin } from "@/lib/auth";
 import z from "zod";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
-export async function getCurrentUser() {
-  const clerkUser = await currentUser();
+function revalidate() {
+  revalidatePath("/dashboard/users");
+}
 
-  if (!clerkUser?.username) {
-    redirect("/sign-in");
-  }
-
-  const user = await UserService.getByUsername(clerkUser.username);
-
-  if (!user) {
-    throw new Error("User not found in database");
-  }
-
-  return user;
+/** Public: called by the sign-up form once Clerk has created the account. Always a plain USER. */
+export async function registerUser(
+  input: Pick<z.input<typeof CreateUserSchema>, "name" | "username">,
+) {
+  const data = CreateUserSchema.parse({ ...input, role: "USER" });
+  await UserService.create(data);
 }
 
 export async function createUser(input: z.input<typeof CreateUserSchema>) {
+  await requireAdmin();
   const data = CreateUserSchema.parse(input);
   await UserService.create(data);
-  revalidatePath("/dashboard/users");
+  revalidate();
 }
 
 export async function updateUser(
   userId: number,
   input: z.input<typeof UpdateUserSchema>,
 ) {
+  await requireAdmin();
   const data = UpdateUserSchema.parse(input);
   await UserService.update(userId, data);
-  revalidatePath("/dashboard/users");
+  revalidate();
 }
 
 export async function deleteUser(userId: number) {
+  await requireAdmin();
   await UserService.delete(userId);
-  revalidatePath("/dashboard/users");
+  revalidate();
 }

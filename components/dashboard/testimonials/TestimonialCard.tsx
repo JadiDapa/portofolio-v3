@@ -1,7 +1,5 @@
 import { Testimonial } from "@/generated/prisma";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import EditTestimonialDialog from "./EditTestimonialDialog";
+import TestimonialSheet from "./TestimonialSheet";
 
 export default function TestimonialCard({
   testimonial,
@@ -9,30 +7,36 @@ export default function TestimonialCard({
   testimonial: Testimonial;
 }) {
   return (
-    <Card className="border-border/60">
-      <CardContent className="flex flex-col gap-3 p-5">
-        <div className="flex items-start justify-between gap-2">
-          <Badge variant="outline" className="text-xs">
-            {testimonial.published ? "Published" : "Hidden"}
-          </Badge>
-          <EditTestimonialDialog testimonial={testimonial} />
+    <div className="db-card">
+      <div className="db-card_panel">
+        <div className="db-card_top">
+          <span className="db-quote_mark" aria-hidden>
+            “
+          </span>
+          <div className="flex items-center gap-3">
+            <span
+              className="db-stamp"
+              data-tone={testimonial.published ? "live" : "quiet"}
+            >
+              {testimonial.published ? "Live" : "Hidden"}
+            </span>
+            <TestimonialSheet testimonial={testimonial} />
+          </div>
         </div>
 
-        <p className="text-foreground line-clamp-4 text-sm">
-          &ldquo;{testimonial.quote}&rdquo;
-        </p>
+        <p className="db-quote">{testimonial.quote}</p>
 
-        <div>
-          <p className="text-foreground text-sm font-medium">
+        <div className="db-card_foot">
+          <p className="font-extrabold uppercase tracking-tight">
             {testimonial.authorName}
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="db-cell-sub">
             {[testimonial.authorTitle, testimonial.company]
               .filter(Boolean)
-              .join(", ")}
+              .join(" / ")}
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

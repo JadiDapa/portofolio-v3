@@ -6,7 +6,7 @@ import { motion, useInView } from "motion/react";
 import type { Service } from "@/generated/prisma";
 import { DEFAULT_SERVICE_ICON, SERVICE_ICONS } from "@/components/root/serviceIcons";
 import { SparkleArt } from "./WorkArt";
-import RevealHeading from "./RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 const ARROW =
   "M4.77 11.943h13.321m1.025 0L11.943 4.77m7.173 7.173-7.173 7.173";
@@ -80,7 +80,7 @@ function ExpertiseCard({ service, index }: { service: Service; index: number }) 
 export default function WorkExpertise({
   services,
   heading = "Expertise",
-  opening = "Software, electronics, AI — I'll find a technical solution for whatever problem your product runs into.",
+  opening = "Software, power, control and AI — I'll find a technical solution for whatever problem your product runs into.",
   action,
 }: {
   services: Service[];

@@ -1,27 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
 
 /** Flags `data-visible` once the strip scrolls into view so its tiles can wipe in. */
 export default function ShowcaseInView({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.15 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const [ref, visible] = useInViewOnce({ threshold: 0.15 });
 
   return (
     <div ref={ref} data-visible={visible || undefined}>

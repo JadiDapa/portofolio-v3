@@ -2,11 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import Image from "next/image";
 
 import DataTable from "../DataTable";
 import SearchDataTable from "../SearchDataTable";
 import TableSorter from "../TableSorter";
-import Image from "next/image";
+import { PublishedBadge, RowActions, indexColumn } from "../table-columns";
+import { deletePost, deletePosts, setPostsPublished } from "@/app/action/post.action";
 
 export interface PostTableType {
   id: number;
@@ -33,74 +35,52 @@ export default function PostTable({ posts }: PostTableProps) {
     <DataTable
       columns={postColumns}
       data={posts}
+      statusColumn="published"
+      bulk={{ noun: "entries", publish: setPostsPublished, remove: deletePosts }}
       filters={(table) => (
-        <div className="grid w-full items-end gap-4 p-4 lg:grid-cols-3 lg:gap-6">
-          <SearchDataTable
-            table={table}
-            column="title"
-            placeholder="Search Title..."
-          />
-
-          <SearchDataTable
-            table={table}
-            column="author"
-            placeholder="Search Author..."
-          />
-
-          <SearchDataTable
-            table={table}
-            column="slug"
-            placeholder="Search Slug..."
-          />
-        </div>
+        <>
+          <SearchDataTable table={table} column="title" placeholder="Title" />
+          <SearchDataTable table={table} column="author" placeholder="Author" />
+          <SearchDataTable table={table} column="slug" placeholder="Slug" />
+        </>
       )}
     />
   );
 }
 
 export const postColumns: ColumnDef<PostTableType>[] = [
-  {
-    id: "index",
-    header: ({ column }) => <TableSorter isFirst column={column} header="#" />,
-    cell: ({ row }) => (
-      <div className="text-muted-foreground max-w-fit ps-5 text-center text-xs">
-        {row.index + 1}
-      </div>
-    ),
-  },
+  indexColumn<PostTableType>(),
 
   {
     accessorKey: "title",
-    header: ({ column }) => <TableSorter column={column} header="TITLE" />,
+    header: ({ column }) => <TableSorter column={column} header="Entry" />,
     cell: ({ row }) => {
       const post = row.original;
 
       return (
-        <div className="flex items-center gap-3">
-          {post.thumbnail ? (
-            <Image
-              src={post.thumbnail}
-              alt={post.title}
-              className="rounded-md object-cover"
-              width={48}
-              height={48}
-            />
-          ) : (
-            <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-md text-sm font-semibold">
-              {post.title.charAt(0)}
-            </div>
-          )}
+        <div className="flex items-center gap-4">
+          <div className="db-thumb">
+            {post.thumbnail ? (
+              <Image
+                src={post.thumbnail}
+                alt={post.title}
+                width={56}
+                height={56}
+              />
+            ) : (
+              post.title.charAt(0)
+            )}
+          </div>
 
-          <div className="flex flex-col leading-tight">
+          <div className="flex min-w-0 flex-col gap-1">
             <Link
-              href={`/posts/${post.slug}`}
-              className="line-clamp-1 font-medium hover:underline"
+              href={`/dashboard/posts/update/${post.slug}`}
+              className="db-cell-title line-clamp-1"
             >
               {post.title}
             </Link>
-
-            <span className="text-muted-foreground line-clamp-1 text-xs">
-              {post.content || "No content"}
+            <span className="db-cell-sub line-clamp-1 max-w-md">
+              {post.content || "No content yet"}
             </span>
           </div>
         </div>
@@ -111,23 +91,14 @@ export const postColumns: ColumnDef<PostTableType>[] = [
   {
     id: "author",
     accessorFn: (row) => `${row.author.name || ""} ${row.author.username}`,
-    header: ({ column }) => <TableSorter column={column} header="AUTHOR" />,
+    header: ({ column }) => <TableSorter column={column} header="Author" />,
     cell: ({ row }) => {
       const author = row.original.author;
 
       return (
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
-            {(author.name || author.username).charAt(0)}
-          </div>
-
-          <div className="flex flex-col leading-tight">
-            <span className="font-medium">{author.name || "Unnamed User"}</span>
-
-            <span className="text-muted-foreground text-xs">
-              @{author.username}
-            </span>
-          </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold">{author.name || "Unnamed"}</span>
+          <span className="db-cell-sub">@{author.username}</span>
         </div>
       );
     },
@@ -135,46 +106,36 @@ export const postColumns: ColumnDef<PostTableType>[] = [
 
   {
     accessorKey: "slug",
-    header: ({ column }) => <TableSorter column={column} header="SLUG" />,
-    cell: ({ row }) => (
-      <span className="bg-muted rounded-md px-2 py-1 text-xs font-medium">
-        {row.original.slug}
-      </span>
-    ),
+    header: ({ column }) => <TableSorter column={column} header="Slug" />,
+    cell: ({ row }) => <span className="db-chip">{row.original.slug}</span>,
   },
 
   {
     accessorKey: "published",
-    header: ({ column }) => <TableSorter column={column} header="STATUS" />,
-    cell: ({ row }) => {
-      const published = row.original.published;
-
-      return (
-        <span
-          className={`rounded-md px-2 py-1 text-xs font-medium ${
-            published
-              ? "bg-green-500/10 text-green-600"
-              : "bg-yellow-500/10 text-yellow-600"
-          }`}
-        >
-          {published ? "PUBLISHED" : "DRAFT"}
-        </span>
-      );
-    },
+    header: ({ column }) => <TableSorter column={column} header="Status" />,
+    cell: ({ row }) => <PublishedBadge published={row.original.published} />,
   },
 
   {
     accessorKey: "createdAt",
-    header: ({ column }) => <TableSorter column={column} header="CREATED" />,
+    header: ({ column }) => <TableSorter column={column} header="Written" />,
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
 
       return (
-        <div className="flex flex-col text-sm leading-tight">
-          <span>{date.toLocaleDateString()}</span>
-
-          <span className="text-muted-foreground text-xs">
-            {date.toLocaleTimeString()}
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold">
+            {date.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </span>
+          <span className="db-cell-sub">
+            {date.toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </span>
         </div>
       );
@@ -183,27 +144,14 @@ export const postColumns: ColumnDef<PostTableType>[] = [
 
   {
     id: "actions",
-    header: () => <span className="text-xs">ACTIONS</span>,
-    cell: ({ row }) => {
-      const post = row.original;
-
-      return (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/journal/${post.slug}`}
-            className="bg-muted hover:bg-muted/80 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            View
-          </Link>
-
-          <Link
-            href={`/dashboard/posts/update/${post.slug}`}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1 text-xs font-medium transition-colors"
-          >
-            Edit
-          </Link>
-        </div>
-      );
-    },
+    header: () => "Actions",
+    cell: ({ row }) => (
+      <RowActions
+        viewHref={`/journal/${row.original.slug}`}
+        editHref={`/dashboard/posts/update/${row.original.slug}`}
+        name={row.original.title}
+        onDelete={() => deletePost(row.original.id)}
+      />
+    ),
   },
 ];

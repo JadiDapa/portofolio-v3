@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useEntered } from "@/hooks/use-entered";
+import BoxFrame from "@/components/root/shared/BoxFrame";
 import { Sparkles } from "lucide-react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import { DEFAULT_SERVICE_ICON, SERVICE_ICONS } from "@/components/root/serviceIcons";
 import ServiceLink from "./ServiceLink";
 
@@ -42,14 +44,9 @@ export default function ServiceHero({
   summary: string;
   images: string[];
 }) {
-  const [visible, setVisible] = useState(false);
+  const visible = useEntered();
   const heading = useRef<HTMLHeadingElement>(null);
   const Icon = SERVICE_ICONS[slug] ?? DEFAULT_SERVICE_ICON;
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   // A long single word (e.g. "Development") would clip on a phone: shrink the
   // whole heading just enough for the widest word to fit
@@ -77,16 +74,7 @@ export default function ServiceHero({
   return (
     <section>
       <div className="sd-hero" data-cmp="hero">
-        <div
-          className="wk-box sd-hero-glass"
-          data-visible={visible || undefined}
-          aria-hidden
-        >
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
+        <BoxFrame visible={visible} className="sd-hero-glass" />
 
         <div className="sd-hero-title" data-cmp="heroTitle">
           <header className="wk-pad relative space-y-(--space-3xs-2xs) text-center">

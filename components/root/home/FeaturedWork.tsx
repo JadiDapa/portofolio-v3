@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useOpenCategory } from "@/hooks/use-open-category";
 import { motion } from "motion/react";
 import { Asterisk, Lightbulb, Sparkles } from "lucide-react";
 import ProjectPreview, { type WorkProject } from "@/components/root/work/ProjectPreview";
@@ -11,12 +11,10 @@ import ServiceLink from "@/components/root/services/detail/ServiceLink";
  * one column so they interlock. Cards are the same ones /work previews with.
  */
 export default function FeaturedWork({ projects }: { projects: WorkProject[] }) {
-  const router = useRouter();
+  const openCategory = useOpenCategory();
   if (projects.length === 0) return null;
 
   const [first, left, right] = projects;
-  const openCategory = (category: string) =>
-    router.push(`/work?category=${encodeURIComponent(category)}`);
 
   const card = (project: WorkProject, landscape?: boolean) => (
     <ProjectPreview

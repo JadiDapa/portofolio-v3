@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { CreateUserDTO, UpdateUserDTO } from "../validators/user.validator";
 import { Prisma, Role } from "@/generated/prisma";
 

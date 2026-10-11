@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
+import BoxFrame from "@/components/root/shared/BoxFrame";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import { cn } from "@/lib/utils";
 
 /**
@@ -27,35 +28,11 @@ export default function SectionTitle({
   boxed?: boolean;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const [ref, visible] = useInViewOnce({ threshold: 0.3 });
 
   return (
     <div ref={ref} className={cn("relative", className)}>
-      {boxed && (
-        <div className="wk-box ct-glass" data-visible={visible || undefined} aria-hidden>
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-      )}
+      {boxed && <BoxFrame visible={visible} className="ct-glass" />}
 
       <header
         className={cn(

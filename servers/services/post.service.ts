@@ -1,7 +1,8 @@
 import { Prisma } from "@/generated/prisma";
 import { CreatePostDTO, UpdatePostDTO } from "../validators/post.validator";
 import prisma from "@/lib/prisma";
-import slugify from "slugify";
+import { toSlug } from "../validators/common";
+import { uniqueViolation } from "./errors";
 
 export type PostListOptions = {
   page?: number;
@@ -52,6 +53,18 @@ export const PostService = {
     });
   },
 
+  async getRecent(take: number) {
+    return await prisma.post.findMany({
+      take,
+      orderBy: { id: "desc" },
+      include: { author: true },
+    });
+  },
+
+  async countPublished() {
+    return await prisma.post.count({ where: { published: true } });
+  },
+
   async getById(id: number) {
     return await prisma.post.findUnique({ where: { id } });
   },
@@ -63,9 +76,28 @@ export const PostService = {
     });
   },
 
+  /** The published entries either side of this one, in the same newest-first order as the list. */
+  async getNeighbours(id: number) {
+    const select = { title: true, slug: true, thumbnail: true } as const;
+    const [newer, older] = await Promise.all([
+      prisma.post.findFirst({
+        where: { published: true, id: { gt: id } },
+        orderBy: { id: "asc" },
+        select,
+      }),
+      prisma.post.findFirst({
+        where: { published: true, id: { lt: id } },
+        orderBy: { id: "desc" },
+        select,
+      }),
+    ]);
+
+    return { newer, older };
+  },
+
   async create(data: CreatePostDTO) {
-    const slug = data.slug || slugify(data.title, { lower: true, strict: true });
-    return prisma.post.create({ data: { ...data, slug } });
+    const slug = data.slug || toSlug(data.title);
+    return prisma.post.create({ data: { ...data, slug } }).catch(uniqueViolation("post"));
   },
 
   async update(id: number, data: UpdatePostDTO) {
@@ -74,5 +106,13 @@ export const PostService = {
 
   async delete(id: number) {
     return prisma.post.delete({ where: { id } });
+  },
+
+  async setPublishedMany(ids: number[], published: boolean) {
+    return prisma.post.updateMany({ where: { id: { in: ids } }, data: { published } });
+  },
+
+  async deleteMany(ids: number[]) {
+    return prisma.post.deleteMany({ where: { id: { in: ids } } });
   },
 };

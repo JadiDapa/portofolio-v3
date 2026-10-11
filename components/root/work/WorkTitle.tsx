@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEntered } from "@/hooks/use-entered";
+import BoxFrame from "@/components/root/shared/BoxFrame";
 import { LabelArt } from "./WorkArt";
-import RevealHeading from "./RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import { cn } from "@/lib/utils";
 
 const LABEL_LEFT = "Project";
@@ -27,22 +28,12 @@ export default function WorkTitle({
   /** Drop the label row on phones, leaving just the heading and opening. */
   compactLabel?: boolean;
 }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const visible = useEntered();
 
   return (
     <section>
       <div className="relative" data-cmp="title">
-        <div className="wk-box" data-visible={visible || undefined} aria-hidden>
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
+        <BoxFrame visible={visible} />
 
         <header className="wk-pad relative space-y-(--space-3xs-2xs) text-center">
           <p

@@ -27,7 +27,7 @@ export default function ServicesOverview({ services }: { services: Service[] }) 
         <div className="sv-aside-sticky">
           <div
             data-cmp="aside"
-            className="wk-b space-y-(--space-s-m) bg-[#0f0f0f] p-(--space-s-m) text-white"
+            className="wk-b space-y-(--space-s-m) bg-foreground p-(--space-s-m) text-(--on-foreground)"
           >
             <p data-cmp="asideTitle" className="sv-aside-title text-balance">
               What I <br />

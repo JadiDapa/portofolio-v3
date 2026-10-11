@@ -5,7 +5,29 @@ import {
   resolveSections,
 } from "../validators/project.validator";
 import prisma from "@/lib/prisma";
-import slugify from "slugify";
+import { cache } from "react";
+import { toSlug } from "../validators/common";
+import { uniqueViolation } from "./errors";
+
+/** The slim shape public project grids render. */
+export const projectCardSelect = {
+  id: true,
+  title: true,
+  slug: true,
+  category: true,
+  coverImage: true,
+} satisfies Prisma.ProjectSelect;
+
+export type ProjectCard = Prisma.ProjectGetPayload<{ select: typeof projectCardSelect }>;
+
+function shuffle<T>(items: T[]) {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 export type ProjectListOptions = {
   page?: number;
@@ -54,15 +76,34 @@ export const ProjectService = {
     return await prisma.project.findMany({ orderBy: { id: "desc" } });
   },
 
+  /** Published projects as slim cards, newest first (or featured only). */
+  async listCards(opts: { featured?: boolean; category?: string; take?: number } = {}) {
+    return await prisma.project.findMany({
+      where: {
+        published: true,
+        ...(opts.featured !== undefined && { featured: opts.featured }),
+        ...(opts.category && { category: opts.category }),
+      },
+      orderBy: { id: "desc" },
+      take: opts.take,
+      select: projectCardSelect,
+    });
+  },
+
+  async count() {
+    return await prisma.project.count();
+  },
+
   async getById(id: number) {
     return await prisma.project.findUnique({ where: { id } });
   },
 
-  async getBySlug(slug: string) {
+  /** Memoised per request so `generateMetadata` and the page share one query. */
+  getBySlug: cache(async (slug: string) => {
     const project = await prisma.project.findUnique({ where: { slug } });
     if (!project) return null;
     return { ...project, sections: resolveSections(project) };
-  },
+  }),
 
   /** Up to `take` random published projects, excluding `excludeIds`. */
   async getRelated(excludeIds: number[], take = 2) {
@@ -70,20 +111,17 @@ export const ProjectService = {
       where: { published: true, id: { notIn: excludeIds } },
       select: { id: true },
     });
-    const ids = rows
-      .map((r) => r.id)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, take);
+    const ids = shuffle(rows.map((r) => r.id)).slice(0, take);
     if (ids.length === 0) return [];
     return prisma.project.findMany({
       where: { id: { in: ids } },
-      select: { id: true, title: true, slug: true, category: true, coverImage: true },
+      select: projectCardSelect,
     });
   },
 
   async create(data: CreateProjectDTO) {
-    const slug = data.slug || slugify(data.title, { lower: true, strict: true });
-    return prisma.project.create({ data: { ...data, slug } });
+    const slug = data.slug || toSlug(data.title);
+    return prisma.project.create({ data: { ...data, slug } }).catch(uniqueViolation("project"));
   },
 
   async update(id: number, data: UpdateProjectDTO) {
@@ -92,5 +130,13 @@ export const ProjectService = {
 
   async delete(id: number) {
     return prisma.project.delete({ where: { id } });
+  },
+
+  async setPublishedMany(ids: number[], published: boolean) {
+    return prisma.project.updateMany({ where: { id: { in: ids } }, data: { published } });
+  },
+
+  async deleteMany(ids: number[]) {
+    return prisma.project.deleteMany({ where: { id: { in: ids } } });
   },
 };

@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import { useClerk, useSignUp } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import DbButton from "@/components/dashboard/ui/DbButton";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUser } from "@/app/action/user.action";
+import { registerUser } from "@/app/action/user.action";
 
 const signUpSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -38,7 +35,7 @@ export default function SignUpForm() {
     defaultValues: { name: "", username: "", password: "" },
   });
 
-  async function onSubmit(values: SignUpFormType) {
+  function onSubmit(values: SignUpFormType) {
     startTransition(async () => {
       if (!loaded) return;
 
@@ -56,14 +53,13 @@ export default function SignUpForm() {
         }
 
         if (signUp.status === "complete") {
-          await createUser({
+          await registerUser({
             username: values.username,
             name: values.name,
-            role: "USER",
           });
           await signUp.finalize({
             navigate: ({ decorateUrl }) => {
-              router.push(decorateUrl("/"));
+              router.push(decorateUrl("/dashboard"));
             },
           });
         } else {
@@ -77,66 +73,73 @@ export default function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="name">Full name</Label>
-        <Input
+    <form onSubmit={handleSubmit(onSubmit)} className="db-auth_form">
+      <div className="db-field">
+        <label htmlFor="name" className="db-label">Full name</label>
+        <input
           id="name"
           {...register("name")}
+          className="db-input"
           placeholder="Your full name"
           autoComplete="name"
+          aria-invalid={!!errors.name}
         />
         {errors.name && (
-          <p className="text-destructive text-sm">{errors.name.message}</p>
+          <p className="db-field_error" role="alert">{errors.name.message}</p>
         )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="username">Username</Label>
-        <Input
+      <div className="db-field">
+        <label htmlFor="username" className="db-label">Username</label>
+        <input
           id="username"
           {...register("username")}
+          className="db-input"
           placeholder="Choose a username"
           autoComplete="username"
+          aria-invalid={!!errors.username}
         />
         {errors.username && (
-          <p className="text-destructive text-sm">{errors.username.message}</p>
+          <p className="db-field_error" role="alert">{errors.username.message}</p>
         )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="password">Password</Label>
-        <div className="relative">
-          <Input
+      <div className="db-field">
+        <label htmlFor="password" className="db-label">Password</label>
+        <div className="db-auth_pw">
+          <input
             id="password"
             {...register("password")}
+            className="db-input"
             type={isVisible ? "text" : "password"}
             placeholder="At least 8 characters"
             autoComplete="new-password"
-            className="pr-10"
+            aria-invalid={!!errors.password}
           />
           <button
             type="button"
             onClick={() => setIsVisible(!isVisible)}
-            className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+            className="db-auth_eye"
+            aria-label={isVisible ? "Hide password" : "Show password"}
           >
-            {isVisible ? (
-              <EyeOff className="size-4" />
-            ) : (
-              <Eye className="size-4" />
-            )}
+            {isVisible ? <EyeOff size={18} strokeWidth={1.4} /> : <Eye size={18} strokeWidth={1.4} />}
           </button>
         </div>
         {errors.password && (
-          <p className="text-destructive text-sm">{errors.password.message}</p>
+          <p className="db-field_error" role="alert">{errors.password.message}</p>
         )}
       </div>
 
       <div id="clerk-captcha" />
 
-      <Button type="submit" disabled={isPending || !loaded} className="w-full">
-        {isPending ? <Spinner /> : "Create account"}
-      </Button>
+      <DbButton
+        type="submit"
+        dark
+        disabled={isPending || !loaded}
+        className="wk-btn--expand"
+      >
+        {isPending ? "Creating…" : "Create account"}
+      </DbButton>
     </form>
   );
 }

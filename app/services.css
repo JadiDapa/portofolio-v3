@@ -54,8 +54,8 @@
   transform: scale(1.25);
 }
 .sv-tile--dark {
-  background: #0f0f0f;
-  color: #fff;
+  background: var(--foreground);
+  color: var(--on-foreground);
 }
 
 /* Overview: sticky aside sits above the list on small screens */
@@ -158,7 +158,7 @@
   height: calc(100% - 16px);
   overflow: hidden;
   border-radius: 8px;
-  background: #0f0f0f;
+  background: var(--foreground);
   transform: translateX(-100%);
   transition: transform 0.8s var(--wk-ease);
 }
@@ -172,7 +172,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--on-foreground);
 }
 .sv-row-media-inner.sv-tile--dark svg {
   width: 1.6em;
@@ -270,9 +270,9 @@
   align-items: center;
   gap: 0.4em;
   padding: 0.3em;
-  border: 1px solid #0f0f0f;
+  border: 1px solid var(--foreground);
   border-radius: 9999px;
-  background: #fff;
+  background: var(--surface);
 }
 @media (width >= 64rem) {
   .sv-toolbar nav {
@@ -303,8 +303,8 @@
 }
 .sv-toolbar nav a.is-active {
   transform: scale(1);
-  background: #0f0f0f;
-  color: #fff;
+  background: var(--foreground);
+  color: var(--on-foreground);
 }
 @media (width >= 64rem) {
   .sv-toolbar nav a.is-active {
@@ -321,4 +321,11 @@
   flex-shrink: 0;
   white-space: nowrap;
   font-size: 0.6em;
+}
+
+/* Skill names under a service's summary */
+.sv-row-skills {
+  margin-top: var(--space-xs-s);
+  color: #b3b3b3;
+  line-height: 1.5;
 }

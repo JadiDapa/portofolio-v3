@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GridButton from "@/components/root/work/GridButton";
 
-const ARROW =
+export const ARROW_PATH =
   "M4.77 11.943h13.321m1.025 0L11.943 4.77m7.173 7.173-7.173 7.173";
 
 /** Expanding grid button: the arrow slides in from the left, the icon tilts on hover. */
@@ -29,11 +29,10 @@ export default function ServiceLink({
       dark={dark}
       onClick={onClick}
       className={cn("sv-link", className)}
-      ariaLabel={label}
     >
       <svg viewBox="0 0 24 24" fill="none" className="sv-link-left" aria-hidden>
         <path
-          d={ARROW}
+          d={ARROW_PATH}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="square"

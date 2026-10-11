@@ -1,0 +1,517 @@
+/* ==========================================================================
+   Cards, timeline rows and the dialog skin.
+   Cards are a black base + a paper panel that lifts (same trick as .wk-btn).
+   ========================================================================== */
+.db-grid {
+  display: grid;
+  gap: var(--space-m-l);
+  padding: 0 var(--space-xs-s) var(--space-xs-s) 0; /* room for the lift */
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (width >= 40rem) {
+  .db-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width >= 90rem) {
+  .db-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.db-card_top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1em;
+}
+.db-card_foot {
+  margin-top: auto;
+  padding-top: var(--space-xs-s);
+  border-top: 1px solid var(--grid);
+}
+
+/* Testimonial: giant quote mark behind the words */
+.db-quote {
+  position: relative;
+  font-size: var(--step-1);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.db-quote_mark {
+  height: 0.6em;
+  font-size: var(--step-8);
+  font-weight: 900;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--foreground);
+  user-select: none;
+}
+
+/* User: initial block */
+.db-avatar {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  background: var(--foreground);
+  color: var(--on-foreground);
+  font-size: var(--step-4);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.db-card[data-tone="pink"] .db-avatar {
+  background: var(--accent-pink);
+}
+
+/* Recognition: the big title is the card */
+.db-reco_title {
+  font-size: var(--step-2);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* Experience: a timeline of dated rows */
+.db-tl {
+  border-top: 2px solid var(--foreground);
+}
+.db-tl_row {
+  display: grid;
+  align-items: center;
+  gap: var(--space-xs-s) var(--space-m);
+  padding: var(--space-s-m) var(--space-xs-s);
+  border-bottom: 1px solid var(--grid);
+  background-image: linear-gradient(#0f0f0f, #0f0f0f);
+  background-repeat: no-repeat;
+  background-size: 100% 0;
+  background-position: 0 var(--origin, 100%);
+  transition:
+    background-size 0.5s var(--wk-ease),
+    color 0.3s var(--wk-ease);
+  animation: db-rise 0.8s var(--wk-ease) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+@media (width >= 48rem) {
+  .db-tl_row {
+    grid-template-columns: 15rem minmax(0, 1fr) auto;
+  }
+}
+.db-tl_date {
+  grid-column: 1 / -1;
+  font-size: var(--step-1);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.db-tl_date small {
+  display: block;
+  margin-top: 0.4em;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #b3b3b3;
+}
+@media (width >= 48rem) {
+  .db-tl_date {
+    grid-column: auto;
+  }
+}
+.db-tl_role {
+  font-size: var(--step-2);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-tl_row:hover,
+  .db-tl_row:focus-within {
+    background-size: 100% 100%;
+    color: #fff;
+    --foreground: #fff;
+    --muted-foreground: #b3b3b3;
+    --grid: #262626;
+  }
+}
+
+/* ==========================================================================
+   Dialog skin. Dialogs portal outside .db-root, so tokens are re-declared here.
+   ========================================================================== */
+.db-dialog {
+  --background: #f8f8f8;
+  --foreground: #0f0f0f;
+  --on-foreground: #fff;
+  --surface: #fff;
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.44 0 0);
+  --border: #0f0f0f;
+  --input: #0f0f0f;
+  --popover: #fff;
+  --popover-foreground: #0f0f0f;
+  --accent: #ebe9e5;
+  --accent-foreground: #0f0f0f;
+  --primary: #0f0f0f;
+  --primary-foreground: #fff;
+  --ring: #00be7a;
+  border: 1px solid #0f0f0f !important;
+  border-radius: 0 !important;
+  box-shadow: 0.9rem -0.9rem 0 #0f0f0f !important;
+  background: #f8f8f8 !important;
+  color: #0f0f0f;
+  padding: var(--space-m) !important;
+  gap: var(--space-s-m) !important;
+}
+.db-dialog [data-slot="dialog-title"] {
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.db-dialog [data-slot="dialog-description"],
+.db-dialog [data-slot="dialog-header"] p {
+  font-size: var(--step--1);
+  color: #6b6b6b;
+}
+.db-dialog [data-slot="label"] {
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.db-dialog [data-slot="input"],
+.db-dialog [data-slot="textarea"],
+.db-dialog [data-slot="select-trigger"] {
+  border: 1px solid #0f0f0f;
+  border-radius: 0;
+  background: #f8f8f8;
+  box-shadow: none;
+  font-size: var(--step--1);
+  font-weight: 450;
+  transition:
+    background-color 0.3s var(--wk-ease),
+    box-shadow 0.3s var(--wk-ease),
+    border-color 0.3s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-dialog [data-slot="input"]:hover,
+  .db-dialog [data-slot="textarea"]:hover,
+  .db-dialog [data-slot="select-trigger"]:hover {
+    background: #ebe9e5;
+    box-shadow: inset 0 -4px #0f0f0f;
+  }
+}
+.db-dialog [data-slot="input"]:focus-visible,
+.db-dialog [data-slot="textarea"]:focus-visible,
+.db-dialog [data-slot="select-trigger"]:focus-visible {
+  border-color: #00be7a;
+  background: #fff;
+  box-shadow: none;
+  outline: none;
+}
+.db-dialog [aria-invalid="true"] {
+  border-color: #ff2e79 !important;
+  background: rgba(255, 46, 121, 0.08) !important;
+}
+.db-dialog [data-slot="button"] {
+  height: 2.75rem;
+  padding-inline: 1.4rem;
+  border: 1px solid #0f0f0f;
+  border-radius: 0;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: none;
+  transition:
+    transform 0.4s var(--wk-ease),
+    box-shadow 0.4s var(--wk-ease),
+    background-color 0.3s;
+}
+.db-dialog [data-slot="button"][type="submit"],
+.db-dialog [data-slot="button"][data-variant="default"] {
+  background: #0f0f0f;
+  color: #fff;
+}
+.db-dialog [data-slot="button"][data-variant="outline"],
+.db-dialog [data-slot="button"][data-variant="ghost"] {
+  background: #f8f8f8;
+  color: #0f0f0f;
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-dialog [data-slot="button"]:not(:disabled):hover {
+    transform: translate(0.3rem, -0.3rem);
+    box-shadow: -0.3rem 0.3rem 0 #0f0f0f;
+  }
+}
+.db-dialog [data-slot="button"]:active {
+  transform: none;
+  box-shadow: none;
+}
+.db-dialog [data-slot="switch"][data-state="checked"] {
+  background: #0f0f0f;
+}
+.db-dialog [data-slot="dialog-close"] {
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-tl_row {
+    animation: none;
+  }
+}
+
+/* Reorder dialog rows */
+.db-reorder {
+  max-height: 55vh;
+  overflow-y: auto;
+  border-top: 1px solid #0f0f0f;
+}
+.db-reorder_row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs-s);
+  padding: var(--space-xs-s);
+  border-bottom: 1px solid #e5e5e5;
+  background: #f8f8f8;
+  list-style: none;
+}
+.db-reorder_grip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  cursor: grab;
+  color: #8a8a8a;
+}
+.db-reorder_grip:active {
+  cursor: grabbing;
+}
+.db-reorder_num {
+  font-size: var(--step-1);
+}
+
+/* ==========================================================================
+   ⌘K command palette (cmdk, portaled outside .db-root so colours are literal)
+   ========================================================================== */
+.db-cmd_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(15, 15, 15, 0.45);
+}
+.db-cmd {
+  position: fixed;
+  top: 14vh;
+  left: 50%;
+  z-index: 61;
+  width: min(40rem, calc(100vw - 2rem));
+  translate: -50% 0;
+  border: 1px solid #0f0f0f;
+  background: #f8f8f8;
+  color: #0f0f0f;
+  box-shadow: 0.9rem -0.9rem 0 #0f0f0f;
+  animation: db-cmd-in 0.5s var(--wk-ease) both;
+}
+@keyframes db-cmd-in {
+  from {
+    opacity: 0;
+    translate: -50% 1rem;
+  }
+}
+.db-cmd_input {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid #0f0f0f;
+}
+.db-cmd_input input {
+  flex: 1;
+  height: 3.5rem;
+  background: transparent;
+  font: inherit;
+  font-size: var(--step-0);
+  font-weight: 600;
+  outline: none;
+}
+.db-cmd_input input::placeholder {
+  color: rgba(15, 15, 15, 0.35);
+}
+.db-cmd kbd {
+  padding: 0.2em 0.6em;
+  border: 1px solid #0f0f0f;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.db-cmd [cmdk-list] {
+  max-height: min(24rem, 50vh);
+  overflow-y: auto;
+  padding-bottom: 0.4rem;
+}
+.db-cmd [cmdk-group-heading] {
+  padding: 0.9rem 1rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+.db-cmd [cmdk-item] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 1rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background-color 0.25s var(--wk-ease),
+    color 0.25s var(--wk-ease);
+}
+.db-cmd [cmdk-item][data-selected="true"] {
+  background: #0f0f0f;
+  color: #fff;
+}
+.db-cmd_num {
+  width: 2.4rem;
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #b3b3b3;
+}
+.db-cmd_enter {
+  margin-left: auto;
+  flex: none;
+  opacity: 0;
+}
+.db-cmd [cmdk-item][data-selected="true"] .db-cmd_enter {
+  opacity: 1;
+}
+.db-cmd [cmdk-empty] {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: #8a8a8a;
+}
+.db-cmd_foot {
+  display: flex;
+  gap: 1.4rem;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid #0f0f0f;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-cmd {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Right-hand sheet (replaces the centred dialogs). Reuses the .db-dialog
+   field/button skin; this block only changes the frame.
+   ========================================================================== */
+[data-slot="sheet-overlay"] {
+  background: rgba(15, 15, 15, 0.45) !important;
+  backdrop-filter: none !important;
+}
+.db-sheetpanel {
+  width: min(34rem, 100vw) !important;
+  max-width: none !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-width: 0 0 0 1px !important;
+  box-shadow: none !important;
+}
+.db-sheetpanel [data-slot="sheet-header"] {
+  position: relative;
+  gap: 0.5rem;
+  padding: var(--space-m) 4.5rem var(--space-s-m) var(--space-m);
+  border-bottom: 1px solid #0f0f0f;
+}
+.db-sheetpanel [data-slot="sheet-title"] {
+  font-family: inherit;
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #0f0f0f;
+}
+.db-sheetpanel [data-slot="sheet-description"],
+.db-sheetpanel [data-slot="sheet-header"] p {
+  font-size: var(--step--1);
+  color: #6b6b6b;
+}
+.db-sheet_close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-left: 1px solid #0f0f0f;
+  border-bottom: 1px solid #0f0f0f;
+  transition:
+    background-color 0.4s var(--wk-ease),
+    color 0.4s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-sheet_close:hover {
+    background: #0f0f0f;
+    color: #fff;
+  }
+}
+/* The form (or list) is the scrolling body; its footer sticks to the bottom */
+.db-sheetpanel > form,
+.db-sheetpanel > .db-sheet_body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-s-m) var(--space-m) 0;
+}
+.db-sheetpanel > form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+}
+.db-sheetfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-xs-s) !important;
+  margin: auto calc(var(--space-m) * -1) 0;
+  padding: var(--space-xs-s) var(--space-m) !important;
+  border-top: 1px solid #0f0f0f;
+  background: #f8f8f8;
+}
+.db-sheetfoot--flush {
+  margin: 0;
+}
+.db-reorder {
+  max-height: none;
+}

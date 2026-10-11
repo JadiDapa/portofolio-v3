@@ -1,29 +1,14 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, GripVertical, Plus, Trash2 } from "lucide-react";
+import { Reorder, useDragControls } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import type { Faq, ProcessStep } from "@/servers/validators/service.validator";
-
-/** Drops blank outcomes and steps the editor left empty. */
-export function cleanProcess(steps: ProcessStep[] | undefined): ProcessStep[] {
-  return (steps ?? [])
-    .map((s) => ({
-      title: s.title.trim(),
-      text: s.text.trim(),
-      outcomes: s.outcomes.map((o) => o.trim()).filter(Boolean),
-    }))
-    .filter((s) => s.title && s.text);
-}
-
-export function cleanFaqs(faqs: Faq[] | undefined): Faq[] {
-  return (faqs ?? [])
-    .map((f) => ({ question: f.question.trim(), answer: f.answer.trim() }))
-    .filter((f) => f.question && f.answer);
-}
+import TagInput from "@/components/dashboard/ui/TagInput";
+import type { Faq, ProcessStep, Skill } from "@/servers/validators/service.validator";
 
 function move<T>(list: T[], from: number, to: number) {
   if (to < 0 || to >= list.length) return list;
@@ -176,6 +161,98 @@ export function FaqEditor({
         onClick={() => onChange([...value, { question: "", answer: "" }])}
       >
         <Plus className="h-4 w-4" /> Add question
+      </Button>
+    </div>
+  );
+}
+
+export const newSkillId = () => Math.random().toString(36).slice(2, 10);
+
+function SkillItem({
+  skill,
+  index,
+  onChange,
+  onRemove,
+}: {
+  skill: Skill;
+  index: number;
+  onChange: (patch: Partial<Skill>) => void;
+  onRemove: () => void;
+}) {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={skill}
+      dragListener={false}
+      dragControls={controls}
+      className="db-section space-y-3 p-3"
+      whileDrag={{ scale: 1.01, boxShadow: "0.6rem -0.6rem 0 #0f0f0f" }}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <p className="flex items-center gap-2 text-sm font-medium">
+          <GripVertical
+            aria-label="Drag to reorder"
+            onPointerDown={(e) => controls.start(e)}
+            style={{ touchAction: "none" }}
+            className="db-grip text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing"
+          />
+          Skill {index + 1}
+        </p>
+        <Button type="button" size="icon" variant="ghost" aria-label="Remove skill" onClick={onRemove}>
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+      <Input
+        value={skill.name}
+        onChange={(e) => onChange({ name: e.target.value })}
+        placeholder="Skill, e.g. Frontend Development"
+      />
+      <Input
+        value={skill.summary ?? ""}
+        onChange={(e) => onChange({ summary: e.target.value })}
+        placeholder="One-line summary (optional)"
+      />
+      <TagInput
+        value={skill.tools}
+        onChange={(tools) => onChange({ tools })}
+        placeholder="Tools: Next.js, React, TypeScript…"
+        label="tool"
+      />
+    </Reorder.Item>
+  );
+}
+
+/** Service → skills → tools. Drag a card by its grip to reorder. */
+export function SkillsEditor({
+  value,
+  onChange,
+}: {
+  value: Skill[];
+  onChange: (next: Skill[]) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <Reorder.Group axis="y" values={value} onReorder={onChange} className="space-y-3">
+        {value.map((skill, i) => (
+          <SkillItem
+            key={skill.id ?? i}
+            skill={skill}
+            index={i}
+            onChange={(patch) =>
+              onChange(value.map((s, j) => (j === i ? { ...s, ...patch } : s)))
+            }
+            onRemove={() => onChange(value.filter((_, j) => j !== i))}
+          />
+        ))}
+      </Reorder.Group>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => onChange([...value, { id: newSkillId(), name: "", tools: [] }])}
+      >
+        <Plus className="h-4 w-4" /> Add skill
       </Button>
     </div>
   );

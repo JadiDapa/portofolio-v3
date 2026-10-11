@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-export const PostSearchSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  pageSize: z.number().int().min(1).max(100).default(20),
-  search: z.string().min(1).max(50).optional(),
-});
-
 const PostBaseSchema = z.object({
   slug: z.string().optional(),
   title: z.string().min(1, "Title is required"),

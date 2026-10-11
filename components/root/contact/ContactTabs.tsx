@@ -33,9 +33,10 @@ export default function ContactTabs({ header }: { header?: boolean }) {
             dark={type === active}
             className="ct-btn ct-btn--expand"
             ariaLabel={`${type} form`}
+            ariaCurrent={type === active ? "page" : undefined}
           >
             <span className="ct-btn-text">{type}</span>
-            <ChevronDown strokeWidth={1.5} />
+            <ChevronDown strokeWidth={1.5} aria-hidden />
           </GridButton>
         </div>
       ))}

@@ -11,6 +11,16 @@ export const ExperienceService = {
     });
   },
 
+  /** Public About page: entries split by kind, newest first. */
+  async getGrouped() {
+    const all = await this.getAll();
+    return {
+      work: all.filter((e) => e.type === "WORK"),
+      organization: all.filter((e) => e.type === "ORGANIZATION"),
+      education: all.filter((e) => e.type === "EDUCATION"),
+    };
+  },
+
   async getById(id: number) {
     return await prisma.experience.findUnique({ where: { id } });
   },

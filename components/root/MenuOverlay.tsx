@@ -1,25 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookOpen, Menu, Rocket, X } from "lucide-react";
+import { Menu, Rocket, X } from "lucide-react";
 import GridButton from "@/components/root/work/GridButton";
 import ServiceLink from "@/components/root/services/detail/ServiceLink";
-
-const MAIN_LINKS = [
-  { title: "Work", href: "/work" },
-  { title: "About", href: "/about" },
-  { title: "Services", href: "/services" },
-  { title: "Contact", href: "/contact" },
-];
-
-const BOTTOM_LINKS = [
-  { title: "Journal", href: "/journal", icon: BookOpen },
-  { title: "GitHub", href: "#", icon: ArrowUpRight },
-  { title: "LinkedIn", href: "#", icon: ArrowUpRight },
-  { title: "Resume", href: "#", icon: ArrowUpRight },
-];
+import { EXTRA_LINKS, MENU_LINKS } from "@/components/root/siteLinks";
 
 /**
  * Fixed hamburger + monogram tile, and the full-screen menu they open. The
@@ -28,6 +15,8 @@ const BOTTOM_LINKS = [
 export function MenuOverlay() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menu = useRef<HTMLDivElement>(null);
+  const toggle = useRef<HTMLDivElement>(null);
 
   // Close when the route changes (adjusting state during render, not in an effect)
   const [lastPath, setLastPath] = useState(pathname);
@@ -40,6 +29,8 @@ export function MenuOverlay() {
     if (!open) return;
 
     document.body.style.overflow = "hidden";
+    const opener = toggle.current?.querySelector("button");
+    menu.current?.querySelector<HTMLElement>("a, button")?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
@@ -48,6 +39,7 @@ export function MenuOverlay() {
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKeyDown);
+      opener?.focus();
     };
   }, [open]);
 
@@ -67,12 +59,14 @@ export function MenuOverlay() {
       </div>
 
       <div className="hm-fab hm-fab--btn px-gutter pt-(--gutter-pad)">
-        <div className="hm-fab-row">
+        <div ref={toggle} className="hm-fab-row">
           <GridButton
             icon
             dark={open}
             onClick={() => setOpen((v) => !v)}
             ariaLabel={open ? "Close menu" : "Open menu"}
+            ariaExpanded={open}
+            ariaControls="site-menu"
             className="hm-menu-btn"
           >
             {open ? (
@@ -85,6 +79,11 @@ export function MenuOverlay() {
       </div>
 
       <div
+        ref={menu}
+        id="site-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
         className="hm-menu"
         data-open={open || undefined}
         aria-hidden={!open}
@@ -119,7 +118,7 @@ export function MenuOverlay() {
           </div>
 
           <nav className="hm-menu-nav">
-            {MAIN_LINKS.map((link) => (
+            {MENU_LINKS.map((link) => (
               <Link
                 key={link.title}
                 href={link.href}
@@ -132,7 +131,7 @@ export function MenuOverlay() {
           </nav>
 
           <div className="hm-menu-bottom">
-            {BOTTOM_LINKS.map((link) => (
+            {EXTRA_LINKS.map((link) => (
               <ServiceLink
                 key={link.title}
                 href={link.href}

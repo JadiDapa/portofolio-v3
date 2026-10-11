@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useInViewOnce } from "@/hooks/use-in-view-once";
 
 const NAME = "DAFFA ALTHAF";
 
@@ -9,24 +10,7 @@ const NAME = "DAFFA ALTHAF";
 // wordmark scrolls into view; click to replay.
 export default function NameReveal() {
   const [playKey, setPlayKey] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLParagraphElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStarted(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const [ref, started] = useInViewOnce<HTMLParagraphElement>({ threshold: 0.3 });
 
   const replay = () => setPlayKey((k) => k + 1);
 

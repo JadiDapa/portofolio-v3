@@ -1,8 +1,8 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import { ServiceService } from "@/servers/services/service.service";
 import DynamicBreadcrumb from "@/components/dashboard/DynamicBreadcrumb";
 import PageHeader from "@/components/dashboard/PageHeader";
-import UpdateServiceForm from "@/components/dashboard/services/UpdateServiceForm";
+import ServiceForm from "@/components/dashboard/services/ServiceForm";
 import { notFound, redirect } from "next/navigation";
 
 export default async function UpdateServicePage({
@@ -23,10 +23,10 @@ export default async function UpdateServicePage({
     <main className="w-full space-y-6">
       <div className="space-y-2">
         <DynamicBreadcrumb />
-        <PageHeader title="Update Service" subtitle="Edit this service." />
+        <PageHeader eyebrow="Services" title="Edit service" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <UpdateServiceForm service={service} />
+      <ServiceForm service={service} />
     </main>
   );
 }

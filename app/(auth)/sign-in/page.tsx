@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import SignInForm from "@/components/auth/sign-in/SignInForm";
-import Link from "next/link";
+import AuthShell from "@/components/auth/AuthShell";
 
 export default async function SignInPage() {
   const { userId } = await auth();
@@ -9,27 +9,15 @@ export default async function SignInPage() {
   if (userId) redirect("/dashboard");
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <h1 className="text-foreground text-2xl font-bold">Welcome back</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Sign in to your account to continue
-          </p>
-        </div>
-
-        <SignInForm />
-
-        <p className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/sign-up"
-            className="text-foreground underline underline-offset-4"
-          >
-            Sign up
-          </Link>
-        </p>
-      </div>
-    </div>
+    <AuthShell
+      eyebrow="(01) Sign in"
+      title="Welcome *back*"
+      subtitle="Sign in to manage your work, journal and inbox."
+      altText="No account?"
+      altHref="/sign-up"
+      altLabel="Sign up"
+    >
+      <SignInForm />
+    </AuthShell>
   );
 }

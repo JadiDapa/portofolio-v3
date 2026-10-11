@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MessageCircle, Sparkles } from "lucide-react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import type { Faq } from "@/servers/validators/service.validator";
 import ServiceLink from "./ServiceLink";
 
@@ -40,9 +40,8 @@ export default function ServiceFaq({
                 <button
                   type="button"
                   className="sd-acc-trigger wk-b"
-                  aria-label={isOpen ? "Collapse answer" : "Expand answer"}
-                  aria-expanded={isOpen}
-                  aria-controls={`faq-${i}`}
+                  aria-hidden
+                  tabIndex={-1}
                   onClick={() => toggle(i)}
                 >
                   <svg viewBox="0 0 24 24" className="sd-acc-icon" aria-hidden>
@@ -59,6 +58,7 @@ export default function ServiceFaq({
                 <article className="wk-b min-w-0 grow">
                   <button
                     type="button"
+                    id={`faq-q-${i}`}
                     className="sd-acc-header"
                     aria-expanded={isOpen}
                     aria-controls={`faq-${i}`}
@@ -66,7 +66,12 @@ export default function ServiceFaq({
                   >
                     <p className="sd-title">{faq.question}</p>
                   </button>
-                  <div id={`faq-${i}`} className="sd-acc-body" role="region">
+                  <div
+                    id={`faq-${i}`}
+                    className="sd-acc-body"
+                    role="region"
+                    aria-labelledby={`faq-q-${i}`}
+                  >
                     <div>
                       <div className="sd-acc-area">
                         <p className="sv-subtext">{faq.answer}</p>

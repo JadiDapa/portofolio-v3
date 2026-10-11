@@ -1,4 +1,5 @@
 import { BookOpen } from "lucide-react";
+import { pad2 } from "@/lib/format";
 import AboutTitle from "./AboutTitle";
 import Reveal from "./Reveal";
 
@@ -47,7 +48,7 @@ export default function AboutApproach() {
       <div className="relative z-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {APPROACH.map((item, i) => (
           <Reveal key={item.title} className="ab-space wk-b ab-glass ab-p">
-            <p className="wk-label">{String(i + 1).padStart(2, "0")}</p>
+            <p className="wk-label">{pad2(i + 1)}</p>
             <p className="ab-approach-heading ab-subtitle">{item.title}</p>
             <p className="ab-subtext">{item.description}</p>
           </Reveal>

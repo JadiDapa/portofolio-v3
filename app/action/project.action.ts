@@ -6,31 +6,53 @@ import {
   UpdateProjectSchema,
 } from "@/servers/validators/project.validator";
 import { ProjectService } from "@/servers/services/project.service";
+import { requireAdmin } from "@/lib/auth";
 import z from "zod";
+
+function revalidate() {
+  revalidatePath("/dashboard/projects");
+  revalidatePath("/");
+  revalidatePath("/work");
+  revalidatePath("/work/[slug]", "page");
+}
 
 export async function createProject(
   input: z.input<typeof CreateProjectSchema>,
 ) {
+  await requireAdmin();
   const data = CreateProjectSchema.parse(input);
   await ProjectService.create(data);
-  revalidatePath("/dashboard/projects");
-  revalidatePath("/work");
+  revalidate();
 }
 
 export async function updateProject(
   projectId: number,
   input: z.input<typeof UpdateProjectSchema>,
 ) {
+  await requireAdmin();
   const data = UpdateProjectSchema.parse(input);
   await ProjectService.update(projectId, data);
-  revalidatePath("/dashboard/projects");
-  revalidatePath("/work");
+  revalidate();
+}
+
+const Ids = z.array(z.number().int()).min(1).max(500);
+
+export async function setProjectsPublished(ids: number[], published: boolean) {
+  await requireAdmin();
+  await ProjectService.setPublishedMany(Ids.parse(ids), published);
+  revalidate();
+}
+
+export async function deleteProjects(ids: number[]) {
+  await requireAdmin();
+  await ProjectService.deleteMany(Ids.parse(ids));
+  revalidate();
 }
 
 export async function deleteProject(projectId: number) {
+  await requireAdmin();
   await ProjectService.delete(projectId);
-  revalidatePath("/dashboard/projects");
-  revalidatePath("/work");
+  revalidate();
 }
 
 /** Two random projects other than the current page, preferring ones not on screen already. */

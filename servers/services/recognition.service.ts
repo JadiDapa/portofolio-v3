@@ -11,6 +11,15 @@ export const RecognitionService = {
     });
   },
 
+  /** Rewrites `order` to match the position of each id in the list. */
+  async reorder(ids: number[]) {
+    return prisma.$transaction(
+      ids.map((id, order) =>
+        prisma.recognition.update({ where: { id }, data: { order } }),
+      ),
+    );
+  },
+
   async getPublished() {
     return await prisma.recognition.findMany({
       where: { published: true },

@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { MotionConfig } from "motion/react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./ThemeProvider";
@@ -22,7 +23,8 @@ export default function Providers({ children }: Props) {
           enableColorScheme
           disableTransitionOnChange
         >
-          {children}
+          {/* Honour the OS reduce-motion setting for every motion component */}
+          <MotionConfig reducedMotion="user">{children}</MotionConfig>
         </ThemeProvider>
       </QueryClientProvider>
     </ClerkProvider>

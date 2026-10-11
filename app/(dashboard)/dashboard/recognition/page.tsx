@@ -1,9 +1,11 @@
-import { getCurrentUser } from "@/app/action/user.action";
+import { getCurrentUser } from "@/lib/auth";
 import { RecognitionService } from "@/servers/services/recognition.service";
 import PageHeader from "@/components/dashboard/PageHeader";
-import RecognitionDialog from "@/components/dashboard/recognition/RecognitionDialog";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import RecognitionSheet from "@/components/dashboard/recognition/RecognitionSheet";
+import RecognitionCard from "@/components/dashboard/recognition/RecognitionCard";
+import ReorderSheet from "@/components/dashboard/ui/ReorderSheet";
+import { reorderRecognition } from "@/app/action/recognition.action";
+import DbEmpty from "@/components/dashboard/ui/DbEmpty";
 import { redirect } from "next/navigation";
 
 export default async function RecognitionPage() {
@@ -15,44 +17,37 @@ export default async function RecognitionPage() {
 
   return (
     <main className="w-full space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader
-          title="Recognition"
-          subtitle="Awards, certifications and press shown on the About page."
-        />
-        <RecognitionDialog />
-      </div>
+      <PageHeader
+        eyebrow="(06) Shelf"
+        title="Recognition"
+        subtitle="Awards, certifications and press shown on the About page."
+        actions={
+          <>
+            {items.length > 1 && (
+              <ReorderSheet
+                title="Reorder recognition"
+                description="Drag by the grip. This is the order on the About page."
+                items={items.map((r) => ({
+                  id: r.id,
+                  title: r.title,
+                  sub: [r.source, r.year].filter(Boolean).join(" / "),
+                }))}
+                onSave={reorderRecognition}
+              />
+            )}
+            <RecognitionSheet />
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {items.map((r) => (
-          <Card key={r.id} className="border-border/60">
-            <CardContent className="flex flex-col gap-3 p-5">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex gap-1.5">
-                  <Badge variant="outline" className="text-xs">
-                    {r.kind.toLowerCase()}
-                  </Badge>
-                  {!r.published && (
-                    <Badge variant="secondary" className="text-xs">
-                      Hidden
-                    </Badge>
-                  )}
-                </div>
-                <RecognitionDialog recognition={r} />
-              </div>
-              <p className="text-foreground text-sm font-medium">{r.title}</p>
-              <p className="text-muted-foreground text-xs">
-                {[r.source, r.year].filter(Boolean).join(" · ")}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {items.length === 0 && (
-        <p className="text-muted-foreground py-16 text-center text-sm">
-          No recognition yet.
-        </p>
+      {items.length === 0 ? (
+        <DbEmpty title="The shelf is *empty*" text="Add an award, a feature or a certificate." />
+      ) : (
+        <div className="db-grid">
+          {items.map((r) => (
+            <RecognitionCard key={r.id} recognition={r} />
+          ))}
+        </div>
       )}
     </main>
   );

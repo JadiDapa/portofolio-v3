@@ -5,10 +5,12 @@ import { ProjectService } from "@/servers/services/project.service";
 import {
   FaqSchema,
   ProcessStepSchema,
+  SkillSchema,
   parseList,
 } from "@/servers/validators/service.validator";
 import ServiceHero from "@/components/root/services/detail/ServiceHero";
 import ServiceIntro from "@/components/root/services/detail/ServiceIntro";
+import ServiceSkills from "@/components/root/services/detail/ServiceSkills";
 import ServiceProcess from "@/components/root/services/detail/ServiceProcess";
 import ServiceRelated from "@/components/root/services/detail/ServiceRelated";
 import ServiceFaq from "@/components/root/services/detail/ServiceFaq";
@@ -26,35 +28,29 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ServiceDetailPage({ params }: Params) {
   const { slug } = await params;
-  const service = await ServiceService.getBySlug(slug);
+  const [service, services, others] = await Promise.all([
+    ServiceService.getBySlug(slug),
+    ServiceService.getAll(),
+    ProjectService.listCards({ take: 12 }),
+  ]);
 
   if (!service) notFound();
 
-  const [services, own, others] = await Promise.all([
-    ServiceService.getAll(),
-    ProjectService.list({ published: true, category: service.title, pageSize: 12 }),
-    ProjectService.list({ published: true, pageSize: 12 }),
-  ]);
+  const own = await ProjectService.listCards({ category: service.title, take: 12 });
 
   // Projects in this service first, then anything else so the showcase is never empty
   const seen = new Set<number>();
-  const projects = [...own.items, ...others.items].filter((p) => {
+  const projects = [...own, ...others].filter((p) => {
     if (seen.has(p.id)) return false;
     seen.add(p.id);
     return true;
   });
 
   const images = projects.flatMap((p) => (p.coverImage ? [p.coverImage] : []));
-  const pool = projects.map((p) => ({
-    id: p.id,
-    title: p.title,
-    slug: p.slug,
-    category: p.category,
-    coverImage: p.coverImage,
-  }));
 
   const steps = parseList(ProcessStepSchema, service.process);
   const faqs = parseList(FaqSchema, service.faqs);
+  const skills = parseList(SkillSchema, service.skills);
 
   return (
     <article className="sd-page px-gutter pb-(--space-xl-2xl)">
@@ -70,8 +66,9 @@ export default async function ServiceDetailPage({ params }: Params) {
           lead={service.lead || service.summary}
           description={service.description}
         />
+        <ServiceSkills skills={skills} title={service.title} />
         <ServiceProcess steps={steps} title={service.title} />
-        <ServiceRelated pool={pool} />
+        <ServiceRelated pool={projects} />
         <ServiceFaq faqs={faqs} title={service.title} />
         <div className="-mt-(--space-l-xl)">
           <ServiceCta slug={service.slug} />

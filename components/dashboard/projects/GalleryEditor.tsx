@@ -14,13 +14,13 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { uploadMedia } from "@/app/action/upload.action";
+import { uploadImage, uploadMedia } from "@/app/action/upload.action";
+import { getErrorMessage } from "@/lib/utils";
+import { isVideo } from "@/lib/format";
 import type {
   GalleryBlock,
   GalleryItem,
 } from "@/servers/validators/project.validator";
-
-const isVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
 
 export function MediaSlot({
   value,
@@ -28,12 +28,15 @@ export function MediaSlot({
   accept,
   label,
   aspect = "16/9",
+  imageOnly = false,
 }: {
   value?: string | null;
   onChange: (src: string | null) => void;
   accept: string;
   label: string;
   aspect?: string;
+  /** Uses the stricter 5MB image upload instead of the 50MB image/video one. */
+  imageOnly?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -45,10 +48,10 @@ export function MediaSlot({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const { url } = await uploadMedia(fd);
+      const { url } = await (imageOnly ? uploadImage : uploadMedia)(fd);
       onChange(url);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(getErrorMessage(err, "Upload failed"));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";

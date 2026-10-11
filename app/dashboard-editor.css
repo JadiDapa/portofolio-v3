@@ -1,0 +1,442 @@
+/* ==========================================================================
+   Editors — fields, two-pane shell, live preview frame, sticky action bar.
+   Also skins the shadcn parts used inside the section / FAQ / gallery editors.
+   ========================================================================== */
+
+/* ---- Fields ------------------------------------------------------------- */
+.db-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.db-field_head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.db-label {
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.db-field_hint {
+  font-size: var(--step--2);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  max-width: 60ch;
+}
+.db-field_error {
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-pink);
+}
+textarea.db-input {
+  min-height: 5rem;
+}
+
+/* Section card inside the sections editor */
+.db-section {
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  list-style: none;
+}
+.db-grip {
+  flex: none;
+}
+
+/* ---- Shell -------------------------------------------------------------- */
+.db-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+  padding-top: var(--space-s-m);
+}
+.db-editor_toggle {
+  align-self: flex-start;
+}
+@media (width >= 80rem) {
+  .db-editor_toggle {
+    display: none;
+  }
+}
+.db-editor_panes {
+  display: grid;
+  gap: var(--space-m-l);
+  align-items: start;
+}
+@media (width >= 80rem) {
+  .db-editor_panes {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  }
+}
+.db-editor_fields {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-m);
+  padding-bottom: var(--space-l);
+}
+@media (width < 80rem) {
+  .db-editor[data-view="write"] .db-editor_preview {
+    display: none;
+  }
+  .db-editor[data-view="preview"] .db-editor_fields {
+    display: none;
+  }
+}
+.db-editor_preview {
+  min-width: 0;
+}
+@media (width >= 80rem) {
+  .db-editor_preview {
+    position: sticky;
+    top: var(--space-s-m);
+  }
+}
+
+/* ---- Preview frame ------------------------------------------------------ */
+.db-preview {
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  box-shadow: 0.9rem -0.9rem 0 var(--foreground);
+  margin: 0.9rem 0.9rem 0 0;
+}
+.db-preview_bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs-s);
+  padding: 0.6rem var(--space-xs-s);
+  border-bottom: 1px solid var(--foreground);
+}
+.db-preview_dots {
+  display: flex;
+  gap: 0.35rem;
+}
+.db-preview_dots i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid var(--foreground);
+  border-radius: 50%;
+}
+.db-preview_live {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: #00be7a;
+}
+.db-preview_live::before {
+  content: "";
+  width: 0.55em;
+  height: 0.55em;
+  background: currentColor;
+  animation: db-blink 1.6s steps(2, jump-none) infinite;
+}
+@keyframes db-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+.db-preview_host {
+  height: 70vh;
+  overflow: auto;
+  background: var(--background);
+}
+@media (width >= 80rem) {
+  .db-preview_host {
+    height: calc(100vh - 11rem);
+  }
+}
+.db-preview_canvas {
+  position: relative;
+  background: var(--background);
+  color: var(--foreground);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---- Sticky action bar -------------------------------------------------- */
+.db-actionbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs-s) var(--space-m);
+  padding: var(--space-xs-s) var(--space-s-m);
+  border: 1px solid var(--foreground);
+  background: var(--surface);
+  box-shadow: 0.5rem 0.5rem 0 rgba(15, 15, 15, 0.08);
+}
+.db-actionbar_state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+.db-actionbar_state::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  background: #00be7a;
+}
+.db-actionbar_state[data-dirty="true"] {
+  color: var(--foreground);
+}
+.db-actionbar_state[data-dirty="true"]::before {
+  background: var(--accent-pink);
+  animation: db-blink 1.2s steps(2, jump-none) infinite;
+}
+.db-actionbar_ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s) var(--space-m);
+}
+
+/* ==========================================================================
+   Global skin for shadcn parts inside the dashboard (nested editors).
+   ========================================================================== */
+.db-root [data-slot="input"],
+.db-root [data-slot="textarea"],
+.db-root [data-slot="select-trigger"] {
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: var(--background);
+  box-shadow: none;
+  font-size: var(--step--1);
+  font-weight: 450;
+  transition:
+    background-color 0.3s var(--wk-ease),
+    box-shadow 0.3s var(--wk-ease),
+    border-color 0.3s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-root [data-slot="input"]:hover,
+  .db-root [data-slot="textarea"]:hover,
+  .db-root [data-slot="select-trigger"]:hover {
+    background: #ebe9e5;
+    box-shadow: inset 0 -4px var(--foreground);
+  }
+}
+.db-root [data-slot="input"]:focus-visible,
+.db-root [data-slot="textarea"]:focus-visible,
+.db-root [data-slot="select-trigger"]:focus-visible {
+  border-color: #00be7a;
+  background: #fff;
+  box-shadow: none;
+  outline: none;
+}
+.db-root [data-slot="label"] {
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.db-root [data-slot="button"] {
+  border-radius: 0;
+  font-size: var(--step--2);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: none;
+  transition:
+    transform 0.4s var(--wk-ease),
+    box-shadow 0.4s var(--wk-ease),
+    background-color 0.3s,
+    color 0.3s;
+}
+.db-root [data-slot="button"][data-variant="outline"] {
+  border: 1px solid var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+}
+.db-root [data-slot="button"][data-variant="default"] {
+  background: var(--foreground);
+  color: var(--on-foreground);
+}
+.db-root [data-slot="button"][data-variant="ghost"]:hover {
+  background: #ebe9e5;
+  color: var(--foreground);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-root [data-slot="button"][data-variant="outline"]:not(:disabled):hover,
+  .db-root [data-slot="button"][data-variant="default"]:not(:disabled):hover {
+    transform: translate(0.25rem, -0.25rem);
+    box-shadow: -0.25rem 0.25rem 0 var(--foreground);
+  }
+}
+.db-root [data-slot="button"]:active {
+  transform: none;
+  box-shadow: none;
+}
+/* Switch: square track, ink when on */
+.db-root [data-slot="switch"] {
+  border-radius: 0;
+  border: 1px solid var(--foreground);
+  background: var(--background);
+}
+.db-root [data-slot="switch"] > span {
+  border-radius: 0;
+  background: var(--foreground);
+}
+.db-root [data-slot="switch"][data-state="checked"] {
+  background: var(--foreground);
+}
+.db-root [data-slot="switch"][data-state="checked"] > span {
+  background: var(--on-foreground);
+}
+
+/* Breadcrumb */
+.db-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b3b3b3;
+}
+.db-crumb_item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.db-crumb a {
+  text-decoration: underline dotted rgba(128, 128, 128, 0.6);
+  text-underline-offset: 0.3em;
+}
+.db-crumb a:hover {
+  color: var(--foreground);
+  text-decoration-style: solid;
+}
+.db-crumb_here {
+  color: var(--foreground);
+  max-width: 24ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Numbered form group */
+.db-fs_head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs-s);
+  padding-bottom: var(--space-2xs-xs);
+  border-bottom: 1px solid var(--foreground);
+}
+.db-fs_body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+  padding-top: var(--space-s-m);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-preview_live::before,
+  .db-actionbar_state::before {
+    animation: none;
+  }
+}
+
+/* Restore-draft strip */
+.db-draft {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs-s) var(--space-m);
+  padding: var(--space-xs-s) var(--space-s-m);
+  border: 1px solid var(--foreground);
+  border-left: 0.5rem solid var(--accent-pink);
+  background: var(--surface);
+  font-size: var(--step--1);
+  font-weight: 500;
+  animation: db-rise 0.7s var(--wk-ease) both;
+}
+.db-draft_text strong {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.db-draft_ctrl {
+  display: flex;
+  gap: var(--space-s);
+}
+
+/* ---- Tag input ---------------------------------------------------------- */
+.db-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5em 0.6em;
+  border: 1px solid var(--foreground);
+  background: var(--background);
+  cursor: text;
+  transition:
+    background-color 0.3s var(--wk-ease),
+    box-shadow 0.3s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .db-tags:hover {
+    background: #ebe9e5;
+    box-shadow: inset 0 -4px var(--foreground);
+  }
+}
+.db-tags:focus-within {
+  background: var(--background);
+  box-shadow: inset 0 -4px #00be7a;
+}
+.db-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.3em 0.4em 0.3em 0.7em;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.db-tag button {
+  display: grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  opacity: 0.6;
+  transition: opacity 0.2s, color 0.2s;
+}
+.db-tag button:hover,
+.db-tag button:focus-visible {
+  opacity: 1;
+  color: var(--accent-pink);
+  outline: none;
+}
+.db-tags_input {
+  flex: 1 1 8rem;
+  min-width: 6rem;
+  padding: 0.3em 0.2em;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  outline: none;
+}
+.db-tags_input::placeholder {
+  color: rgba(15, 15, 15, 0.33);
+}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { blurProps } from "@/lib/placeholder";
 import ShowcaseInView from "./ShowcaseInView";
 
 type ShowcaseItem = { id: number; title: string; coverImage: string };
@@ -25,6 +26,7 @@ function Row({ items, reverse }: { items: ShowcaseItem[]; reverse?: boolean }) {
               src={item.coverImage}
               alt={i < items.length ? item.title : ""}
               fill
+              {...blurProps(item.coverImage)}
               sizes="350px"
               className="object-cover"
             />

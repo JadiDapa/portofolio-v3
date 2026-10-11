@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { isVideo, pad2 } from "@/lib/format";
 import { useRef } from "react";
 import type { Service } from "@/generated/prisma";
 import { leanPanel } from "@/components/root/work/GridButton";
+import { SkillSchema, parseList } from "@/servers/validators/service.validator";
 import { DEFAULT_SERVICE_ICON, SERVICE_ICONS } from "@/components/root/serviceIcons";
 
-const isVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
 
 /**
  * Grid-button row: the panel leans toward the cursor while the text slides
@@ -21,6 +22,7 @@ export default function ServiceRow({
 }) {
   const panel = useRef<HTMLSpanElement>(null);
   const video = useRef<HTMLVideoElement>(null);
+  const skills = parseList(SkillSchema, service.skills);
   const Icon = SERVICE_ICONS[service.slug] ?? DEFAULT_SERVICE_ICON;
   // Only the first rows carry measurement hooks for the layout checks
   const cmp = (key: string) => (index === 0 ? key : undefined);
@@ -66,7 +68,7 @@ export default function ServiceRow({
 
             <span data-cmp={cmp("row1Text")} className="sv-row-text">
               <span data-cmp={cmp("row1Label")} className="sv-row-num wk-label">
-                {String(index + 1).padStart(2, "0")}
+                {pad2(index + 1)}
               </span>
               <span className="block">
                 <span data-cmp={cmp("row1Heading")} className="sv-row-heading block">
@@ -75,6 +77,11 @@ export default function ServiceRow({
                 <span data-cmp={cmp("row1Sub")} className="sv-row-sub block">
                   {service.summary}
                 </span>
+                {skills.length > 0 && (
+                  <span className="sv-row-skills wk-label block">
+                    {skills.map((k) => k.name.replace(/ (Development|Engineering)$/, "")).join(" · ")}
+                  </span>
+                )}
               </span>
             </span>
           </span>

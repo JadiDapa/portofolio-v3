@@ -23,7 +23,7 @@
 }
 
 .ab-glass {
-  background-color: rgba(248, 248, 248, 0.64);
+  background-color: var(--glass);
 }
 .ab-p {
   padding: var(--space-s-m);
@@ -110,15 +110,7 @@
 }
 
 .ab-spin {
-  animation: ab-spin 10s linear infinite;
-}
-@keyframes ab-spin {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
+  animation: spin-reverse 10s linear infinite;
 }
 
 /* --------------------------------------------------------------------------
@@ -141,10 +133,10 @@
   user-select: none;
 }
 .ab-ex-layer {
-  -webkit-text-stroke: 4px #0f0f0f;
+  -webkit-text-stroke: 4px var(--foreground);
 }
 .ab-ex-face {
-  color: #f8f8f8;
+  color: var(--background);
 }
 
 /* --------------------------------------------------------------------------
@@ -173,11 +165,11 @@
 }
 .ab-photo_ring {
   z-index: 1;
-  background: #0f0f0f;
+  background: var(--foreground);
 }
 .ab-photo_dots {
   z-index: 2;
-  background: #fff;
+  background: var(--surface);
 }
 .ab-photo_dots canvas {
   display: block;
@@ -198,8 +190,8 @@
 .ab-hero-photo {
   font-size: var(--space-m);
   box-shadow:
-    inset 0 0 #0f0f0f,
-    inset 0 0 #0f0f0f;
+    inset 0 0 var(--foreground),
+    inset 0 0 var(--foreground);
   transition: box-shadow 0.4s var(--wk-ease);
 }
 .ab-hero-photo {
@@ -221,8 +213,8 @@
   .ab-hero-photo:hover,
   .ab-hero-photo:focus-within {
     box-shadow:
-      inset 1.5em 1.5em #0f0f0f,
-      inset -1.5em -1.5em #0f0f0f;
+      inset 1.5em 1.5em var(--foreground),
+      inset -1.5em -1.5em var(--foreground);
   }
 }
 
@@ -283,84 +275,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   Portrait cards
-   -------------------------------------------------------------------------- */
-.ab-portraits {
-  overflow: visible;
-}
-.ab-portraits_track {
-  display: flex;
-}
-.ab-portrait {
-  flex: 0 0 90%;
-  min-width: 0;
-  font-size: var(--space-m);
-}
-@media (width >= 40rem) {
-  .ab-portrait {
-    flex-basis: 60%;
-  }
-}
-@media (width >= 64rem) {
-  .ab-portrait {
-    flex-basis: calc(100% / 3);
-  }
-}
-.ab-portrait_lift {
-  transition: transform 0.4s var(--wk-ease);
-  will-change: transform;
-}
-.ab-portrait_frame {
-  aspect-ratio: 421 / 490;
-  background: #f8f8f8;
-  transition: background-color 0.4s var(--wk-ease);
-}
-.ab-portrait_media {
-  position: absolute;
-  inset: 1px 0 0 1px;
-  clip-path: inset(-1px);
-}
-.ab-portrait_name {
-  transition-property: color, background-color;
-  transition-duration: 0.4s;
-  transition-timing-function: var(--wk-ease);
-}
-@media (hover: hover) and (pointer: fine) {
-  .ab-portrait:hover .ab-portrait_lift,
-  .ab-portrait:focus-within .ab-portrait_lift {
-    transform: translateY(-0.5em);
-  }
-}
-.ab-portrait[data-cursor="enter"] .ab-portrait_frame,
-.ab-portrait[data-cursor="enter"] .ab-portrait_name {
-  background-color: #0f0f0f;
-  color: #fff;
-}
-.ab-portrait[data-cursor="enter"] .ab-portrait_media {
-  animation: ab-inset-enter 0.5s var(--wk-ease) forwards;
-}
-.ab-portrait[data-cursor="leave"] .ab-portrait_media {
-  animation: ab-inset-leave 0.5s var(--wk-ease) forwards;
-}
-@keyframes ab-inset-enter {
-  from {
-    clip-path: inset(-1px);
-  }
-  to {
-    clip-path: inset(8px round 8px);
-  }
-}
-@keyframes ab-inset-leave {
-  from {
-    clip-path: inset(8px round 8px);
-  }
-  to {
-    clip-path: inset(-1px);
-  }
-}
-
-
-/* --------------------------------------------------------------------------
    Approach
    -------------------------------------------------------------------------- */
 @media (width >= 48rem) {
@@ -393,7 +307,7 @@
   position: absolute;
   inset: 0;
   display: block;
-  background: #0f0f0f;
+  background: var(--foreground);
   transform: scaleY(0);
   transform-origin: var(--origin, top);
   transition: transform 0.4s var(--wk-ease);
@@ -429,7 +343,7 @@
 @media (width >= 64rem) {
   .ab-rec a:hover > div,
   .ab-rec a:focus-visible > div {
-    color: #fff;
+    color: var(--on-foreground);
   }
 }
 
@@ -446,7 +360,7 @@
   display: block;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #0f0f0f;
+  background: var(--foreground);
 }
 @media (width < 64rem) {
   .ab-build-cover a {
@@ -485,3 +399,653 @@
     transform: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Toolbox: periodic table of tools. Index + detail card on the left, tiles right.
+   -------------------------------------------------------------------------- */
+.ab-tbx {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (width >= 64rem) {
+  .ab-tbx {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+  .ab-tbx_side {
+    grid-column: 1;
+    position: sticky;
+    top: calc(var(--ab-grid) * 1.2);
+  }
+}
+
+/* Discipline filters */
+.ab-tbx_filters {
+  display: flex;
+  flex-direction: column;
+}
+.ab-tbx_filter {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.6em 1fr auto;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: var(--space-xs-s) var(--space-xs-s);
+  border-bottom: 1px solid var(--foreground);
+  text-align: left;
+  overflow: hidden;
+  isolation: isolate;
+}
+.ab-tbx_filter:last-child {
+  border-bottom: 0;
+}
+.ab-tbx_filter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--foreground);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s var(--wk-ease);
+}
+.ab-tbx_filter[aria-pressed="true"] {
+  color: var(--on-foreground);
+}
+.ab-tbx_filter[aria-pressed="true"]::before {
+  transform: scaleX(1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-tbx_filter:hover::before {
+    transform: scaleX(0.04);
+  }
+  .ab-tbx_filter[aria-pressed="true"]:hover::before {
+    transform: scaleX(1);
+  }
+}
+.ab-tbx_filter:focus-visible {
+  outline: 2px solid #00be7a;
+  outline-offset: -2px;
+}
+.ab-tbx_fname {
+  font-size: var(--step-0);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.ab-tbx_count {
+  font-size: var(--step--1);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.55;
+}
+/* The hovered tool is used here: a pink square flags the discipline */
+.ab-tbx_filter[data-used]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  width: 0.45em;
+  height: 0.45em;
+  background: var(--accent-pink);
+  transform: translateY(-50%);
+  animation: ab-tbx-pop 0.4s var(--wk-ease);
+}
+.ab-tbx_filter[data-used] .ab-tbx_count {
+  margin-right: 0.8em;
+}
+@keyframes ab-tbx-pop {
+  from {
+    transform: translateY(-50%) scale(0);
+  }
+}
+
+/* Detail card */
+.ab-tbx_card {
+  display: flex;
+  min-height: 15rem;
+  flex-direction: column;
+  gap: var(--space-xs-s);
+  padding: var(--space-s-m);
+}
+.ab-tbx_card > * {
+  animation: ab-tbx-in 0.5s var(--wk-ease) backwards;
+}
+.ab-tbx_card > :nth-child(2) {
+  animation-delay: 0.05s;
+}
+.ab-tbx_card > :nth-child(3) {
+  animation-delay: 0.1s;
+}
+@keyframes ab-tbx-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+}
+.ab-tbx_big {
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--foreground);
+}
+.ab-tbx_num {
+  font-size: var(--step-5);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+.ab-tbx_num span {
+  font-size: var(--step-0);
+  letter-spacing: 0;
+  font-weight: 600;
+}
+.ab-tbx_uses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs-xs);
+}
+.ab-tbx_uses li {
+  display: grid;
+  grid-template-columns: 2.6em 1fr;
+  gap: 0.5em;
+}
+.ab-tbx_uses b {
+  display: block;
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+.ab-tbx_uses small {
+  display: block;
+  font-size: var(--step--2);
+  font-weight: 500;
+  color: #8a8a8a;
+}
+.ab-tbx_skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+.ab-tbx_skills li::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.7em;
+  background: var(--accent-pink);
+}
+.ab-tbx_go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: auto;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* Right column: discipline block -> skill rows -> tool tiles */
+.ab-tbx_main {
+  display: flex;
+  grid-column: 2 / span 3;
+  min-width: 0;
+  flex-direction: column;
+}
+.ab-tbx_bhead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs-s);
+  padding: var(--space-xs-s) var(--space-s-m);
+}
+.ab-tbx_bnum {
+  font-size: var(--step-4);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--foreground);
+}
+.ab-tbx_btitle {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.4em;
+  font-size: var(--step-2);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.ab-tbx_btitle svg {
+  transition: transform 0.5s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-tbx_btitle:hover svg {
+    transform: translate(3px, -3px);
+  }
+}
+.ab-tbx_block + .ab-tbx_block {
+  margin-top: var(--space-m-l);
+}
+
+.ab-tbx_group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Inside the 3-column main area: label = 1 column, tiles = 2 */
+@media (width >= 64rem) {
+  .ab-tbx_group {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .ab-tbx_group > .ab-tbx_label {
+    grid-column: 1;
+  }
+  .ab-tbx_group > .ab-tbx_grid {
+    grid-column: 2 / span 2;
+  }
+}
+.ab-tbx_label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  padding: var(--space-xs-s) var(--space-s-m);
+}
+@media (width >= 64rem) {
+  .ab-tbx_label {
+    justify-content: center;
+  }
+}
+.ab-tbx_skill {
+  font-size: var(--step-1);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.ab-tbx_sum {
+  font-size: var(--step--2);
+  font-weight: 500;
+  line-height: 1.4;
+  color: #8a8a8a;
+}
+
+/* Tool tiles: hairline cells, each one a "chemical element".
+   Four a row (two per page column); six on the service page. */
+.ab-tbx_grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--foreground);
+  border-left: 1px solid var(--foreground);
+  align-content: start;
+}
+@media (width >= 64rem) {
+  .ab-tbx_grid {
+    border-left: 0;
+  }
+}
+.ab-tbx_grid > li {
+  display: flex;
+  border-right: 1px solid var(--foreground);
+  border-bottom: 1px solid var(--foreground);
+  opacity: 0;
+}
+.ab-tbx[data-visible] .ab-tbx_grid > li {
+  animation: ab-tbx-rise 0.9s var(--wk-ease) both;
+  animation-delay: calc(min(var(--i), 20) * 55ms);
+}
+@keyframes ab-tbx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.2rem) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ab-tbx_tile {
+  position: relative;
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.35em;
+  padding: 0.6rem 0.7rem;
+  background: var(--glass);
+  text-align: left;
+  isolation: isolate;
+  transition:
+    transform 0.5s var(--wk-ease),
+    box-shadow 0.5s var(--wk-ease),
+    background-color 0.3s var(--wk-ease),
+    color 0.3s var(--wk-ease);
+}
+.ab-tbx_tile:focus-visible {
+  outline: 2px solid #00be7a;
+  outline-offset: -3px;
+}
+/* Every tile of the same tool lights up, so repeats across skills are visible */
+.ab-tbx_tile.is-active {
+  z-index: 2;
+  background: var(--foreground);
+  color: var(--on-foreground);
+  transform: translate(-5px, -5px);
+  box-shadow: 5px 5px 0 var(--accent-pink);
+}
+.ab-tbx_pips {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.7rem;
+  display: flex;
+  gap: 3px;
+}
+.ab-tbx_pips i {
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+  opacity: 0.35;
+  transition:
+    background-color 0.3s,
+    opacity 0.3s;
+}
+.ab-tbx_pips i[data-on] {
+  background: currentColor;
+  opacity: 1;
+}
+.ab-tbx_tile[data-bridge] .ab-tbx_pips i[data-on] {
+  background: var(--accent-pink);
+  border-color: var(--accent-pink);
+}
+.ab-tbx_sym {
+  font-size: var(--step-3);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  transition: transform 0.6s var(--wk-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-tbx_tile:hover .ab-tbx_sym {
+    transform: translateY(-0.1em) scale(1.12);
+    transform-origin: left bottom;
+  }
+}
+.ab-tbx_name {
+  font-size: var(--step--2);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-tbx[data-visible] .ab-tbx_grid > li {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+  .ab-tbx_tile {
+    transition-duration: 0.01s;
+  }
+  .ab-tbx_card > * {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Experience: ledger rows that open into highlights
+   -------------------------------------------------------------------------- */
+.ab-xp_tabs {
+  display: flex;
+}
+.ab-xp_tab {
+  flex: 1;
+  padding: var(--space-xs-s) var(--space-s-m);
+  text-align: center;
+  transition:
+    background-color 0.35s var(--wk-ease),
+    color 0.35s var(--wk-ease);
+}
+.ab-xp_tab.is-active {
+  background: var(--foreground);
+  color: var(--on-foreground);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-xp_tab:not(.is-active):hover {
+    background: #ebe9e5;
+  }
+}
+.ab-xp_btn {
+  position: relative;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr auto;
+  text-align: left;
+  cursor: pointer;
+}
+.ab-xp_btn:disabled {
+  cursor: default;
+}
+@media (width >= 64rem) {
+  .ab-xp_btn {
+    grid-template-columns: 1fr 2fr auto;
+  }
+}
+.ab-xp_btn > .ab-xp_cell:first-child {
+  grid-column: 1;
+}
+.ab-xp_btn > .ab-tile {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  height: auto;
+}
+@media (width >= 64rem) {
+  .ab-xp_btn > .ab-tile {
+    grid-row: auto;
+    grid-column: 3;
+  }
+}
+.ab-xp_btn > .ab-xp_main {
+  grid-column: 1;
+}
+@media (width >= 64rem) {
+  .ab-xp_btn > .ab-xp_main {
+    grid-column: 2;
+  }
+}
+.ab-xp_btn::before {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--foreground);
+  transform: scaleY(0);
+  transform-origin: var(--origin, top);
+  transition: transform 0.4s var(--wk-ease);
+  pointer-events: none;
+}
+@media (width >= 64rem) {
+  .ab-xp_btn::before {
+    content: "";
+  }
+}
+.ab-xp_btn > * {
+  position: relative;
+  transition: color 50ms;
+}
+.ab-xp_cell {
+  display: flex;
+  min-height: var(--ab-grid);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs-s);
+  padding-block: var(--space-xs-s);
+}
+.ab-xp_years {
+  display: block;
+  font-size: var(--step-2);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.ab-xp_range {
+  display: block;
+  margin-top: 0.4em;
+  color: #b3b3b3;
+}
+.ab-xp_live {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5em;
+}
+.ab-xp_live i {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 9999px;
+  background: #00be7a;
+  animation: ab-xp-pulse 2s ease-in-out infinite;
+}
+@keyframes ab-xp-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+.ab-xp_plus {
+  transition: transform 0.5s var(--wk-ease);
+}
+.ab-xp_item[data-open] .ab-xp_plus {
+  transform: rotate(135deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ab-xp_btn:not(:disabled):hover::before,
+  .ab-xp_btn:focus-visible::before {
+    transform: scaleY(1);
+  }
+}
+@media (width >= 64rem) {
+  .ab-xp_btn:not(:disabled):hover > *,
+  .ab-xp_btn:focus-visible > * {
+    color: var(--on-foreground);
+  }
+}
+.ab-xp_btn:focus-visible {
+  outline: 2px solid #00be7a;
+  outline-offset: -2px;
+}
+.ab-xp_body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s var(--wk-ease);
+}
+.ab-xp_item[data-open] .ab-xp_body {
+  grid-template-rows: 1fr;
+}
+.ab-xp_inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.ab-xp_content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+  padding: var(--space-s-m) var(--space-xs-s) var(--space-m-l);
+}
+@media (width >= 64rem) {
+  .ab-xp_content {
+    padding-left: calc(25% + var(--space-xs-s));
+  }
+}
+.ab-xp_hl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.5em;
+}
+.ab-xp_hl li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.ab-xp_hl li::before {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--accent-pink);
+}
+.ab-xp_tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.ab-xp_tools .sd-tool {
+  font-size: var(--step--2);
+}
+
+/* --------------------------------------------------------------------------
+   Education: diploma cards
+   -------------------------------------------------------------------------- */
+.ab-edu {
+  display: grid;
+  gap: var(--space-m-l);
+  padding: var(--space-m-l) var(--space-s-m);
+}
+@media (width >= 40rem) {
+  .ab-edu {
+    padding: var(--space-l-xl);
+  }
+}
+@media (width >= 64rem) {
+  .ab-edu {
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--space-xl-2xl);
+  }
+}
+.ab-edu_main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs-xs);
+}
+.ab-edu_years {
+  font-size: var(--step-5);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--foreground);
+}
+.ab-edu_degree {
+  margin-top: var(--space-s-m);
+  font-size: var(--step-3);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.ab-edu_side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s-m);
+}
+
+/* Same rows on a service page: no side card, just the skill → tools ledger */
+.ab-tbx--solo {
+  display: block;
+}
+@media (width >= 64rem) {
+  .ab-tbx--solo .ab-tbx_group {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ab-tbx--solo .ab-tbx_group > .ab-tbx_grid {
+    grid-column: 2 / span 3;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+

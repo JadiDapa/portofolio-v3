@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const LENS = 16; // % — clip-path circle radius
@@ -98,21 +98,31 @@ export default function HalftonePhoto({
     };
     const ro = new ResizeObserver(draw);
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      ro.disconnect();
+      img.onload = null;
+    };
   }, [src]);
 
-  // Apply the lens to whichever layer sits on top.
-  useEffect(() => {
-    const apply = () => {
-      const { x, y } = pos.current;
-      const at = `at ${x.toFixed(2)}px ${y.toFixed(2)}px`;
-      const lens = `circle(${LENS}% ${at})`;
-      if (ring.current) ring.current.style.clipPath = `circle(${RING}% ${at})`;
-      if (dots.current) dots.current.style.clipPath = toggle ? "none" : lens;
-      if (media.current) media.current.style.clipPath = toggle ? lens : "none";
-    };
-    apply();
+  // Whichever layer is on top gets the lens. `toggle` lives in a ref so the
+  // pointer listener below is attached once, not re-attached on every click.
+  const toggleRef = useRef(toggle);
+  const apply = useCallback(() => {
+    const { x, y } = pos.current;
+    const at = `at ${x.toFixed(2)}px ${y.toFixed(2)}px`;
+    const lens = `circle(${LENS}% ${at})`;
+    const showMedia = toggleRef.current;
+    if (ring.current) ring.current.style.clipPath = `circle(${RING}% ${at})`;
+    if (dots.current) dots.current.style.clipPath = showMedia ? "none" : lens;
+    if (media.current) media.current.style.clipPath = showMedia ? lens : "none";
+  }, []);
 
+  useEffect(() => {
+    toggleRef.current = toggle;
+    apply();
+  }, [toggle, apply]);
+
+  useEffect(() => {
     const p = pos.current;
     const tick = () => {
       p.x += (p.tx - p.x) * EASE;
@@ -143,7 +153,7 @@ export default function HalftonePhoto({
       cancelAnimationFrame(p.raf);
       p.raf = 0;
     };
-  }, [toggle]);
+  }, [apply]);
 
   return (
     <button

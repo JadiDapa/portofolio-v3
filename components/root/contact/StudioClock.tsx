@@ -1,7 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import { pad2 } from "@/lib/format";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 
 const TIME_ZONE = "Asia/Jakarta";
 const ZONE_LABEL = "WIB";
@@ -9,16 +10,25 @@ const OPEN_DAYS = [1, 2, 3, 4, 5]; // Mon - Fri
 const OPEN_FROM = 9;
 const OPEN_UNTIL = 17;
 
+// Built once: constructing an Intl.DateTimeFormat every second is wasteful
+const PARTS_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TIME_ZONE,
+  weekday: "short",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+  hourCycle: "h23",
+});
+const LABEL_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TIME_ZONE,
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
 /** Wall-clock parts in Jakarta, independent of the visitor's own zone. */
 function jakartaNow(date: Date) {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: TIME_ZONE,
-    weekday: "short",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    hourCycle: "h23",
-  }).formatToParts(date);
+  const parts = PARTS_FORMAT.formatToParts(date);
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return {
@@ -26,12 +36,7 @@ function jakartaNow(date: Date) {
     hour: Number(get("hour")),
     minute: Number(get("minute")),
     second: Number(get("second")),
-    label: new Intl.DateTimeFormat("en-US", {
-      timeZone: TIME_ZONE,
-      hour: "numeric",
-      minute: "2-digit",
-      second: "2-digit",
-    }).format(date),
+    label: LABEL_FORMAT.format(date),
   };
 }
 
@@ -115,7 +120,7 @@ export default function StudioClock() {
           <div className="wk-type-text ct-text flex uppercase">
             <div className="wk-b ct-tile-glass ct-p-sm grow">Mon - Fri</div>
             <div className="wk-b ct-tile-glass ct-p-sm grow">
-              {String(OPEN_FROM).padStart(2, "0")}:00 - {OPEN_UNTIL}:00
+              {pad2(OPEN_FROM)}:00 - {OPEN_UNTIL}:00
             </div>
           </div>
         </div>

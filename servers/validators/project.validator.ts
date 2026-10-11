@@ -1,10 +1,5 @@
 import { z } from "zod";
-
-export const ProjectSearchSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  pageSize: z.number().int().min(1).max(100).default(20),
-  search: z.string().min(1).max(50).optional(),
-});
+import { optionalUrl } from "./common";
 
 export const GalleryItemSchema = z.object({
   src: z.string().min(1),
@@ -148,7 +143,7 @@ const ProjectBaseSchema = z.object({
   content: z.string().optional(),
   coverImage: z.string().nullish(),
   heroVideo: z.string().nullish(),
-  websiteUrl: z.union([z.url(), z.literal("")]).nullish(),
+  websiteUrl: optionalUrl.nullish(),
   gallery: GallerySchema.optional(),
   sections: SectionsSchema.default([]),
   year: z.number().int().optional(),

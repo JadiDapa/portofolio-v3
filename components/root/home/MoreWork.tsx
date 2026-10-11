@@ -1,8 +1,8 @@
-import { Project } from "@/generated/prisma";
+import type { ProjectCard } from "@/servers/services/project.service";
 import ContactShowcase from "@/components/root/contact/ContactShowcase";
 
 /** Two-row strip of project covers drifting in opposite directions, above the footer. */
-export default function MoreWork({ projects }: { projects: Project[] }) {
+export default function MoreWork({ projects }: { projects: ProjectCard[] }) {
   const items = projects
     .filter((p) => p.coverImage)
     .map(({ id, title, coverImage }) => ({ id, title, coverImage: coverImage! }));

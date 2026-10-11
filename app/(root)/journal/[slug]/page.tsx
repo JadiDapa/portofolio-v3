@@ -1,52 +1,53 @@
 import { PostService } from "@/servers/services/post.service";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { stripHtml } from "@/lib/format";
+import PostArticle from "@/components/root/journal/PostArticle";
+import ReadingProgress from "@/components/root/journal/ReadingProgress";
 
-export default async function PostDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await PostService.getBySlug(slug);
+  if (!post || !post.published) return {};
+
+  const description = post.content ? stripHtml(post.content).slice(0, 160) : undefined;
+
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: "article",
+      publishedTime: post.createdAt.toISOString(),
+      authors: [post.author.name ?? post.author.username],
+      images: post.thumbnail ? [post.thumbnail] : undefined,
+    },
+  };
+}
+
+export default async function PostDetailPage({ params }: Params) {
   const { slug } = await params;
   const post = await PostService.getBySlug(slug);
 
   if (!post || !post.published) notFound();
 
+  const { newer, older } = await PostService.getNeighbours(post.id);
+
   return (
-    <div className="px-gutter py-24">
-      <div className="mx-auto max-w-2xl">
-        <Link
-          href="/journal"
-          className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-        >
-          ← All journal entries
-        </Link>
-
-        <article className="mt-8">
-          <header className="mb-8 space-y-3 border-b pb-8">
-            <h1 className="text-section font-semibold tracking-tight">{post.title}</h1>
-            <p className="text-muted-foreground text-sm">
-              {new Date(post.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-              {" · "}By {post.author.name ?? post.author.username}
-            </p>
-          </header>
-
-          {post.content ? (
-            <div
-              className="prose prose-neutral dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          ) : (
-            <p className="text-muted-foreground">
-              This entry has no content yet.
-            </p>
-          )}
-        </article>
-      </div>
-    </div>
+    <>
+      <ReadingProgress />
+      <PostArticle
+        title={post.title}
+        content={post.content}
+        thumbnail={post.thumbnail}
+        authorName={post.author.name ?? post.author.username}
+        date={post.createdAt}
+        newer={newer}
+        older={older}
+      />
+    </>
   );
 }

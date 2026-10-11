@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Prisma client is generated to a non-default location; never lint it.
     "generated/**",
+    // Playwright MCP scratch output
+    ".playwright-mcp/**",
   ]),
 ]);
 

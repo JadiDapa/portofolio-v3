@@ -1,7 +1,6 @@
-"use client";
-
 import { Settings } from "lucide-react";
-import RevealHeading from "@/components/root/work/RevealHeading";
+import { pad2 } from "@/lib/format";
+import RevealHeading from "@/components/root/shared/RevealHeading";
 import type { ProcessStep } from "@/servers/validators/service.validator";
 
 export default function ServiceProcess({
@@ -41,7 +40,7 @@ export default function ServiceProcess({
             <li key={i}>
               <article data-cmp={i === 0 ? "step1" : undefined} className="sd-step wk-b">
                 <p className="sd-step-num wk-label">
-                  {String(i + 1).padStart(2, "0")}
+                  {pad2(i + 1)}
                 </p>
                 <div className="min-w-0 grow space-y-(--space-s-m)">
                   <p className="sd-title">{step.title}</p>

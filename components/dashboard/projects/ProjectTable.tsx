@@ -25,6 +25,7 @@ export interface ProjectTableType {
   year?: number | null;
   published: boolean;
   featured: boolean;
+  order: number;
   createdAt: Date;
 }
 
@@ -126,6 +127,12 @@ export const projectColumns: ColumnDef<ProjectTableType>[] = [
         )}
       </div>
     ),
+  },
+
+  {
+    accessorKey: "order",
+    header: ({ column }) => <TableSorter column={column} header="Order" />,
+    cell: ({ row }) => <span className="db-chip">#{row.original.order}</span>,
   },
 
   {

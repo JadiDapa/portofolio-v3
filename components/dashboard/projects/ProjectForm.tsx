@@ -61,6 +61,7 @@ export default function ProjectForm({
       year: project?.year ?? new Date().getFullYear(),
       published: project?.published ?? false,
       featured: project?.featured ?? false,
+      order: project?.order ?? 0,
     },
   });
 
@@ -99,6 +100,12 @@ export default function ProjectForm({
         <>
           <SwitchField control={form.control} name="published" label="Published" />
           <SwitchField control={form.control} name="featured" label="Featured" />
+          <NumberField
+            control={form.control}
+            name="order"
+            label="Order"
+            hint="Lower comes first. Featured projects always sit above the rest; ties go to the newest."
+          />
         </>
       }
       preview={

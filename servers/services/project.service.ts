@@ -20,6 +20,14 @@ export const projectCardSelect = {
 
 export type ProjectCard = Prisma.ProjectGetPayload<{ select: typeof projectCardSelect }>;
 
+/** Featured first, then the manual `order`, then newest (by year, then when it was added). */
+const PROJECT_ORDER: Prisma.ProjectOrderByWithRelationInput[] = [
+  { featured: "desc" },
+  { order: "asc" },
+  { year: { sort: "desc", nulls: "last" } },
+  { createdAt: "desc" },
+];
+
 function shuffle<T>(items: T[]) {
   const out = [...items];
   for (let i = out.length - 1; i > 0; i--) {
@@ -35,7 +43,7 @@ export type ProjectListOptions = {
   published?: boolean;
   featured?: boolean;
   category?: string;
-  orderBy?: Prisma.ProjectOrderByWithRelationInput;
+  orderBy?: Prisma.ProjectOrderByWithRelationInput | Prisma.ProjectOrderByWithRelationInput[];
 };
 
 function projectWhere(opts: ProjectListOptions): Prisma.ProjectWhereInput {
@@ -54,7 +62,7 @@ export const ProjectService = {
     const page = Math.max(opts.page ?? 1, 1);
 
     const where = projectWhere(opts);
-    const orderBy: Prisma.ProjectOrderByWithRelationInput = opts.orderBy ?? { id: "desc" };
+    const orderBy = opts.orderBy ?? PROJECT_ORDER;
 
     const [items, total] = await Promise.all([
       prisma.project.findMany({
@@ -73,10 +81,10 @@ export const ProjectService = {
   },
 
   async getAll() {
-    return await prisma.project.findMany({ orderBy: { id: "desc" } });
+    return await prisma.project.findMany({ orderBy: PROJECT_ORDER });
   },
 
-  /** Published projects as slim cards, newest first (or featured only). */
+  /** Published projects as slim cards in display order (see PROJECT_ORDER), optionally featured only. */
   async listCards(opts: { featured?: boolean; category?: string; take?: number } = {}) {
     return await prisma.project.findMany({
       where: {
@@ -84,7 +92,7 @@ export const ProjectService = {
         ...(opts.featured !== undefined && { featured: opts.featured }),
         ...(opts.category && { category: opts.category }),
       },
-      orderBy: { id: "desc" },
+      orderBy: PROJECT_ORDER,
       take: opts.take,
       select: projectCardSelect,
     });

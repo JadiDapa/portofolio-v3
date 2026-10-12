@@ -149,6 +149,7 @@ const ProjectBaseSchema = z.object({
   year: z.number().int().optional(),
   published: z.boolean().default(false),
   featured: z.boolean().default(false),
+  order: z.number().int().default(0),
 });
 
 export const CreateProjectSchema = ProjectBaseSchema;

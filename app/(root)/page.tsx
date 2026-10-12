@@ -23,7 +23,7 @@ const PERSON_JSON_LD = {
 export default async function HomePage() {
   const [services, featuredProjects, moreProjects, testimonials] = await Promise.all([
     ServiceService.getAll(),
-    ProjectService.listCards({ featured: true, take: 3 }),
+    ProjectService.listCards({ featured: true, take: 6 }),
     ProjectService.listCards({ take: 24 }),
     TestimonialService.getPublished(4),
   ]);

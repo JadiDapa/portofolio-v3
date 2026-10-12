@@ -49,6 +49,8 @@ model Project {
   year       Int?
   published  Boolean  @default(false)
   featured   Boolean  @default(false)
+  /// Manual position; lower comes first. Featured projects always sort above the rest.
+  order      Int      @default(0)
   createdAt  DateTime @default(now())
 }
 

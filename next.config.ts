@@ -21,12 +21,9 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: "images.unsplash.com" },
       { hostname: "images.pexels.com" },
+      // UploadThing (see app/api/uploadthing)
+      { hostname: "*.ufs.sh", pathname: "/f/*" },
     ],
-  },
-  experimental: {
-    // Uploads go through a server action: the default 1MB rejects most images, and the
-    // upload fields promise up to 50MB for video
-    serverActions: { bodySizeLimit: "50mb" },
   },
 };
 

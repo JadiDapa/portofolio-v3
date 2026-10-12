@@ -167,7 +167,7 @@ export default function ProjectForm({
               <MediaSlot
                 value={field.value}
                 onChange={field.onChange}
-                label="cover image (PNG, JPG, WebP up to 5MB)"
+                label="cover image (PNG, JPG, WebP up to 8MB)"
                 accept="image/*"
                 imageOnly
               />
@@ -186,7 +186,7 @@ export default function ProjectForm({
               <MediaSlot
                 value={field.value}
                 onChange={field.onChange}
-                label="hero video (mp4/webm, up to 50MB)"
+                label="hero video (mp4/webm, up to 64MB)"
                 accept="video/mp4,video/webm"
               />
             )}

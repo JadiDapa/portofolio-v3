@@ -109,7 +109,7 @@ export default function PostForm({ post, authorId, authorName = "You" }: Props) 
             <MediaSlot
               value={field.value}
               onChange={field.onChange}
-              label="thumbnail (PNG, JPG, WebP up to 5MB)"
+              label="thumbnail (PNG, JPG, WebP up to 8MB)"
               accept="image/*"
               imageOnly
             />

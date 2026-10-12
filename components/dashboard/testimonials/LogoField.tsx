@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { uploadImage } from "@/app/action/upload.action";
+import { uploadFile } from "@/lib/upload";
 
-/** Company logo picker for a testimonial: uploads through the shared image action. */
+/** Company logo picker for a testimonial: uploads through the shared image endpoint. */
 export default function LogoField({
   value,
   onChange,
@@ -25,10 +25,7 @@ export default function LogoField({
     if (!file) return;
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const { url } = await uploadImage(fd);
-      onChange(url);
+      onChange(await uploadFile(file, "image"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {

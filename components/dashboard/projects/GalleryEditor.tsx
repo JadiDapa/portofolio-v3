@@ -14,7 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { uploadImage, uploadMedia } from "@/app/action/upload.action";
+import { uploadFile } from "@/lib/upload";
 import { getErrorMessage } from "@/lib/utils";
 import { isVideo } from "@/lib/format";
 import type {
@@ -35,7 +35,7 @@ export function MediaSlot({
   accept: string;
   label: string;
   aspect?: string;
-  /** Uses the stricter 5MB image upload instead of the 50MB image/video one. */
+  /** Uses the stricter 8MB image upload instead of the 64MB image/video one. */
   imageOnly?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -46,10 +46,7 @@ export function MediaSlot({
     if (!file) return;
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const { url } = await (imageOnly ? uploadImage : uploadMedia)(fd);
-      onChange(url);
+      onChange(await uploadFile(file, imageOnly ? "image" : "media"));
     } catch (err) {
       toast.error(getErrorMessage(err, "Upload failed"));
     } finally {

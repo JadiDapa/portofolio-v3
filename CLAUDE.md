@@ -29,7 +29,7 @@ This is Daffa Althaf Ridovani's personal portfolio site + CMS (Software Engineer
 - `app/(dashboard)/` — admin dashboard, requires auth via `getCurrentUser()` in layout
 - `app/(root)/` — public-facing pages: `/` (home), `/work` (+ `/work/[slug]`), `/about`, `/services` (+ `/services/[slug]`), `/contact`, `/journal` (+ `/journal/[slug]`)
 - `app/action/` — Next.js Server Actions (all files are `"use server"`)
-- `app/api/images/[filename]/` — serves uploaded images from `uploads/images/` on disk
+- `app/api/uploadthing/` — UploadThing file router (`image`, `media`); the browser uploads straight to UploadThing via `uploadFile()` in `lib/upload.ts`, then stills are swapped for an optimised WebP by `optimiseUpload` in `app/action/upload.action.ts`. Needs `UPLOADTHING_TOKEN`.
 
 ### Server-side layers
 

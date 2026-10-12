@@ -190,7 +190,7 @@ export default function ServiceForm({ service }: { service?: Service }) {
             <MediaSlot
               value={field.value}
               onChange={field.onChange}
-              label="image or video (mp4/webm, up to 50MB)"
+              label="image or video (mp4/webm, up to 64MB)"
               accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
             />
           )}

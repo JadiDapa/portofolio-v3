@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useMemo, useState, useTransition } from "react";
+import { ReactNode, useState, useTransition } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,6 +15,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
 import TablePagination from "./TablePagination";
 import ConfirmDelete from "./ui/ConfirmDelete";
 import { getErrorMessage } from "@/lib/utils";
@@ -27,6 +28,17 @@ export interface BulkActions {
   remove?: (ids: number[]) => Promise<unknown>;
 }
 
+/**
+ * Turns on a drag grip and ↑/↓ column. Rows need a numeric `id` and must arrive in
+ * their saved order. Moves apply instantly and roll back if `onSave` fails.
+ */
+export interface ReorderOptions<TData> {
+  /** Every id, top to bottom. */
+  onSave: (ids: number[]) => Promise<unknown>;
+  /** Rows only move within their group, e.g. featured projects stay above the rest. */
+  groupOf?: (row: TData) => unknown;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -37,6 +49,8 @@ interface DataTableProps<TData, TValue> {
   statusColumn?: string;
   statusLabels?: { on: string; off: string };
   bulk?: BulkActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reorder?: ReorderOptions<any>;
 }
 
 /** Tells the row which edge the cursor used, so the black wipe enters and leaves from it. */
@@ -82,19 +96,122 @@ const DataTable: React.FC<DataTableProps<any, any>> = ({
   statusColumn,
   statusLabels = { on: "Live", off: "Draft" },
   bulk,
+  reorder,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [pending, startTransition] = useTransition();
 
-  const allColumns = useMemo(
-    () => (bulk ? [selectColumn, ...columns] : columns),
-    [bulk, columns],
-  );
+  // Reorder works on a local copy so moves show instantly; fresh server data replaces it
+  const [items, setItems] = useState(data);
+  const [source, setSource] = useState(data);
+  if (data !== source) {
+    setSource(data);
+    setItems(data);
+  }
+  const [moved, setMoved] = useState(false);
+  const [armed, setArmed] = useState<number | null>(null);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [over, setOver] = useState<{ id: number; after: boolean } | null>(null);
+
+  // Positions only mean something in the saved order, so a sort or filter pauses reordering
+  const canReorder = !!reorder && sorting.length === 0 && columnFilters.length === 0;
+
+  /** The index range `row`'s group occupies (the whole list without `groupOf`). */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const groupRange = (row: any) => {
+    const groupOf = reorder?.groupOf;
+    if (!groupOf) return [0, items.length - 1] as const;
+    const g = groupOf(row);
+    const lo = items.findIndex((r) => groupOf(r) === g);
+    let hi = lo;
+    while (hi + 1 < items.length && groupOf(items[hi + 1]) === g) hi++;
+    return [lo, hi] as const;
+  };
+
+  function move(id: number, to: number) {
+    const from = items.findIndex((r) => r.id === id);
+    if (from < 0 || !reorder) return;
+    const [lo, hi] = groupRange(items[from]);
+    const target = Math.min(Math.max(to, lo), hi);
+    if (target === from) return;
+
+    const before = items;
+    const next = [...items];
+    next.splice(target, 0, ...next.splice(from, 1));
+    setItems(next);
+    setMoved(true);
+
+    reorder
+      .onSave(next.map((r) => r.id))
+      .catch((err) => {
+        setItems(before);
+        toast.error(getErrorMessage(err, "Couldn't save the new order"));
+      });
+  }
+
+  function endDrag() {
+    setArmed(null);
+    setDragging(null);
+    setOver(null);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const reorderColumn: ColumnDef<any, any> | null = reorder
+    ? {
+        id: "reorder",
+        header: () => <span className="sr-only">Reorder</span>,
+        cell: ({ row }) => {
+          const id = row.original.id as number;
+          const at = items.findIndex((r) => r.id === id);
+          const [lo, hi] = groupRange(row.original);
+          const hint = canReorder ? undefined : "Clear sorting and filters to reorder";
+
+          return (
+            <div className="db-move" title={hint}>
+              <button
+                type="button"
+                className="db-move_grip"
+                aria-label="Drag to reorder"
+                disabled={!canReorder}
+                onPointerDown={() => setArmed(id)}
+                onPointerUp={() => setArmed(null)}
+              >
+                <GripVertical aria-hidden />
+              </button>
+              <div className="db-move_steps">
+                <button
+                  type="button"
+                  aria-label="Move up"
+                  disabled={!canReorder || at <= lo}
+                  onClick={() => move(id, at - 1)}
+                >
+                  <ChevronUp aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Move down"
+                  disabled={!canReorder || at >= hi}
+                  onClick={() => move(id, at + 1)}
+                >
+                  <ChevronDown aria-hidden />
+                </button>
+              </div>
+            </div>
+          );
+        },
+      }
+    : null;
+
+  const allColumns = [
+    ...(bulk ? [selectColumn] : []),
+    ...(reorderColumn ? [reorderColumn] : []),
+    ...columns,
+  ];
 
   const table = useReactTable({
-    data,
+    data: reorder ? items : data,
     columns: allColumns,
     getRowId: (row) => String(row.id),
     enableRowSelection: !!bulk,
@@ -163,7 +280,7 @@ const DataTable: React.FC<DataTableProps<any, any>> = ({
       )}
 
       <div className="db-tablewrap">
-        <table className="db-table">
+        <table className="db-table" data-moved={moved || undefined}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -187,9 +304,44 @@ const DataTable: React.FC<DataTableProps<any, any>> = ({
                   key={row.id}
                   className="db-row"
                   data-selected={row.getIsSelected()}
+                  data-dragging={dragging === row.original.id || undefined}
+                  data-drop={
+                    over && over.id === row.original.id && dragging !== row.original.id
+                      ? over.after
+                        ? "after"
+                        : "before"
+                      : undefined
+                  }
                   style={{ "--i": i } as React.CSSProperties}
                   onPointerEnter={setOrigin}
                   onPointerLeave={setOrigin}
+                  // Only the grip arms a row for dragging, so text and links behave normally
+                  draggable={canReorder && armed === row.original.id}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", row.id);
+                    setDragging(row.original.id);
+                  }}
+                  onDragOver={(e) => {
+                    if (dragging === null) return;
+                    e.preventDefault();
+                    const r = e.currentTarget.getBoundingClientRect();
+                    const after = e.clientY > r.top + r.height / 2;
+                    if (!over || over.id !== row.original.id || over.after !== after) {
+                      setOver({ id: row.original.id, after });
+                    }
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragging !== null && over) {
+                      const from = items.findIndex((r) => r.id === dragging);
+                      let to = items.findIndex((r) => r.id === over.id) + (over.after ? 1 : 0);
+                      if (from < to) to -= 1;
+                      move(dragging, to);
+                    }
+                    endDrag();
+                  }}
+                  onDragEnd={endDrag}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>

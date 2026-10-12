@@ -11,6 +11,7 @@ import { PublishedBadge, RowActions, indexColumn } from "../table-columns";
 import {
   deleteProject,
   deleteProjects,
+  reorderProjects,
   setProjectsPublished,
 } from "@/app/action/project.action";
 
@@ -40,6 +41,11 @@ export default function ProjectTable({ projects }: ProjectTableProps) {
       data={projects}
       statusColumn="published"
       bulk={{ noun: "projects", publish: setProjectsPublished, remove: deleteProjects }}
+      reorder={{
+        onSave: reorderProjects,
+        // Featured always sits above the rest, so rows only move within their group
+        groupOf: (p: ProjectTableType) => p.featured,
+      }}
       filters={(table) => (
         <>
           <SearchDataTable table={table} column="title" placeholder="Title" />
@@ -127,12 +133,6 @@ export const projectColumns: ColumnDef<ProjectTableType>[] = [
         )}
       </div>
     ),
-  },
-
-  {
-    accessorKey: "order",
-    header: ({ column }) => <TableSorter column={column} header="Order" />,
-    cell: ({ row }) => <span className="db-chip">#{row.original.order}</span>,
   },
 
   {

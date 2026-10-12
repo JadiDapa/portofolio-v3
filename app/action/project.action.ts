@@ -37,6 +37,13 @@ export async function updateProject(
 
 const Ids = z.array(z.number().int()).min(1).max(500);
 
+/** Saves the dashboard table's drag/arrow order: `ids` is every project, top to bottom. */
+export async function reorderProjects(ids: number[]) {
+  await requireAdmin();
+  await ProjectService.reorder(Ids.parse(ids));
+  revalidate();
+}
+
 export async function setProjectsPublished(ids: number[], published: boolean) {
   await requireAdmin();
   await ProjectService.setPublishedMany(Ids.parse(ids), published);

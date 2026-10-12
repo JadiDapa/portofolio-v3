@@ -140,6 +140,13 @@ export const ProjectService = {
     return prisma.project.delete({ where: { id } });
   },
 
+  /** Rewrites `order` to match each id's position in the list (1-based, so new projects at 0 sit on top). */
+  async reorder(ids: number[]) {
+    return prisma.$transaction(
+      ids.map((id, i) => prisma.project.update({ where: { id }, data: { order: i + 1 } })),
+    );
+  },
+
   async setPublishedMany(ids: number[], published: boolean) {
     return prisma.project.updateMany({ where: { id: { in: ids } }, data: { published } });
   },

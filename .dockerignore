@@ -1,0 +1,31 @@
+# Dependencies & build output (rebuilt inside the image)
+node_modules
+.next
+out
+build
+generated
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets — passed at build/run time, never baked into the image
+.env*
+!.env.example
+.clerk
+*.pem
+
+# VCS, editor & tooling noise
+.git
+.gitignore
+.vscode
+.idea
+.vercel
+.playwright-mcp
+coverage
+npm-debug.log*
+.DS_Store
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+compose.yaml
+DOCKER.md

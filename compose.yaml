@@ -1,0 +1,81 @@
+# See DOCKER.md. Run every command with `--env-file .env.local` so the build args and
+# build secrets below can read your existing env file, e.g.:
+#   docker compose --env-file .env.local up -d --build
+
+name: portfolio
+
+x-runtime: &runtime
+  # Runtime env (DB, Clerk, SMTP, UploadThing…) is injected at container start,
+  # never baked into the image.
+  env_file:
+    - path: .env.local
+      required: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  # Production image — `docker compose --env-file .env.local up -d --build`
+  app:
+    <<: *runtime
+    image: portfolio:latest
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+        GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      secrets:
+        - database_url
+        - clerk_secret_key
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    restart: unless-stopped
+    # Matches Next's recommended 10–30s drain window for in-flight requests
+    stop_grace_period: 30s
+    volumes:
+      # Keeps optimised next/image variants across restarts
+      - image-cache:/app/.next/cache/images
+
+  # One-off migrations — `docker compose --env-file .env.local run --rm migrate`
+  migrate:
+    <<: *runtime
+    image: portfolio-migrate:latest
+    build:
+      context: .
+      target: migrate
+    profiles: [tools]
+    restart: "no"
+
+  # Hot-reloading dev server — `docker compose --env-file .env.local --profile dev up dev`
+  dev:
+    <<: *runtime
+    image: portfolio-dev:latest
+    build:
+      context: .
+      target: dev
+    profiles: [dev]
+    ports:
+      - "${DEV_PORT:-3002}:3000"
+    environment:
+      # Bind-mounted files from a Windows/macOS host don't emit native change
+      # events inside the container, so Watchpack polls instead
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      # Keep the container's Linux node_modules / Prisma client / build cache
+      # instead of the host's
+      - /app/node_modules
+      - /app/generated
+      - /app/.next
+
+volumes:
+  image-cache:
+
+secrets:
+  database_url:
+    environment: DATABASE_URL
+  clerk_secret_key:
+    environment: CLERK_SECRET_KEY

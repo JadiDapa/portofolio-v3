@@ -10,6 +10,8 @@ const RENAMED_SERVICES: Record<string, string> = {
 };
 
 const nextConfig: NextConfig = {
+  // Docker builds ship the minimal `server.js` bundle (see Dockerfile); `npm start` is unaffected
+  output: process.env.BUILD_STANDALONE === "1" ? "standalone" : undefined,
   async redirects() {
     return Object.entries(RENAMED_SERVICES).map(([from, to]) => ({
       source: `/services/${from}`,

@@ -16,6 +16,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the site.
 
+For the Docker setup (production image, migrations, optional dev container), see [DOCKER.md](./DOCKER.md).
+
 ## Commands
 
 ```bash

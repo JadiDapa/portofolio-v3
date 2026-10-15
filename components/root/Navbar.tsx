@@ -16,7 +16,7 @@ export default function Navbar() {
       <div className="page-grid">
         <div className="hm-logo col-span-full md:col-span-2">
           <Link href="/" className="hm-logo-link" aria-label="Home">
-            JADIDAPA
+            DAPA
           </Link>
         </div>
 

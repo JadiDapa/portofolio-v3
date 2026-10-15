@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import {
   CreateProjectSchema,
+  MAX_RELATED,
+  RELATED_FILL,
   UpdateProjectSchema,
 } from "@/servers/validators/project.validator";
 import { ProjectService } from "@/servers/services/project.service";
@@ -36,6 +38,7 @@ export async function updateProject(
 }
 
 const Ids = z.array(z.number().int()).min(1).max(500);
+const RelatedIds = z.array(z.number().int()).max(MAX_RELATED);
 
 /** Saves the dashboard table's drag/arrow order: `ids` is every project, top to bottom. */
 export async function reorderProjects(ids: number[]) {
@@ -62,12 +65,21 @@ export async function deleteProject(projectId: number) {
   revalidate();
 }
 
-/** Two random projects other than the current page, preferring ones not on screen already. */
+/**
+ * Random projects to fill Related Work up to RELATED_FILL next to the hand-picked ones,
+ * preferring ones not on screen already. Nothing when two or more were picked.
+ */
 export async function getRelatedProjects(
   projectId: number,
+  pickedIds: number[],
   currentIds: number[],
 ) {
-  const fresh = await ProjectService.getRelated([projectId, ...currentIds], 2);
-  if (fresh.length === 2) return fresh;
-  return ProjectService.getRelated([projectId], 2);
+  const picked = RelatedIds.parse(pickedIds);
+  const take = RELATED_FILL - picked.length;
+  if (take <= 0) return [];
+
+  const keep = [projectId, ...picked];
+  const fresh = await ProjectService.getRelated([...keep, ...RelatedIds.parse(currentIds)], take);
+  if (fresh.length === take) return fresh;
+  return ProjectService.getRelated(keep, take);
 }

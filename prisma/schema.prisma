@@ -51,6 +51,8 @@ model Project {
   featured   Boolean  @default(false)
   /// Manual position; lower comes first. Featured projects always sort above the rest.
   order      Int      @default(0)
+  /// Hand-picked "Related Work", in display order (max 3). Empty means random.
+  relatedIds Int[]    @default([])
   createdAt  DateTime @default(now())
 }
 

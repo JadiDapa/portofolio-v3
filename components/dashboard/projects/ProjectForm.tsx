@@ -21,6 +21,9 @@ import FormSection from "@/components/dashboard/ui/FormSection";
 import ProjectLivePreview from "@/components/dashboard/projects/ProjectLivePreview";
 import { MediaSlot } from "@/components/dashboard/projects/GalleryEditor";
 import SectionsEditor from "@/components/dashboard/projects/SectionsEditor";
+import RelatedProjectsField, {
+  type ProjectOption,
+} from "@/components/dashboard/projects/RelatedProjectsField";
 import {
   CreateProjectSchema,
   cleanSections,
@@ -38,10 +41,13 @@ type ProjectFormType = z.input<typeof CreateProjectSchema>;
 export default function ProjectForm({
   project,
   categories = [],
+  projects = [],
 }: {
   project?: Project;
   /** Service titles; a project's category has to match one to show under that service. */
   categories?: string[];
+  /** Every project, for the related-work picker (this one is left out). */
+  projects?: ProjectOption[];
 }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -58,6 +64,7 @@ export default function ProjectForm({
       heroVideo: project?.heroVideo ?? null,
       websiteUrl: project?.websiteUrl ?? "",
       sections: project ? resolveSections(project) : defaultSections(),
+      relatedIds: project?.relatedIds ?? [],
       year: project?.year ?? new Date().getFullYear(),
       published: project?.published ?? false,
       featured: project?.featured ?? false,
@@ -204,6 +211,20 @@ export default function ProjectForm({
           control={form.control}
           render={({ field }) => (
             <SectionsEditor value={field.value ?? []} onChange={field.onChange} />
+          )}
+        />
+      </FormSection>
+
+      <FormSection num={4} title="Related work">
+        <Controller
+          name="relatedIds"
+          control={form.control}
+          render={({ field }) => (
+            <RelatedProjectsField
+              value={field.value ?? []}
+              onChange={field.onChange}
+              options={projects.filter((p) => p.id !== project?.id)}
+            />
           )}
         />
       </FormSection>

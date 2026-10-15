@@ -113,6 +113,24 @@ export const ProjectService = {
     return { ...project, sections: resolveSections(project) };
   }),
 
+  /** Every project as `{ id, title, published }`, for the related-work picker. */
+  async listOptions() {
+    return await prisma.project.findMany({
+      orderBy: PROJECT_ORDER,
+      select: { id: true, title: true, published: true },
+    });
+  },
+
+  /** The published ones among `ids`, as cards in the order given (unpublished or deleted ids drop out). */
+  async getPicked(ids: number[]) {
+    if (ids.length === 0) return [];
+    const rows = await prisma.project.findMany({
+      where: { published: true, id: { in: ids } },
+      select: projectCardSelect,
+    });
+    return ids.flatMap((id) => rows.find((r) => r.id === id) ?? []);
+  },
+
   /** Up to `take` random published projects, excluding `excludeIds`. */
   async getRelated(excludeIds: number[], take = 2) {
     const rows = await prisma.project.findMany({

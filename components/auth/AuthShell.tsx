@@ -12,7 +12,7 @@ type Props = {
   altLabel: string;
 };
 
-const PHRASES = "Back office / Jadidapa / Words, work and the people who write to me / ";
+const PHRASES = "Back office / Dapa / Words, work and the people who write to me / ";
 
 /** Shared frame for sign in and sign up: ink panel on the left, paper form on the right. */
 export default function AuthShell({

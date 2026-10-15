@@ -20,7 +20,11 @@ export default async function UpdateProjectPage({
 
   if (!project) notFound();
 
-  const categories = (await ServiceService.getAll()).map((s) => s.title);
+  const [services, projects] = await Promise.all([
+    ServiceService.getAll(),
+    ProjectService.listOptions(),
+  ]);
+  const categories = services.map((s) => s.title);
 
   return (
     <main className="w-full space-y-6">
@@ -29,7 +33,7 @@ export default async function UpdateProjectPage({
         <PageHeader eyebrow="Work" title="Edit project" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <ProjectForm project={project} categories={categories} />
+      <ProjectForm project={project} categories={categories} projects={projects} />
     </main>
   );
 }

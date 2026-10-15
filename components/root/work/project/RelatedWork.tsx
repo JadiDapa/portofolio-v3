@@ -7,52 +7,73 @@ import { getRelatedProjects } from "@/app/action/project.action";
 import GridButton from "../GridButton";
 import ProjectPreview, { type WorkProject } from "../ProjectPreview";
 import RevealHeading from "@/components/root/shared/RevealHeading";
+import { cn } from "@/lib/utils";
 
-/** Two other projects; the reload button swaps them using the same cross-fade as /work. */
+/**
+ * The hand-picked projects (up to three), topped up to two with random ones when fewer
+ * were picked. The reload button only appears while there's a random slot, and only
+ * swaps that slot, using the same cross-fade as /work.
+ */
 export default function RelatedWork({
   projectId,
+  picked,
   initial,
 }: {
   projectId: number;
+  picked: WorkProject[];
+  /** Random fill. */
   initial: WorkProject[];
 }) {
   const openCategory = useOpenCategory();
-  const [projects, setProjects] = useState(initial);
+  const [random, setRandom] = useState(initial);
   const [pending, startTransition] = useTransition();
 
-  if (initial.length === 0) return null;
+  const projects = [...picked, ...random];
+  if (projects.length === 0) return null;
+
+  const pickedIds = picked.map((p) => p.id);
+  const canReload = initial.length > 0;
+  const three = projects.length === 3;
 
   const reload = () =>
     startTransition(async () => {
       const next = await getRelatedProjects(
         projectId,
-        projects.map((p) => p.id),
+        pickedIds,
+        random.map((p) => p.id),
       );
-      if (next.length) setProjects(next);
+      if (next.length) setRandom(next);
     });
 
 
   return (
     <section>
       <div className="wk-grid">
-        <div className="wk-b wk-glass col-span-2 p-(--space-s-m) lg:col-span-3">
+        <div
+          className={cn(
+            "wk-b wk-glass col-span-2 p-(--space-s-m)",
+            canReload ? "lg:col-span-3" : "lg:col-span-4",
+          )}
+        >
           <p className="wk-heading">
             <RevealHeading text="Related Work" inView />
           </p>
         </div>
-        <div className="wk-related-reload">
-          <GridButton icon ariaLabel="Show other projects" onClick={reload}>
-            <RefreshCw
-              className={pending ? "animate-spin" : undefined}
-              strokeWidth={1.5}
-            />
-          </GridButton>
-        </div>
+        {canReload && (
+          <div className="wk-related-reload">
+            <GridButton icon ariaLabel="Show other projects" onClick={reload}>
+              <RefreshCw
+                className={pending ? "animate-spin" : undefined}
+                strokeWidth={1.5}
+              />
+            </GridButton>
+          </div>
+        )}
       </div>
 
-      <div className="wk-grid">
+      <div className={cn("wk-grid", three && "wk-grid--3")}>
         {projects.map((project, i) => (
-          <div key={i} className="relative col-span-2">
+          <div key={i} className={cn("relative col-span-2", three && "lg:col-span-1")}>
             <ProjectPreview
               project={project}
               onCategory={openCategory}

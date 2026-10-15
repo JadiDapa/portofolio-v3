@@ -103,7 +103,7 @@ export function MenuOverlay() {
           <div className="page-grid">
             <div className="hm-logo col-span-full md:col-span-2">
               <Link href="/" onClick={close} className="hm-logo-link hm-logo-link--dark">
-                JADIDAPA
+                DAPA
               </Link>
             </div>
             <div className="hidden md:col-start-2 md:block lg:col-start-4">

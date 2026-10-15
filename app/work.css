@@ -691,6 +691,7 @@
   width: 100%;
 }
 .wk-btn--icon .wk-btn_inner {
+  width: 100%;
   justify-content: center;
   padding: 0;
 }
@@ -798,6 +799,13 @@
 @media (width >= 64rem) {
   .wk-related-reload {
     grid-column: span 1 / span 1;
+  }
+}
+
+/* Three hand-picked related projects share one row on desktop */
+@media (width >= 64rem) {
+  .wk-grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

@@ -11,6 +11,7 @@ import {
   TextSection,
   ToolsSection,
 } from "@/components/root/work/project/ProjectSections";
+import { MAX_RELATED, RELATED_FILL } from "@/servers/validators/project.validator";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -27,7 +28,16 @@ export default async function ProjectDetailPage({ params }: Params) {
 
   if (!project || !project.published) notFound();
 
-  const related = await ProjectService.getRelated([project.id], 2);
+  const picked = await ProjectService.getPicked(
+    project.relatedIds.filter((id) => id !== project.id).slice(0, MAX_RELATED),
+  );
+  const random =
+    picked.length < RELATED_FILL
+      ? await ProjectService.getRelated(
+          [project.id, ...picked.map((p) => p.id)],
+          RELATED_FILL - picked.length,
+        )
+      : [];
 
   return (
     <article className="px-gutter pb-(--space-xl-2xl)">
@@ -66,7 +76,7 @@ export default async function ProjectDetailPage({ params }: Params) {
               return <TextSection key={section.id} section={section} />;
           }
         })}
-        <RelatedWork projectId={project.id} initial={related} />
+        <RelatedWork projectId={project.id} picked={picked} initial={random} />
       </div>
     </article>
   );

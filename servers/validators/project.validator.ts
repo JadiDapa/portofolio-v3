@@ -134,6 +134,10 @@ export function cleanSections(sections: Section[] | undefined): Section[] {
   return out;
 }
 
+/** At most this many hand-picked related projects; with none or one picked, random ones top it up to 2. */
+export const MAX_RELATED = 3;
+export const RELATED_FILL = 2;
+
 const ProjectBaseSchema = z.object({
   slug: z.string().optional(),
   title: z.string().min(1, "Title is required"),
@@ -146,6 +150,8 @@ const ProjectBaseSchema = z.object({
   websiteUrl: optionalUrl.nullish(),
   gallery: GallerySchema.optional(),
   sections: SectionsSchema.default([]),
+  /** Hand-picked "Related Work", in display order. */
+  relatedIds: z.array(z.number().int()).max(MAX_RELATED, `Pick up to ${MAX_RELATED} projects`).default([]),
   year: z.number().int().optional(),
   published: z.boolean().default(false),
   featured: z.boolean().default(false),

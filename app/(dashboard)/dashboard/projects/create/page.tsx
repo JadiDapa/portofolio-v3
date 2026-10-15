@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import DynamicBreadcrumb from "@/components/dashboard/DynamicBreadcrumb";
 import PageHeader from "@/components/dashboard/PageHeader";
 import ProjectForm from "@/components/dashboard/projects/ProjectForm";
+import { ProjectService } from "@/servers/services/project.service";
 import { ServiceService } from "@/servers/services/service.service";
 import { redirect } from "next/navigation";
 
@@ -10,7 +11,11 @@ export default async function CreateProjectPage() {
 
   if (user.role !== "ADMIN") redirect("/dashboard");
 
-  const categories = (await ServiceService.getAll()).map((s) => s.title);
+  const [services, projects] = await Promise.all([
+    ServiceService.getAll(),
+    ProjectService.listOptions(),
+  ]);
+  const categories = services.map((s) => s.title);
 
   return (
     <main className="w-full space-y-6">
@@ -19,7 +24,7 @@ export default async function CreateProjectPage() {
         <PageHeader eyebrow="Work" title="New project" subtitle="Write on the left, watch the page on the right." />
       </div>
 
-      <ProjectForm categories={categories} />
+      <ProjectForm categories={categories} projects={projects} />
     </main>
   );
 }

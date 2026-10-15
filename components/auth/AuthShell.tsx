@@ -30,7 +30,7 @@ export default function AuthShell({
     <div className="db-auth">
       <aside className="db-auth_art" aria-hidden>
         <div className="db-auth_top">
-          <span className="db-auth_mono">J</span>
+          <span className="db-auth_mono">D</span>
           <span className="wk-label">V 3.0 / Admin</span>
         </div>
 

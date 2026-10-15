@@ -52,7 +52,7 @@ export function MenuOverlay() {
         <div className="hm-fab-row">
           <div className="hm-mono-clip">
             <Link href="/" tabIndex={-1} className="hm-mono">
-              J
+              D
             </Link>
           </div>
         </div>
